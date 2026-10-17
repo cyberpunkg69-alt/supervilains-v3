@@ -41,3 +41,12 @@ Pour tester la connexion, utiliser deux comptes e-mail différents.
 - Mode solo : six zones, six boss, failles ultimes, progression sauvegardée dans le téléphone.
 - Arène : captures classées validées par le serveur, 30 patrouilles par jour, classements semaine/mois/général, défis privés de 24 heures.
 - Les captures solo n'alimentent pas les scores en ligne.
+
+## Transférer les GIFs de combats (V3.2)
+1. Récupérer dans cette conversation le ZIP `SUPERVILAINS_12_GIFS_REACTIONS.zip` (4 Mo).
+2. Ouvrir https://github.com/cyberpunkg69-alt/supervilains-v3/upload/main
+3. Ajouter le ZIP **à la racine** du dépôt sans le décompresser, puis valider **Commit changes**.
+4. Le workflow `Importer GIFs SUPERVILAINS` décompresse les 12 GIFs dans `assets/reactions/` et tente de les ajouter au dépôt.
+5. Le workflow `Deployer SUPERVILAINS V3` extrait aussi automatiquement les GIFs dans la version en ligne, même si l'import via commit est refusé.
+
+Le bouton « TROLLER » lance `<personnage>_troller.gif` et la capture réussie affiche `<personnage>_capture.gif` avec des pleurs.
