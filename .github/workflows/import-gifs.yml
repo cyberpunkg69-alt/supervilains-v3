@@ -1,0 +1,52 @@
+name: Importer GIFs SUPERVILAINS
+on:
+  push:
+    branches: [main]
+    paths:
+      - SUPERVILAINS_12_GIFS_REACTIONS.zip
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  importer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le depot
+        uses: actions/checkout@v4
+      - name: Verifier et extraire les 12 GIFs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile
+          names=[f'{person}_{action}.gif' for person in ['manu','lea','natsu','amelie','ludo','eric'] for action in ['troller','capture']]
+          archive=Path('SUPERVILAINS_12_GIFS_REACTIONS.zip')
+          if not archive.exists():
+              raise SystemExit('Archive absente. Transfere la ZIP a la racine du depot.')
+          output=Path('assets/reactions')
+          output.mkdir(parents=True,exist_ok=True)
+          with zipfile.ZipFile(archive) as z:
+              if sorted(z.namelist())!=sorted(names):
+                  raise SystemExit('Archive invalide : 12 GIFs attendus')
+              if z.testzip() is not None:
+                  raise SystemExit('CRC invalide')
+              for name in names:
+                  data=z.read(name)
+                  if len(data)>5_000_000 or data[:6] not in (b'GIF87a',b'GIF89a'):
+                      raise SystemExit('GIF manquant, trop grand ou invalide : '+name)
+                  (output/name).write_bytes(data)
+                  print(name, len(data),'octets')
+          PY
+      - name: Ajouter les fichiers GIF au depot
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/reactions/*.gif
+          if ! git diff --cached --quiet; then
+            git commit -m "Ajouter les 12 GIFs de combats en pleine qualite"
+            git push
+          else
+            echo "Les 12 GIFs sont deja a jour."
+          fi
