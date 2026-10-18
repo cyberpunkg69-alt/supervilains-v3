@@ -1,0 +1,55 @@
+name: Importer les voix SUPERVILAINS V4
+on:
+  push:
+    paths: ['audio_import_v4.json']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  importer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Telecharger les voix officielles
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, re, time, urllib.request
+          p = pathlib.Path("audio_import_v4.json")
+          if not p.exists():
+              raise SystemExit("Aucun manifeste audio en attente")
+          clips = json.loads(p.read_text(encoding="utf-8"))
+          assert len(clips)==24, f"24 extraits attendus, recu {len(clips)}"
+          dest = pathlib.Path("assets/audio/v4")
+          dest.mkdir(parents=True, exist_ok=True)
+          for name, url in clips.items():
+              assert re.fullmatch(r"[a-z0-9_]+", name)
+              assert url.startswith("https://dnznrvs05pmza.cloudfront.net/text_to_speech/")
+              last = None
+              for attempt in range(3):
+                  try:
+                      req = urllib.request.Request(url, headers={"User-Agent":"SUPERVILAINS-Audio-Importer/1.0"})
+                      with urllib.request.urlopen(req, timeout=50) as res:
+                          data = res.read(2_500_000)
+                      if not (1000 < len(data) < 2_500_000):
+                          raise ValueError("Taille MP3 inattendue pour "+name)
+                      if not (data.startswith(b"ID3") or data[:1] == b"\\xff"):
+                          raise ValueError("Entete MP3 incorrect pour "+name)
+                      (dest/(name+".mp3")).write_bytes(data)
+                      print(name, len(data), "octets")
+                      break
+                  except Exception as error:
+                      last = error
+                      if attempt == 2:
+                          raise
+                      time.sleep(3)
+          p.unlink()
+          PY
+      - name: Versionner les MP3 officiels
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A assets/audio/v4 audio_import_v4.json
+          git commit -m "SUPERVILAINS V4 : integrer 24 voix fixes et personnelles"
+          git push
