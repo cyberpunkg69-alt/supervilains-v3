@@ -25,7 +25,7 @@
     main{padding:17px 16px calc(var(--navh) + 35px + env(safe-area-inset-bottom));min-height:76vh}.view{display:none;animation:showin .2s ease}.view.active{display:block}@keyframes showin{from{opacity:.5;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
     .kicker{font-size:10px;letter-spacing:2.2px;color:var(--cyan);font-weight:950}.h1{font-size:30px;line-height:1.04;font-weight:1000;letter-spacing:-.9px;margin:7px 0}.h1 em{font-style:normal;color:var(--pink)}.subtitle{color:var(--dim);font-size:12px;line-height:1.6;margin:7px 0 0}.section-heading{font-size:15px;font-weight:950;letter-spacing:.2px;margin:23px 0 12px;display:flex;justify-content:space-between;align-items:center}.section-heading small{font-size:10px;color:var(--cyan);letter-spacing:1.2px;text-transform:uppercase}
     .welcome{position:relative;overflow:hidden;border-radius:18px;border:1px solid #574882;background:linear-gradient(115deg,#292450,#151d3e 68%,#163448);padding:18px 18px 15px;isolation:isolate;box-shadow:0 15px 50px #01061277}.welcome:before{content:'⚡';position:absolute;right:-8px;top:-31px;font-size:158px;opacity:.09;transform:rotate(12deg);z-index:-1}.alert{display:inline-flex;align-items:center;gap:6px;background:#ff5a9e20;color:#ffafc9;border:1px solid #ff70aa6b;border-radius:20px;padding:5px 9px;font-size:9px;font-weight:950;letter-spacing:1.1px}.pulse{width:7px;height:7px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 4px #ff528222;animation:pulse 2s infinite}@keyframes pulse{50%{opacity:.45}}.welcome .h1{max-width:235px}.welcome-stats{display:flex;gap:16px;margin-top:17px}.welcome-stats strong{display:block;font-size:19px;color:#fff}.welcome-stats span{font-size:10px;color:#adb8d5}
-    .district-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.district{min-height:165px;position:relative;text-align:left;overflow:hidden;border:1px solid var(--stroke,#34456f);border-radius:16px;padding:13px 12px;background:linear-gradient(148deg,var(--glow,#234c68),#111832 65%);transition:transform .12s,border-color .15s}.district:active{transform:scale(.967)}.district:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 25%,var(--haze,#ff66bc44),transparent 50%);pointer-events:none}.district .district-icon{font-size:35px;filter:drop-shadow(0 2px 12px var(--haze,#ffffff50));position:relative}.district .district-lvl{position:absolute;right:10px;top:12px;font-size:9px;color:#ecdeff;background:#ffffff1c;border:1px solid #ffffff24;border-radius:7px;padding:5px}.district strong{position:relative;display:block;margin:17px 0 4px;font-size:13px;font-weight:950}.district .district-sub{position:relative;display:flex;align-items:center;gap:5px;color:#c9d5f4;font-size:10px}.district .live-dot{height:6px;width:6px;background:var(--green);border-radius:50%;box-shadow:0 0 7px var(--green)}.district.locked{filter:grayscale(.8);border-style:dashed;opacity:.68}.district.locked:after{content:'🔒';position:absolute;right:10px;bottom:11px;font-size:20px}
+    .district-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.district-card{position:relative}.district{min-height:165px;position:relative;text-align:left;overflow:hidden;border:1px solid var(--stroke,#34456f);border-radius:16px;padding:13px 12px;background:linear-gradient(148deg,var(--glow,#234c68),#111832 65%);transition:transform .12s,border-color .15s;width:100%}.district:active{transform:scale(.967)}.district:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 25%,var(--haze,#ff66bc44),transparent 50%);pointer-events:none}.district .district-icon{font-size:35px;filter:drop-shadow(0 2px 12px var(--haze,#ffffff50));position:relative}.district .district-lvl{position:absolute;right:10px;top:12px;font-size:9px;color:#ecdeff;background:#ffffff1c;border:1px solid #ffffff24;border-radius:7px;padding:5px}.district strong{position:relative;display:block;margin:17px 0 4px;font-size:13px;font-weight:950;padding-right:28px}.district .district-sub{position:relative;display:flex;align-items:center;gap:5px;color:#c9d5f4;font-size:10px}.district .live-dot{height:6px;width:6px;background:var(--green);border-radius:50%;box-shadow:0 0 7px var(--green)}.district.locked{filter:grayscale(.8);border-style:dashed;opacity:.68}.district.locked:after{content:'🔒';position:absolute;right:10px;bottom:11px;font-size:20px}.district-info-btn{position:absolute;right:10px;bottom:10px;width:30px;height:30px;border:1px solid #7ed8ff8a;border-radius:50%;background:linear-gradient(145deg,#163457,#1d2a55);color:#effcff;font-size:18px;font-weight:1000;display:grid;place-items:center;box-shadow:0 4px 14px #0008;z-index:2}.district-info-btn:active{transform:scale(.94)}
     .ticker{margin-top:13px;border:1px solid #2a3659;border-radius:12px;padding:12px;background:#121a36;display:flex;align-items:center;gap:10px}.ticker .big-icon{font-size:24px}.ticker b{font-size:12px}.ticker p{font-size:10px;color:var(--dim);margin:4px 0 0;line-height:1.35}
     .progress{height:8px;background:#303650;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#4ce9e5,#6a83ff);transition:width .35s}.progress.pink>i{background:linear-gradient(90deg,#ff64a7,#ffc861)}
     .mission{border:1px solid var(--border);border-radius:15px;background:linear-gradient(130deg,#19203c,#10172d);padding:14px;margin-bottom:10px}.mission-title{font-size:13px;font-weight:900}.mission-desc{font-size:10px;color:var(--dim);margin:6px 0 12px}.mission-footer{display:flex;align-items:center;justify-content:space-between;gap:13px;margin-top:10px}.mission-reward{font-size:10px;color:var(--gold);font-weight:800}.mission .progress{margin-top:10px;height:7px}.tiny-btn{border:0;border-radius:8px;background:linear-gradient(125deg,var(--cyan),#75aaff);color:#07132a;font-size:10px;font-weight:950;padding:9px 11px}.tiny-btn:disabled{background:#343e5a;color:#8091ac;opacity:1}
@@ -108,7 +108,7 @@
     .achievement-pop .medal{font-size:34px}.achievement-pop strong{font-size:12px}.achievement-pop small{font-size:10px;color:#ffe4a6}
     @media(max-width:350px){.nav-btn{font-size:7px}.nav-btn .nicon{font-size:17px}.weak-btn{min-height:75px}}
 
-    /* V3.8 — Radar à dix inconnus et centre des 50 missions */
+    /* V4.0 — Radar, missions, fiches et dialogues vocaux */
     .radar-modal{width:min(100%,460px)}
     .radar-head{padding:18px 18px 5px}
     .radar-badge{color:var(--cyan);font-size:10px;font-weight:950;letter-spacing:1.4px}
@@ -143,7 +143,14 @@
     .mission-tab.active{border-color:#67e6db;background:#1b454d;color:#e8ffff}
     .mission-more{width:100%;border:1px solid #6882af;background:#1d2b4d;color:#d7edff;border-radius:12px;padding:13px;font-size:12px;font-weight:900;margin-bottom:14px}
     .mission-level{color:#81edc8;font-size:9px;font-weight:850;margin-top:4px;letter-spacing:.2px}
-    @media(max-width:350px){.radar-unknown{width:39px;height:39px}.mission-tab{font-size:8px}}
+    .suspect-sheet{padding:18px 16px 16px}.suspect-header{display:flex;align-items:flex-start;gap:12px;margin:8px 0 14px}.suspect-avatar{width:76px;height:76px;border-radius:16px;display:grid;place-items:center;font-size:38px;background:linear-gradient(145deg,#193960,#132446);border:2px solid #6ec5ff;box-shadow:0 8px 26px #0008;flex-shrink:0}.suspect-header h3{margin:0 0 4px;font-size:22px;line-height:1}.suspect-header p{margin:0;color:#9db5d1;font-size:11px;line-height:1.45}.suspect-chip-row{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px}.suspect-chip{border:1px solid #445f83;background:#141f3d;color:#ddecff;border-radius:999px;padding:7px 10px;font-size:10px;font-weight:850}.suspect-box{border:1px solid #375179;background:linear-gradient(145deg,#121c39,#172447);border-radius:14px;padding:13px 12px;margin-top:10px}.suspect-box b{display:block;font-size:11px;color:var(--cyan);letter-spacing:1.2px;margin-bottom:6px}.suspect-box p{margin:0;font-size:12px;line-height:1.52;color:#edf5ff}.suspect-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+    .voice-card{margin-top:16px;padding:15px;border:1px solid #5271a2;border-radius:15px;background:linear-gradient(125deg,#172e4d,#251d48)}
+    .voice-card h3{margin:0 0 8px;font-size:14px;font-weight:950}.voice-card p{margin:6px 0;color:#bbcee9;font-size:11px;line-height:1.45}
+    .voice-profile{font-size:12px;font-weight:900;color:#85fff1;margin:9px 0}.voice-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+    .voice-actions .button{min-height:46px;font-size:11px;padding:9px 7px}
+    .voice-replay{font-size:11px;min-height:44px;margin-top:10px;width:100%}
+    .voice-note{font-size:10px;line-height:1.4;color:#91abc8;margin-top:9px}
+@media(max-width:350px){.radar-unknown{width:39px;height:39px}.mission-tab{font-size:8px}}
     @media(prefers-reduced-motion:reduce){.radar-screen:before{animation:none}}
   </style>
 </head>
@@ -261,7 +268,20 @@
         <div class="shop-card"><div class="shop-icon">🔋</div><div class="shop-desc"><strong>Surcapacité du réacteur</strong><p>+5 d'énergie maximale, bonus permanent.</p></div><div><div class="shop-price" id="upgrade-price">🪙 190</div><button class="tiny-btn" id="buy-upgrade" type="button">AMÉLIORER</button></div></div>
         <div class="privacy">💾 Ta partie est sauvegardée automatiquement sur ce navigateur. La campagne est sauvegardée sur ce navigateur. L’ARÈNE en ligne possède sa progression compétitive séparée, associée à ton compte.</div>
         <button id="sound-toggle" class="button outline" style="width:100%;margin-top:12px" type="button">🔇 Activer les sons</button>
-        <p class="footer-note">SUPERVILAINS — Meme Hunt · V3.8</p>
+
+        <div class="voice-card" aria-label="Identité vocale personnelle">
+          <h3>🎙️ TON COMMISSAIRE PERSONNEL</h3>
+          <div id="voice-profile" class="voice-profile">Identité vocale en préparation…</div>
+          <p>Ton commissaire a un timbre et une signature stables. Si tu es connecté à l’Arène, ce profil te suit sur tes autres appareils.</p>
+          <div class="voice-actions">
+            <button id="voice-toggle" class="button primary" type="button" aria-pressed="false">🔇 ACTIVER LES VOIX</button>
+            <button id="voice-preview" class="button outline" type="button">▶️ ÉCOUTER</button>
+          </div>
+          <button id="voice-stop" class="button outline voice-replay" type="button">⏹️ ARRÊTER LA VOIX</button>
+          <div class="voice-note">Les voix des six méchants sont des enregistrements officiels identiques pour tous. La lecture parlée des motifs utilise la voix disponible sur ton téléphone.</div>
+        </div>
+
+        <p class="footer-note">SUPERVILAINS — Meme Hunt · V4.0</p>
       </section>
     </main>
     <nav class="nav" aria-label="Navigation principale">
@@ -301,6 +321,7 @@
   </div>
   <div id="overlay-result" class="overlay" role="dialog" aria-modal="true" aria-label="Résultat de l'affrontement"><div class="dialog mini-dialog"><span class="result-icon" id="result-icon">🏆</span><div class="overline" id="result-kicker">CIBLE IMMOBILISÉE</div><h2 id="result-title">CAPTURE RÉUSSIE !</h2><p id="result-text">Félicitations agent.</p><div class="result-gif-frame" id="result-gif-frame" hidden><img id="result-gif" alt="Animation du méchant capturé en train de pleurer" /></div><div class="result-stats" id="result-stats"></div><button id="result-button" type="button" class="button primary" style="width:100%">RETOURNER À LA CARTE</button></div></div>
   <div id="overlay-tutorial" class="overlay" role="dialog" aria-modal="true" aria-label="Bienvenue dans Supervilains"><div class="dialog mini-dialog tutorial-page"><div class="tutorial-logo">🦹</div><div class="overline">BIENVENUE AGENT</div><h2>LA CHASSE <span style="color:var(--pink)">COMMENCE !</span></h2><p>6 super-méchants mème sèment le chaos sur les réseaux. Retrouve-les parmi 10 inconnus au radar, découvre leur faille ultime et capture-les avant tout le monde.</p><div class="tutorial-features"><div class="tutorial-feature"><span>🗺️</span><div><strong>EXPLORE LES QUARTIERS</strong><small>Repère les criminels dans la ville.</small></div></div><div class="tutorial-feature"><span>📡</span><div><strong>CHERCHE LE VRAI SUSPECT</strong><small>10 signaux inconnus sur le radar. 5 tentatives pour démasquer le bon !</small></div></div><div class="tutorial-feature"><span>🎴</span><div><strong>UNE CARTE, UNE CHANCE</strong><small>Six cartes cachées et mélangées. Le bon choix capture immédiatement et donne un bonus !</small></div></div><div class="tutorial-feature"><span>🕸️</span><div><strong>CAPTURE AU BON MOMENT</strong><small>Vise juste, collecte les récompenses et progresse.</small></div></div></div><button class="button primary" id="start-game" type="button" style="width:100%;font-size:14px">🚀 DÉMARRER LA MISSION</button></div></div>
+  <div id="overlay-suspect" class="overlay" role="dialog" aria-modal="true" aria-label="Fiche suspect"><div class="dialog mini-dialog suspect-sheet"><div class="overline">❗ AVIS DE RECHERCHE</div><h2>FICHE <span style="color:var(--cyan)">SUSPECT</span></h2><div class="suspect-header"><div class="suspect-avatar" id="suspect-avatar">🦹</div><div><h3 id="suspect-name">SUSPECT</h3><p id="suspect-district">Quartier inconnu</p><p id="suspect-line">Description</p></div></div><div class="suspect-chip-row"><span class="suspect-chip" id="suspect-status">🔎 SUSPECT RECHERCHÉ</span><span class="suspect-chip" id="suspect-weakness">🕵️ DOSSIER COMIQUE</span></div><div class="suspect-box"><b>MOTIF DE RECHERCHE</b><p id="suspect-reason">Motif en attente…</p></div><div class="suspect-box"><b>RAPPORT EXPRESS</b><p id="suspect-report">Le centre de commandement compile encore les anomalies.</p></div><div class="suspect-actions"><button id="suspect-reroll" type="button" class="button secondary">🎲 AUTRE MOTIF</button><button id="suspect-close" type="button" class="button primary">COMPRIS</button></div><button id="suspect-read" class="button outline voice-replay" type="button">🎙️ ÉCOUTER LE MOTIF</button><button id="suspect-hear-villain" class="button outline voice-replay" type="button">🦹 ÉCOUTER LE MÉCHANT</button></div></div>
   <div id="toast" role="status" aria-live="polite"></div>
   <script>
   (()=>{'use strict';
@@ -329,11 +350,113 @@ const villains=[
   {name:'LUDO',icon:'📘',line:'Maître des fautes et des légendes bancales. Le Bescherelle est sa kryptonite.',danger:4,type:'Texte toxique',color:'#ffc861',boss:true,portrait:'assets/ludo.png',weakness:'bescherelle',weaknessName:'Bescherelle',weaknessIcon:'📘'},
   {name:'ERIC',icon:'🧴',line:'Le boss final aromatique. Un simple déodorant suffit à briser son aura pestilentielle.',danger:5,type:'Boss',color:'#ff8a5b',boss:true,portrait:'assets/eric.png',weakness:'deodorant',weaknessName:'Déodorant',weaknessIcon:'🧴'}
 ];
-const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Date.now(),coins:160,nets:5,owned:{},captured:0,perfect:0,patrols:0,robot:0,visited:{},claimed:[],upgrade:0,sound:false,started:false,ultimate:0,ultimateByVillain:{},weaknessAttempts:0,radarFinds:0,radarFirst:0,radarMisses:0,radarEscapes:0,achievements:{}});
+const wantedReasons=[
+  '{name} est recherché(e) pour avoir lancé une révolution du dentifrice dans trois supermarchés.',
+  '{name} est soupçonné(e) d’avoir remplacé toutes les sonneries du quartier par des bruits de mouette.',
+  '{name} aurait organisé un trafic clandestin de chaussettes orphelines.',
+  '{name} est accusé(e) d’avoir crié “premier !” sur 812 publications en moins d’une heure.',
+  '{name} est recherché(e) pour avoir transformé une file d’attente en karaoké non consenti.',
+  '{name} aurait tenté de faire payer un péage émotionnel à l’entrée d’un rond-point.',
+  '{name} a été vu(e) en train de classer des nuggets par signe astrologique.',
+  '{name} est soupçonné(e) d’avoir kidnappé la télécommande du destin.',
+  '{name} a semé la panique après avoir affirmé que la raclette était un sport extrême.',
+  '{name} est recherché(e) pour avoir lancé un concours de grimaces chez les pigeons.',
+  '{name} aurait piraté des réveils pour qu’ils disent “allez courage mon reuf” le matin.',
+  '{name} a été surpris(e) en train de vendre de l’air “édition collector”.',
+  '{name} est accusé(e) d’avoir renommé la lune “lampe de nuit premium”.',
+  '{name} est recherché(e) pour avoir demandé un supplément mayonnaise dans un magasin de meubles.',
+  '{name} aurait provoqué une émeute en annonçant un faux retour du Minitel.',
+  '{name} a déclenché une crise diplomatique en mettant de l’ananas sur une tartiflette.',
+  '{name} est soupçonné(e) d’avoir déclaré une guerre ouverte aux rideaux de douche.',
+  '{name} aurait tenté de dompter un aspirateur avec une flûte à bec.',
+  '{name} est recherché(e) pour avoir fait semblant d’être une notification système.',
+  '{name} a distribué des faux tickets “priorité à la sieste” à la mairie.',
+  '{name} est accusé(e) d’avoir insulté un grille-pain sur la place publique.',
+  '{name} aurait rédigé un manifeste politique pour les cornichons oubliés.',
+  '{name} est recherché(e) pour avoir organisé des courses illégales de caddies en descente.',
+  '{name} a été aperçu(e) en train de facturer des selfies à des statues.',
+  '{name} aurait remplacé les panneaux “sortie” par “destin”.',
+  '{name} est recherché(e) pour usage abusif de filtres licorne en réunion secrète.',
+  '{name} est soupçonné(e) d’avoir déclaré une dinde “présidente du goûter”.',
+  '{name} aurait fait croire à tout un immeuble que le Wi‑Fi poussait sur les arbres.',
+  '{name} est accusé(e) d’avoir fait une dissertation sur le charisme d’une bouillotte.',
+  '{name} est recherché(e) pour avoir déclenché un faux conseil de guerre contre les moustiques.',
+  '{name} aurait improvisé une chorale de klaxons un dimanche matin.',
+  '{name} a été vu(e) en train de bénir des chips saveur barbecue.',
+  '{name} est soupçonné(e) d’avoir confondu un musée avec une salle d’attente pour dragons.',
+  '{name} aurait ouvert un cabinet de voyance spécialisé dans les pâtes trop cuites.',
+  '{name} est recherché(e) pour avoir tenté de tatouer un melon au marqueur.',
+  '{name} a proclamé l’indépendance d’un parking souterrain.',
+  '{name} est accusé(e) d’avoir mis des lunettes 3D à un poisson pané.',
+  '{name} aurait proposé un plan évasion à une pile de pancakes.',
+  '{name} est recherché(e) pour avoir remplacé la météo par des prédictions de croquettes.',
+  '{name} a été aperçu(e) en train de draguer un scanner de caisse automatique.',
+  '{name} aurait monté une start-up de silence en spray.',
+  '{name} est accusé(e) d’avoir transformé un tuto maquillage en tutoriel plomberie.',
+  '{name} est recherché(e) pour avoir créé un faux championnat du lancer de pantoufle.',
+  '{name} aurait demandé la nationalité française pour un lampadaire attachant.',
+  '{name} a été surpris(e) en train de réciter l’alphabet à l’envers à une pastèque.',
+  '{name} est accusé(e) d’avoir collé des yeux mobiles sur des yaourts nature.',
+  '{name} serait le cerveau d’un braquage de compotes en gourde.',
+  '{name} est recherché(e) pour avoir caché les cuillères au nom de l’art contemporain.',
+  '{name} aurait tenté de baptiser un ventilateur “Patrick le tempétueux”.',
+  '{name} a été vu(e) en train de faire un exposé sur la tristesse du papier alu.',
+  '{name} est accusé(e) d’avoir loué un trampoline pour un débat philosophique.',
+  '{name} est recherché(e) pour avoir demandé une garde alternée d’une boîte à biscuits.',
+  '{name} aurait transformé un contrôle de routine en battle de playback.',
+  '{name} est soupçonné(e) d’avoir envoyé des vocaux de 14 minutes à un feu rouge.',
+  '{name} aurait tenté d’inscrire un croissant sur les listes électorales.',
+  '{name} est recherché(e) pour avoir inventé le yoga pour escargots pressés.',
+  '{name} a provoqué un scandale en faisant juger des chips par un jury de canards.',
+  '{name} serait responsable d’une mode illégale de peignoirs à paillettes.',
+  '{name} est accusé(e) d’avoir vendu des abonnements premium à une flaque d’eau.',
+  '{name} est recherché(e) pour avoir pris un couscous en otage affectif.',
+  '{name} aurait remis une médaille de bravoure à une multiprise courageuse.',
+  '{name} a été surpris(e) en train d’interviewer un cactus sur son enfance.',
+  '{name} est soupçonné(e) d’avoir déclaré son amour à une rame de papier.',
+  '{name} est recherché(e) pour avoir fait sonner des maracas dans un ascenseur silencieux.',
+  '{name} aurait lancé une pétition pour mettre des spoilers aux sudoku.',
+  '{name} a tenté de soudoyer un détecteur de fumée avec un brownie.',
+  '{name} est accusé(e) d’avoir proposé des heures sup à des nounours en peluche.',
+  '{name} serait impliqué(e) dans un trafic de playlists pour hamsters nerveux.',
+  '{name} est recherché(e) pour avoir redécoré une salle d’attente en repaire de pirate.',
+  '{name} a été vu(e) en train de négocier une paix durable avec un bouchon récalcitrant.',
+  '{name} aurait essayé de faire rire un distributeur automatique jusqu’à épuisement.',
+  '{name} est accusé(e) d’avoir organisé un pot de départ pour un yaourt périmé.',
+  '{name} est recherché(e) pour avoir appelé les secours après la chute morale d’un muffin.',
+  '{name} a déclenché un signalement massif en courant avec une cuvette “porte-bonheur”.',
+  '{name} est soupçonné(e) d’avoir transformé un atelier calme en fanfare de casseroles.',
+  '{name} est recherché(e) pour avoir proclamé un couvre-feu pour les chaussons mous.',
+  '{name} aurait confondu une webcam avec un oracle intergalactique.',
+  '{name} a lancé un service de livraison express de drames minuscules.',
+  '{name} est accusé(e) d’avoir fait des croche-pattes verbaux à la grammaire.',
+  '{name} est recherché(e) pour détention d’un stock suspect de confettis mélancoliques.',
+  '{name} aurait monté un réseau d’influence pour rouleaux de sopalin mégalos.',
+  '{name} a été aperçu(e) en train de menacer un donut avec une spatule.',
+  '{name} est soupçonné(e) d’avoir remplacé les horaires de bus par des citations motivantes.',
+  '{name} est recherché(e) pour avoir mis du suspense dans une recette de purée.',
+  '{name} aurait ouvert une école de danse pour télécommandes perdues.',
+  '{name} a été surpris(e) en train de réciter du rap à une plante artificielle.',
+  '{name} est accusé(e) d’avoir transformé une sieste en sommet diplomatique.',
+  '{name} est recherché(e) pour avoir fait du moonwalk sur un tapis de bain officiel.',
+  '{name} aurait mis une amende morale à un frigo trop expressif.',
+  '{name} est soupçonné(e) d’avoir volé la dernière olive par esprit de compétition.',
+  '{name} est recherché(e) pour avoir crié “plot twist” dans une boulangerie.',
+  '{name} aurait tenté d’ouvrir un salon de coiffure pour balais-brosses.',
+  '{name} a été vu(e) en train de coacher un pigeon avant une prise de parole.',
+  '{name} est accusé(e) d’avoir fait un burn-out à une machine à bulles.',
+  '{name} est recherché(e) pour avoir dessiné des moustaches sur les portraits du voisinage.',
+  '{name} aurait lancé un culte mystérieux autour d’une bouée licorne.',
+  '{name} a été interpellé(e) après avoir déclaré un grille-pain “trop charismatique pour être honnête”.',
+  '{name} est soupçonné(e) d’avoir tenté de monétiser un silence gênant.',
+  '{name} est recherché(e) pour avoir transformé une livraison de savon en saga criminelle.',
+  '{name} aurait pris le contrôle d’un groupe de discussion pour y vendre des devinettes douteuses.',
+];
+const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Date.now(),coins:160,nets:5,owned:{},captured:0,perfect:0,patrols:0,robot:0,visited:{},claimed:[],upgrade:0,sound:false,started:false,ultimate:0,ultimateByVillain:{},weaknessAttempts:0,radarFinds:0,radarFirst:0,radarMisses:0,radarEscapes:0,achievements:{},voicesEnabled:false});
     const storageKey='supervilains_operation_minuit_v3_meme';
     let state=initial();
     try{let saved=JSON.parse(localStorage.getItem(storageKey)||'null');if(saved&&[1,3].includes(saved.version)){state={...initial(),...saved};state.owned=saved.owned||{};state.visited=saved.visited||{};state.claimed=Array.isArray(saved.claimed)?saved.claimed:[];state.ultimateByVillain=saved.ultimateByVillain&&typeof saved.ultimateByVillain==='object'?saved.ultimateByVillain:{};state.achievements=saved.achievements&&typeof saved.achievements==='object'?saved.achievements:{}}}catch(e){}
-    let enemy=null, radar=null, meterAnimation=0, meterStart=0, meterPos=.5, meterDirection=1, meterActive=false, busy=false, audioCtx=null, toastTimer=0;
+    let enemy=null, radar=null, meterAnimation=0, meterStart=0, meterPos=.5, meterDirection=1, meterActive=false, busy=false, audioCtx=null, toastTimer=0, suspectDistrictId=null, suspectReason='';
     const $=id=>document.getElementById(id);
     const save=()=>{try{localStorage.setItem(storageKey,JSON.stringify(state))}catch(e){}};
     const rand=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
@@ -395,7 +518,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     function regen(){let now=Date.now();if(!Number.isFinite(state.lastEnergy)||state.lastEnergy>now)state.lastEnergy=now;if(state.energy>=state.maxEnergy){state.lastEnergy=now;return}let ticks=Math.floor((now-state.lastEnergy)/45000);if(ticks>0){state.energy=Math.min(state.maxEnergy,state.energy+ticks);state.lastEnergy+=ticks*45000;save()}}
     function addXP(n){state.xp+=n;let leveled=0;while(state.xp>=xpGoal(state.level)){state.xp-=xpGoal(state.level);state.level++;leveled++;state.coins+=50;state.nets+=1}if(leveled){tone(700,.14);setTimeout(()=>toast(`🎉 NIVEAU ${state.level} ! Quartiers et récompenses débloqués.`),160)}return leveled}
     function renderStats(){regen();$('top-level').textContent=`AGENT · NIV. ${state.level}`;$('top-energy').textContent=`${state.energy}/${state.maxEnergy}`;$('top-coins').textContent=state.coins;$('top-nets').textContent=state.nets;$('stat-captured').textContent=state.captured;$('stat-unique').textContent=`${seen()}/${villains.length}`;$('stat-districts').textContent=`${unlocked()}/${districts.length}`}
-    function renderMap(){let html='';districts.forEach(d=>{let lock=state.level<d.min;html+=`<button class="district ${lock?'locked':''}" data-district="${d.id}" style="--glow:${d.color};--haze:${d.glow};--stroke:${d.stroke}" type="button" aria-label="${d.name}, ${lock?'verrouillé jusqu’au niveau '+d.min:'patrouiller'}"><span class="district-lvl">NIV. ${d.min}+</span><span class="district-icon">${d.icon}</span><strong>${d.name}</strong><span class="district-sub">${lock?`🔒 DÉBLOQUER NIV. ${d.min}`:'<i class="live-dot"></i> SIGNAL DÉTECTÉ'}</span></button>`});$('district-grid').innerHTML=html}
+    function renderMap(){let html='';districts.forEach(d=>{let lock=state.level<d.min;html+=`<div class="district-card"><button class="district ${lock?'locked':''}" data-district="${d.id}" style="--glow:${d.color};--haze:${d.glow};--stroke:${d.stroke}" type="button" aria-label="${d.name}, ${lock?'verrouillé jusqu’au niveau '+d.min:'patrouiller'}"><span class="district-lvl">NIV. ${d.min}+</span><span class="district-icon">${d.icon}</span><strong>${d.name}</strong><span class="district-sub">${lock?`🔒 DÉBLOQUER NIV. ${d.min}`:'<i class="live-dot"></i> SIGNAL DÉTECTÉ'}</span></button><button class="district-info-btn" data-info="${d.id}" type="button" aria-label="En savoir plus sur le suspect de ${d.name}">!</button></div>`});$('district-grid').innerHTML=html}
     function renderCodex(){let html='';villains.forEach((v,id)=>{let count=state.owned[id]||0;html+=`<div class="codex-tile ${count?'':'unknown'}" title="${count?v.line:'Identité inconnue'}"><span class="codex-icon">${count?`<img class="codex-face" loading="lazy" src="${v.portrait}" alt="${v.name}">`:'❔'}</span><span class="codex-name">${count?v.name:'DOSSIER ???'}</span><div class="codex-rarity">${count?`×${count} ARRÊTÉ${count>1?'S':''}`:v.boss?'🔒 BOSS':'NON CAPTURÉ'}</div></div>`});$('codex-grid').innerHTML=html;$('prison-counter').textContent=`${seen()} / 6 super-méchants identifiés`;$('prison-summary').textContent=seen()===6?'Les 6 super-méchants ont été capturés ! 🏆':`Encore ${6-seen()} suspects à découvrir.`}
     let missionFilter='all',missionVisible=12;
     function renderMissions(){
@@ -413,7 +536,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       $('mission-more').hidden=sorted.length<=missionVisible;
       if(!$('mission-more').hidden)$('mission-more').textContent=`VOIR LES ${Math.min(12,sorted.length-missionVisible)} MISSIONS SUIVANTES (${sorted.length-missionVisible} restantes)`;
     }
-    function renderAgent(){$('profile-rank').textContent=rank();$('profile-level').textContent=`Niveau ${state.level} • Chasseur viral de SUPERVILAINS`;$('xp-text').textContent=`${state.xp}/${xpGoal(state.level)} XP`;$('xp-bar').style.width=`${100*state.xp/xpGoal(state.level)}%`;$('prof-total').textContent=state.captured;$('prof-perfect').textContent=state.perfect;$('prof-patrol').textContent=state.patrols;$('prof-missions').textContent=state.claimed.length;$('prof-radar').textContent=state.radarFinds;$('prof-radar-first').textContent=state.radarFirst;$('upgrade-price').textContent=`🪙 ${190+state.upgrade*100}`;$('buy-nets').disabled=state.coins<90;$('buy-energy').disabled=state.coins<55||state.energy===state.maxEnergy;$('buy-upgrade').disabled=state.coins<190+state.upgrade*100||state.upgrade>=8;$('sound-toggle').textContent=state.sound?'🔊 Désactiver les sons':'🔇 Activer les sons'}
+    function renderAgent(){$('profile-rank').textContent=rank();$('profile-level').textContent=`Niveau ${state.level} • Chasseur viral de SUPERVILAINS`;$('xp-text').textContent=`${state.xp}/${xpGoal(state.level)} XP`;$('xp-bar').style.width=`${100*state.xp/xpGoal(state.level)}%`;$('prof-total').textContent=state.captured;$('prof-perfect').textContent=state.perfect;$('prof-patrol').textContent=state.patrols;$('prof-missions').textContent=state.claimed.length;$('prof-radar').textContent=state.radarFinds;$('prof-radar-first').textContent=state.radarFirst;$('upgrade-price').textContent=`🪙 ${190+state.upgrade*100}`;$('buy-nets').disabled=state.coins<90;$('buy-energy').disabled=state.coins<55||state.energy===state.maxEnergy;$('buy-upgrade').disabled=state.coins<190+state.upgrade*100||state.upgrade>=8;$('sound-toggle').textContent=state.sound?'🔊 Désactiver les sons':'🔇 Activer les sons';renderVoiceControls()}
     function renderAll(){renderStats();renderMap();renderCodex();renderMissions();renderAgent();renderAchievements()}
     function notifySave(){checkAchievements();save();renderAll()}
     function switchView(view){document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active',el.id==='view-'+view));document.querySelectorAll('.nav-btn').forEach(el=>el.classList.toggle('active',el.dataset.view===view));window.scrollTo({top:0,behavior:'instant'});if(view==='agent')renderAgent();if(view==='missions')renderMissions();if(view==='achievements')renderAchievements()}
@@ -422,6 +545,46 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     const vibrate=n=>{try{navigator.vibrate?.(n)}catch(e){}};
     function show(id){$(id).classList.add('visible')};function hide(id){$(id).classList.remove('visible')}
     const bossKeys=['manu','lea','natsu','amelie','ludo','eric'];
+    const voiceFilesRoot='assets/audio/v4/';
+    const voiceGuestKey='supervilains_voice_guest_v4';
+    const voiceTitles=['Commissaire Atlas','Commissaire Mistral','Commissaire Nova','Commissaire Orion'];
+    const voiceHash=str=>{let h=2166136261;for(const c of String(str)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+    let guestVoiceId='';
+    try{guestVoiceId=localStorage.getItem(voiceGuestKey)||'';if(!guestVoiceId){guestVoiceId=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now())+'-'+String(Math.random());localStorage.setItem(voiceGuestKey,guestVoiceId)}}catch(e){guestVoiceId='invite-'+String(Math.random())}
+    let audioAccountId=null,activeSpeech=null,speechQueueId=0;
+    const myVoiceHash=()=>voiceHash(audioAccountId?'compte:'+audioAccountId:'invite:'+guestVoiceId);
+    const myVoiceIndex=()=>myVoiceHash()%4;
+    const myVoiceRate=()=>0.95+(myVoiceHash()%13)*0.008;
+    function renderVoiceControls(){const v=myVoiceIndex(),code=String((myVoiceHash()%90000)+10000);$('voice-profile').textContent=`${voiceTitles[v]} · MATRICULE ${code} · ${audioAccountId?'Profil de ton compte':'Mode invité : ce téléphone'}`;$('voice-toggle').textContent=state.voicesEnabled?'🔊 DÉSACTIVER LES VOIX':'🔇 ACTIVER LES VOIX';$('voice-toggle').setAttribute('aria-pressed',String(!!state.voicesEnabled))}
+    window.addEventListener('supervilains:identity',e=>{const newId=typeof e.detail?.id==='string'?e.detail.id:null;if(newId!==audioAccountId){audioAccountId=newId;stopVoices();renderVoiceControls()}});
+    function stopVoices(){speechQueueId++;if(activeSpeech){activeSpeech.pause();activeSpeech.removeAttribute('src');activeSpeech=null}try{window.speechSynthesis?.cancel()}catch(e){}}
+    function playVoiceSeries(keys,force=false){
+      if(!force&&!state.voicesEnabled)return;
+      if(!Array.isArray(keys)||!keys.length)return;
+      stopVoices();const token=speechQueueId;
+      const safe=keys.filter(x=>/^(?:commissaire_[0-3]_(?:radar|capture|escape)|(?:manu|lea|natsu|amelie|ludo|eric)_(?:capture|escape))$/.test(x));
+      let at=0;
+      const next=()=>{
+        if(token!==speechQueueId||at>=safe.length)return;
+        const key=safe[at++];const a=new Audio(voiceFilesRoot+key+'.mp3');a.preload='auto';a.volume=.85;a.playbackRate=key.startsWith('commissaire_')?myVoiceRate():1;
+        activeSpeech=a;
+        a.addEventListener('ended',()=>{if(token===speechQueueId)next()},{once:true});
+        a.addEventListener('error',()=>{if(token===speechQueueId)next()},{once:true});
+        const start=a.play();if(start&&typeof start.catch==='function')start.catch(()=>{if(token===speechQueueId)next()});
+      };next();
+    }
+    const commissaireClip=scene=>`commissaire_${myVoiceIndex()}_${scene}`;
+    const villainClip=(id,scene)=>`${bossKeys[id]}_${scene}`;
+    function readSuspectReason(){
+      if(suspectDistrictId===null||!('speechSynthesis' in window))return toast('Lecture vocale des motifs indisponible sur cet appareil.');
+      const v=districtVillain(suspectDistrictId);if(!v)return;
+      stopVoices();const utterance=new SpeechSynthesisUtterance(`Avis de recherche concernant ${v.name}. ${suspectReason}`);
+      utterance.lang='fr-FR';utterance.rate=Math.min(1.12,Math.max(.84,myVoiceRate()));utterance.pitch=.85+(myVoiceHash()%17)/100;
+      const voices=window.speechSynthesis.getVoices().filter(x=>x.lang.toLowerCase().startsWith('fr'));
+      if(voices.length)utterance.voice=voices[myVoiceIndex()%voices.length];
+      window.speechSynthesis.speak(utterance);
+    }
+
     const shuffleCards=()=>{const deck=weaknessItems.map(w=>w.id);for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]]}return deck};
     let reactionTimeout=null;
     function normalPortrait(id){const v=villains[id];$('villain-figure').innerHTML=v.portrait?`<img src="${v.portrait}" alt="${v.name}">`:v.icon;}
@@ -458,11 +621,16 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     ];
     if(radarPhrases.length!==20||new Set(radarPhrases).size!==20)throw Error('20 messages de fuite requis');
     const shuffled=arr=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=rand(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+
+    function districtVillain(districtId){const d=districts[districtId];return d&&villains[d.villains[0]]?villains[d.villains[0]]:null}
+    function randomWantedReason(name){const feminine=['LÉA','NATSU','AMÉLIE'].includes(name);return wantedReasons[rand(0,wantedReasons.length-1)].replaceAll('{name}',name).replaceAll('(e)',feminine?'e':'')}
+    function openSuspectSheet(districtId){const d=districts[districtId],v=districtVillain(districtId);if(!d||!v)return;suspectDistrictId=districtId;suspectReason=randomWantedReason(v.name);$('suspect-avatar').textContent=v.icon;$('suspect-name').textContent=v.name;$('suspect-district').textContent=`${d.name} · ${d.desc}`;$('suspect-line').textContent=v.line;$('suspect-status').textContent=`🔎 SUSPECT RECHERCHÉ · DANGER ${v.danger}/6`;$('suspect-weakness').textContent='😂 Motif de recherche classé hautement ridicule';$('suspect-report').textContent=`Les agents de Néo-City surveillent ${v.name} de près. Dernière zone observée : ${d.name}. Activité typique : ${v.type.toUpperCase()} · menace ${v.boss?'ÉLEVÉE':'MODÉRÉE'}.`;$('suspect-reason').textContent=suspectReason;show('overlay-suspect');tone(620,.08)}
+    function rerollSuspectReason(){if(suspectDistrictId===null)return;const v=districtVillain(suspectDistrictId);if(!v)return;let next=randomWantedReason(v.name),guard=0;while(next===suspectReason&&guard<6){next=randomWantedReason(v.name);guard++}suspectReason=next;$('suspect-reason').textContent=suspectReason;tone(760,.05)}
     function startRadar(villainId,districtId){
       radar={id:villainId,district:districtId,targetSlot:rand(0,9),misses:[],found:false,phraseOrder:shuffled(radarPhrases),message:'Dix inconnus détectés. Trouve le méchant en cinq essais maximum !'};
       $('radar-sector').textContent=districts[districtId].name;
       $('radar-description').textContent='Le signal du méchant est noyé parmi 9 innocents. Chaque erreur élimine un signal.';
-      renderRadar();show('overlay-radar');tone(470,.15);
+      renderRadar();show('overlay-radar');tone(470,.15);playVoiceSeries([commissaireClip('radar')]);
     }
     function renderRadar(){
       if(!radar)return;
@@ -482,7 +650,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       if(slot===radar.targetSlot){
         radar.found=true;state.radarFinds++;if(radar.misses.length===0)state.radarFirst++;
         radar.message=`🎯 IDENTITÉ CONFIRMÉE : ${villains[radar.id].name} ! Appuie sur AFFRONTER pour lancer le combat.`;
-        tone(900,.2);vibrate([30,50,65]);renderRadar();notifySave();return;
+        tone(900,.2);vibrate([30,50,65]);renderRadar();playVoiceSeries([villainClip(radar.id,'escape')]);notifySave();return;
       }
       radar.misses.push(slot);state.radarMisses++;
       const phrase=radar.phraseOrder[radar.misses.length-1];
@@ -500,7 +668,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       $('result-text').textContent=failedFive?`Après cinq mauvaises identifications, le criminel reste en fuite. ${phrase}`:'Recherche interrompue. Le criminel reste en fuite et pourra être recherché lors d’une autre patrouille.';
       $('result-stats').innerHTML=failedFive?'<span>📡 5 tentatives échouées</span><span>🕵️ Suspect non identifié</span>':'<span>📡 Recherche interrompue</span><span>🕵️ Suspect non identifié</span>';
       $('result-button').textContent='RECOMMENCER UNE PATROUILLE';
-      show('overlay-result');notifySave();
+      show('overlay-result');playVoiceSeries([commissaireClip('escape')]);notifySave();
     }
     function confirmRadar(){if(!radar||!radar.found)return;const id=radar.id,zone=radar.district;radar=null;hide('overlay-radar');beginBattle(id,zone)}
     function openDistrict(id){
@@ -579,7 +747,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     function endBattle(kind,reward={}){if(!enemy)return;const v=villains[enemy.id];hide('overlay-meter');hide('overlay-battle');meterActive=false;cancelAnimationFrame(meterAnimation);busy=false;let escaped=kind==='escape';$('result-icon').textContent=escaped?'💨':'🏆';
       const gifFrame=$('result-gif-frame');gifFrame.hidden=escaped;
       if(!escaped){$('result-gif').src=`assets/reactions/${bossKeys[enemy.id]}_capture.gif?t=${Date.now()}`;}else{$('result-gif').removeAttribute('src');}
-      clearTimeout(reactionTimeout);$('result-kicker').textContent=escaped?'LE SUSPECT S’EST ÉCHAPPÉ':'CIBLE IMMOBILISÉE';$('result-title').textContent=escaped?'POURSUITE TERMINÉE':'CAPTURE RÉUSSIE !';$('result-text').textContent=escaped?`${v.name} s'est échappé. Son cringe l'a sauvé pour cette fois.`:`${v.name} rejoint ton coffre des criminels ! ${reward.newEntry?'NOUVEAU DOSSIER DÉBLOQUÉ ! ':''}${reward.ultimate?'🎴 CARTE FATALE AU PREMIER ESSAI ! Capture automatique et bonus spécial.':''}`;$('result-stats').innerHTML=escaped?'<span>🛡️ Bouclier épuisé</span><span>📡 Suspect localisé</span>':`<span>🪙 <b>+${reward.coins}</b></span><span>⭐ <b>+${reward.xp} XP</b></span>${reward.perfect?'<span>🎯 CAPTURE PARFAITE</span>':''}${reward.ultimate?'<span>🎴 FAILLE ULTIME : +160 🪙 · +130 XP · +1 🕸️</span>':''}`;$('result-button').textContent=escaped?'RECOMMENCER UNE PATROUILLE':'CONTINUER LA CHASSE';enemy=null;show('overlay-result');checkAchievements();save();renderAll()}
+      clearTimeout(reactionTimeout);$('result-kicker').textContent=escaped?'LE SUSPECT S’EST ÉCHAPPÉ':'CIBLE IMMOBILISÉE';$('result-title').textContent=escaped?'POURSUITE TERMINÉE':'CAPTURE RÉUSSIE !';$('result-text').textContent=escaped?`${v.name} s'est échappé. Son cringe l'a sauvé pour cette fois.`:`${v.name} rejoint ton coffre des criminels ! ${reward.newEntry?'NOUVEAU DOSSIER DÉBLOQUÉ ! ':''}${reward.ultimate?'🎴 CARTE FATALE AU PREMIER ESSAI ! Capture automatique et bonus spécial.':''}`;$('result-stats').innerHTML=escaped?'<span>🛡️ Bouclier épuisé</span><span>📡 Suspect localisé</span>':`<span>🪙 <b>+${reward.coins}</b></span><span>⭐ <b>+${reward.xp} XP</b></span>${reward.perfect?'<span>🎯 CAPTURE PARFAITE</span>':''}${reward.ultimate?'<span>🎴 FAILLE ULTIME : +160 🪙 · +130 XP · +1 🕸️</span>':''}`;$('result-button').textContent=escaped?'RECOMMENCER UNE PATROUILLE':'CONTINUER LA CHASSE';const spokenId=enemy.id;enemy=null;show('overlay-result');playVoiceSeries(escaped?[commissaireClip('escape'),villainClip(spokenId,'escape')]:[commissaireClip('capture'),villainClip(spokenId,'capture')]);checkAchievements();save();renderAll()}
     function flee(){if(!enemy)return;endBattle('escape');$('result-text').textContent='Tu as quitté l’affrontement. Le criminel pourra être retrouvé dans son quartier.'}
     function claim(id){let m=missionData.find(m=>m.id===id);if(!m||state.claimed.includes(id)||missionValue(m)<m.total)return;state.claimed.push(id);state.coins+=m.coins;state.nets+=m.nets;addXP(m.xp);notifySave();tone(840,.2);vibrate(65);toast(`🎁 Mission accomplie : +${m.coins} 🪙 +${m.nets} 🕸️`)}
     function buy(which){if(which==='nets'){if(state.coins<90)return toast('Crédits insuffisants');state.coins-=90;state.nets+=3;toast('🕸️ +3 filets ioniques !')}
@@ -587,21 +755,27 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       if(which==='upgrade'){let price=190+state.upgrade*100;if(state.coins<price||state.upgrade>=8)return toast('Amélioration indisponible');state.coins-=price;state.upgrade++;state.maxEnergy+=5;state.energy+=5;toast('🔋 Capacité maximale améliorée !')}
       tone(880,.13);notifySave()}
     document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
-    $('district-grid').addEventListener('click',e=>{let b=e.target.closest('[data-district]');if(b)openDistrict(Number(b.dataset.district))});
-    $('radar-targets').addEventListener('click',e=>{let b=e.target.closest('[data-radar-slot]');if(b)identifyRadar(Number(b.dataset.radarSlot))});$('radar-fight').addEventListener('click',confirmRadar);$('close-radar').addEventListener('click',()=>endRadarEscape('',false));
+    $('district-grid').addEventListener('click',e=>{let info=e.target.closest('[data-info]');if(info){e.preventDefault();e.stopPropagation();openSuspectSheet(Number(info.dataset.info));return}let b=e.target.closest('[data-district]');if(b)openDistrict(Number(b.dataset.district))});
+    $('radar-targets').addEventListener('click',e=>{let b=e.target.closest('[data-radar-slot]');if(b)identifyRadar(Number(b.dataset.radarSlot))});$('radar-fight').addEventListener('click',confirmRadar);$('close-radar').addEventListener('click',()=>endRadarEscape('',false));$('suspect-close').addEventListener('click',()=>{stopVoices();hide('overlay-suspect')});$('suspect-reroll').addEventListener('click',rerollSuspectReason);
     $('mission-list').addEventListener('click',e=>{let b=e.target.closest('[data-claim]');if(b)claim(b.dataset.claim)});
     document.querySelectorAll('[data-mission-filter]').forEach(btn=>btn.addEventListener('click',()=>{missionFilter=btn.dataset.missionFilter;missionVisible=12;renderMissions()}));
     $('mission-more').addEventListener('click',()=>{missionVisible+=12;renderMissions()});
-    $('close-battle').addEventListener('click',flee);$('attack-btn').addEventListener('click',attack);$('weakness-grid').addEventListener('click',e=>{let b=e.target.closest('[data-slot]');if(b)useWeakness(Number(b.dataset.slot))});$('capture-btn').addEventListener('click',startMeter);$('stop-meter').addEventListener('click',stopMeter);$('result-button').addEventListener('click',()=>{hide('overlay-result');switchView('map')});
+    $('close-battle').addEventListener('click',flee);$('attack-btn').addEventListener('click',attack);$('weakness-grid').addEventListener('click',e=>{let b=e.target.closest('[data-slot]');if(b)useWeakness(Number(b.dataset.slot))});$('capture-btn').addEventListener('click',startMeter);$('stop-meter').addEventListener('click',stopMeter);$('result-button').addEventListener('click',()=>{stopVoices();hide('overlay-result');switchView('map')});
     $('buy-nets').addEventListener('click',()=>buy('nets'));$('buy-energy').addEventListener('click',()=>buy('energy'));$('buy-upgrade').addEventListener('click',()=>buy('upgrade'));
     document.querySelectorAll('[data-ach-filter]').forEach(btn=>btn.addEventListener('click',()=>{achievementFilter=btn.dataset.achFilter;renderAchievements()}));
     $('sound-toggle').addEventListener('click',()=>{state.sound=!state.sound;save();renderAgent();tone(700,.12)});
+    $('voice-toggle').addEventListener('click',()=>{state.voicesEnabled=!state.voicesEnabled;save();renderVoiceControls();if(state.voicesEnabled)playVoiceSeries([commissaireClip('radar')],true);else stopVoices()});
+    $('voice-preview').addEventListener('click',()=>playVoiceSeries([commissaireClip('radar')],true));
+    $('voice-stop').addEventListener('click',stopVoices);
+    $('suspect-read').addEventListener('click',readSuspectReason);
+    $('suspect-hear-villain').addEventListener('click',()=>{if(suspectDistrictId!==null)playVoiceSeries([villainClip(districts[suspectDistrictId].villains[0],'escape')],true)});
     $('start-game').addEventListener('click',()=>{state.started=true;save();hide('overlay-tutorial');toast('📡 Choisis un quartier pour commencer !')});
-    document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('overlay-result').classList.contains('visible')){$('result-button').click()}else if($('overlay-meter').classList.contains('visible')){$('stop-meter').click()}else if(radar)endRadarEscape('',false);else if(enemy)flee()}else if((e.key===' '||e.key==='Enter')&&$('overlay-meter').classList.contains('visible')&&document.activeElement.tagName!=='BUTTON'){e.preventDefault();stopMeter()}});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('overlay-suspect').classList.contains('visible')){stopVoices();hide('overlay-suspect')}else if($('overlay-result').classList.contains('visible')){$('result-button').click()}else if($('overlay-meter').classList.contains('visible')){$('stop-meter').click()}else if(radar)endRadarEscape('',false);else if(enemy)flee()}else if((e.key===' '||e.key==='Enter')&&$('overlay-meter').classList.contains('visible')&&document.activeElement.tagName!=='BUTTON'){e.preventDefault();stopMeter()}});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)stopVoices()});
     setInterval(()=>{let before=state.energy;regen();if(before!==state.energy){renderStats();if(enemy)renderBattle();renderAgent()}},2000);
     try{if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./service-worker.js').catch(()=>{})}catch(e){}
     checkAchievements(true);save();renderAll();if(!state.started)show('overlay-tutorial');
-    window.__gameTest={getState:()=>JSON.parse(JSON.stringify(state)),getEnemy:()=>enemy&&JSON.parse(JSON.stringify(enemy)),getRadar:()=>radar&&JSON.parse(JSON.stringify(radar)),getMissions:()=>missionData.map(m=>({id:m.id,key:m.key,total:m.total,claimed:state.claimed.includes(m.id),progress:missionValue(m)})),identifyRadar,confirmRadar,closeRadar:()=>endRadarEscape("",false),getAchievements:()=>achievements.map(a=>({id:a.id,points:a.points,unlocked:achievementUnlocked(a),progress:a.progress(),target:a.target})),openDistrict,attack,useWeakness,stopMeter,claim,buy,switchView};
+    window.__gameTest={getVoiceProfile:()=>({label:voiceTitles[myVoiceIndex()],rate:myVoiceRate(),loggedIn:!!audioAccountId}),playVoiceSeries,stopVoices,getState:()=>JSON.parse(JSON.stringify(state)),getEnemy:()=>enemy&&JSON.parse(JSON.stringify(enemy)),getRadar:()=>radar&&JSON.parse(JSON.stringify(radar)),getMissions:()=>missionData.map(m=>({id:m.id,key:m.key,total:m.total,claimed:state.claimed.includes(m.id),progress:missionValue(m)})),identifyRadar,confirmRadar,closeRadar:()=>endRadarEscape("",false),getAchievements:()=>achievements.map(a=>({id:a.id,points:a.points,unlocked:achievementUnlocked(a),progress:a.progress(),target:a.target})),openDistrict,attack,useWeakness,stopMeter,claim,buy,switchView};
   })();
   </script>
   <script src="config.js"></script>
