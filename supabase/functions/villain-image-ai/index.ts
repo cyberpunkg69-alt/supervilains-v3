@@ -134,7 +134,7 @@ Deno.serve(async request=>{
     info:accessError
       ?"Le serveur IA n'a pas accès aux fiches. Vérifier les droits SQL du service_role."
       :ready
-        ?"Moteur IA prêt : 9 images maximum par joueur sur 24 h."
+        ?"Clé IA présente et base accessible. Les crédits, limites de dépenses et disponibilité du modèle ne sont pas vérifiés par ce test."
         :"Ajoute OPENAI_API_KEY dans les secrets Supabase pour activer les images."});
  }
  if(body.action!=="generate")return send({error:"Action invalide"},400);
