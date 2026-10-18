@@ -47,7 +47,8 @@ function b64bytes(b64){
 async function edit(key,blob,v,kind){
  const form=new FormData();
  form.append("model",MODEL);
- form.append("image[]",blob,"photo.jpg");
+ const filename=blob.type==="image/png"?"photo.png":blob.type==="image/webp"?"photo.webp":"photo.jpg";
+ form.append("image[]",blob,filename);
  form.append("prompt",prompt(v,kind));
  form.append("size","1024x1024");
  form.append("quality","medium");
