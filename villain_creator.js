@@ -71,6 +71,19 @@ function validateForm(){
   }
   return true;
 }
+// Garder le fichier original : certains navigateurs Android renvoient
+// une image blanche lorsqu'on force une conversion canvas pourtant réussie.
+function originalPhotoFormat(file){
+  const type=String(file?.type||"").toLowerCase();
+  const filename=String(file?.name||"").toLowerCase();
+  if(type==="image/jpeg"||(!type&&/\.jpe?g$/.test(filename)))
+    return {type:"image/jpeg",ext:"jpg"};
+  if(type==="image/png"||(!type&&/\.png$/.test(filename)))
+    return {type:"image/png",ext:"png"};
+  if(type==="image/webp"||(!type&&/\.webp$/.test(filename)))
+    return {type:"image/webp",ext:"webp"};
+  return null;
+}
 async function jpegFromPhoto(file){
   if(!file)return null;
   let bitmap=null,objectUrl=null,image=null;
@@ -82,7 +95,8 @@ async function jpegFromPhoto(file){
       objectUrl=URL.createObjectURL(file);
       image=new Image();
       await new Promise((resolve,reject)=>{
-        image.onload=resolve;image.onerror=()=>reject(Error("Ton téléphone ne parvient pas à ouvrir ce format. Essaie une photo JPEG."));
+        image.onload=resolve;
+        image.onerror=()=>reject(Error("Ton téléphone ne parvient pas à ouvrir ce format. Essaie une photo JPEG."));
         image.src=objectUrl;
       });
     }
@@ -97,6 +111,16 @@ async function jpegFromPhoto(file){
     if(!ctx)throw Error("Optimisation de la photo indisponible.");
     ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.drawImage(bitmap||image,0,0,canvas.width,canvas.height);
+    // Vérifier des pixels sur plusieurs points avant d'encoder.
+    // Une image intégralement blanche indique souvent un échec silencieux
+    // de décodage/dessin sur certains Android.
+    const count=25;let white=0;
+    for(let y=1;y<=5;y++)for(let x=1;x<=5;x++){
+      const px=Math.floor(canvas.width*x/6),py=Math.floor(canvas.height*y/6);
+      const d=ctx.getImageData(px,py,1,1).data;
+      if(d[0]>=246&&d[1]>=246&&d[2]>=246)white++;
+    }
+    if(white>=24)throw Error("La conversion produit une image blanche. Utilise une photo JPEG directement, sans capture d'écran.");
     let result=null;
     for(const quality of [0.86,0.7,0.55]){
       result=await new Promise(resolve=>canvas.toBlob(resolve,"image/jpeg",quality));
@@ -108,6 +132,16 @@ async function jpegFromPhoto(file){
     bitmap?.close?.();
     if(objectUrl)URL.revokeObjectURL(objectUrl);
   }
+}
+async function preparePhoto(file){
+  const native=originalPhotoFormat(file);
+  if(native&&file.size<=8*1024*1024){
+    // Photo originale inchangée : pas de recompression et pas de risque de
+    // sortie canvas blanche ; le type MIME correspond aussi à l'extension.
+    return {blob:file,ext:native.ext,type:native.type,converted:false};
+  }
+  const blob=await jpegFromPhoto(file);
+  return {blob,ext:"jpg",type:"image/jpeg",converted:true};
 }
 async function signedPhoto(path){
   if(!path||!db)return null;
@@ -131,12 +165,12 @@ async function saveForm(e){
     }
     if(file){
       setSaveStatus("Optimisation de la photo sur ton téléphone…");
-      const image=await jpegFromPhoto(file);
-      // Un seul objet par personnage : remplacements sans fichiers orphelins.
-      const path=user.id+"/"+id+"/source.jpg";
-      setSaveStatus("Envoi de la photo privée à Supabase…");
-      const {error:uploadError}=await db.storage.from("villain-source").upload(path,image,{
-        contentType:"image/jpeg",cacheControl:"60",upsert:true
+      const photo=await preparePhoto(file);
+      // Préserver le format natif (jpg/png/webp) et le MIME de la photo.
+      const path=user.id+"/"+id+"/source."+photo.ext;
+      setSaveStatus(photo.converted?"Envoi de la photo optimisée…":"Envoi de la photo d'origine sans modification…");
+      const {error:uploadError}=await db.storage.from("villain-source").upload(path,photo.blob,{
+        contentType:photo.type,cacheControl:"0",upsert:true
       });
       if(uploadError)throw Error("Photo non envoyée : "+errorMessage(uploadError)+". Le brouillon a été conservé, tu peux réessayer.");
       setSaveStatus("Association de la photo au personnage…");
@@ -156,11 +190,11 @@ async function saveForm(e){
       }
       editingRow={...editingRow,id,source_photo_path:path,status:"draft"};
     }
-    setSaveStatus("✅ Fiche sauvegardée ! Tu peux la retrouver dans « Mes super-vilains ».");
+    setSaveStatus("✅ Fiche et photo enregistrées dans ton compte !");
     status("✅ Ton super-vilain est enregistré dans ton espace privé. La génération IA viendra à l'étape suivante.","good");
     await refreshList();
     resetForm();
-    setSaveStatus("✅ Brouillon créé ! Retrouvez-le ci-dessous pour le modifier.");
+    setSaveStatus("✅ Sauvegarde terminée. Vérifie la photo dans « Mes super-vilains » ci-dessous.");
     $("creator-list")?.scrollIntoView({behavior:"smooth",block:"nearest"});
   }catch(err){
     const msg=errorMessage(err);setSaveStatus("⚠️ "+msg);status("⚠️ "+msg,"warn");
