@@ -276,6 +276,12 @@
     .creator-ai-generate{border:0;border-radius:10px;min-height:46px;width:100%;background:linear-gradient(115deg,#ff83c5,#93aaff);color:#111831;font-weight:1000;font-size:11px;margin-top:12px;padding:10px}
     .creator-ai-generate:disabled,.creator-ai-remake:disabled{opacity:.53;cursor:not-allowed}
     .creator-ai-help{font-size:10px!important;color:#aabbda!important;line-height:1.55!important;margin:10px 0 0!important}
+    .creator-manual-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:11px 0}
+    .creator-manual-actions button{border:1px solid #4f7895;border-radius:10px;background:#1e3957;color:#e6f4ff;font-weight:850;font-size:10px;min-height:44px;padding:9px 5px}
+    .creator-chatgpt-link{display:grid;place-items:center;min-height:44px;text-align:center;border-radius:10px;text-decoration:none;background:linear-gradient(120deg,#66e6d5,#82a9ff);color:#07152a;font-size:10px;font-weight:1000}
+    .creator-ai-tile .creator-ai-remake{overflow-wrap:anywhere;min-height:37px}
+    .creator-ai-gallery{margin-top:12px}
+    .creator-workflow{flex-wrap:wrap}
     #creator-ai-status{border-radius:10px;border:1px solid #435d80;background:#102342;padding:10px 11px;color:#c7e2fb!important;font-size:11px!important;margin:12px 0!important}
     @media(max-width:370px){.creator-ai-gallery{gap:5px}.creator-ai-placeholder{font-size:24px}.creator-ai-tile{padding:5px 3px}.creator-ai-label{font-size:8px}}
 </style>
@@ -355,7 +361,7 @@
         <div class="creator-hero">
           <div class="creator-kicker">🧬 PROJET SUPERVILAINS · LABORATOIRE PRIVÉ</div>
           <h2>FABRIQUE TON <em>SUPER-VILAIN.</em></h2>
-          <p>Crée une fiche personnalisée à partir de tes informations et d'une photo. Chaque agent retrouve ses brouillons sur son compte.</p>
+          <p>Crée ta fiche, fabrique les portraits avec ton compte ChatGPT, puis importe les images. Aucun achat de crédits API n’est nécessaire.</p>
         </div>
         <div id="creator-alert" class="creator-alert" role="status" aria-live="polite">Vérification de ton compte…</div>
         <div id="creator-signin" class="creator-panel" hidden>
@@ -366,7 +372,7 @@
         </div>
         <div id="creator-content" hidden>
           <div class="creator-workflow">
-            <span><b>1</b> Fiche</span><span><b>2</b> Photo</span><span><b>3</b> Brouillon privé</span>
+            <span><b>1</b> Fiche</span><span><b>2</b> Photo</span><span><b>3</b> ChatGPT</span><span><b>4</b> Import</span><span><b>5</b> Validation</span>
           </div>
           <form id="creator-form" class="creator-panel">
             <div class="creator-random-panel">
@@ -426,7 +432,7 @@
               <div><span>😝</span><b>TROLLER</b><small>Langue tirée</small></div>
               <div><span>⛓️</span><b>CAPTURÉ !</b><small>Prisonnier + menottes</small></div>
             </div>
-            <p class="creator-hint">Enregistre d'abord ta fiche et ta photo. Ensuite, retrouve ton personnage dans « Mes super-vilains » et utilise « Générer les 3 images IA ». La génération nécessite un moteur IA activé côté serveur et consomme des crédits.</p>
+            <p class="creator-hint">Enregistre ta fiche et ta photo, puis utilise ton propre compte ChatGPT pour créer les trois images : portrait, langue tirée et prisonnier menotté. Reviens ici importer les fichiers et valide ton personnage. Aucune clé API OpenAI ni facturation API.</p>
             <div class="creator-actions">
               <button id="creator-save" type="submit" class="creator-primary">💾 ENREGISTRER MON SUPER-VILAIN</button>
               <button id="creator-new" type="button" class="creator-secondary">➕ COMMENCER UNE NOUVELLE FICHE</button>
@@ -435,8 +441,8 @@
           </form>
           <div class="creator-panel">
             <div class="creator-section-heading"><span>📁 MES SUPER-VILAINS</span><small id="creator-counter">0 / 10</small></div>
-            <p class="creator-hint">Ces fiches sont privées. Tu peux les modifier et les retrouver sur les appareils où tu utilises ton compte ARÈNE.</p>
-            <p id="creator-ai-status" class="creator-hint" role="status" aria-live="polite">Vérification du moteur de génération IA…</p>
+            <p class="creator-hint">Chaque fiche et ses trois portraits restent privés, même après validation. Tu peux retrouver tes créations en te reconnectant à l’ARÈNE sur un autre appareil.</p>
+            <p id="creator-ai-status" class="creator-hint" role="status" aria-live="polite">✨ ChatGPT sert à créer les portraits ; SUPERVILAINS les conserve ensuite dans ton compte privé.</p>
             <button id="creator-refresh" class="creator-secondary" type="button">↻ ACTUALISER MES CRÉATIONS</button>
             <div id="creator-list" class="creator-list">Chargement de tes fiches…</div>
           </div>
@@ -609,7 +615,7 @@
           <div class="voice-note">Les voix des six méchants sont des enregistrements officiels identiques pour tous. La lecture parlée des motifs utilise la voix disponible sur ton téléphone.</div>
         </div>
 
-        <p class="footer-note">SUPERVILAINS — Meme Hunt · V4.7.2</p>
+        <p class="footer-note">SUPERVILAINS — Meme Hunt · V4.8</p>
       </section>
     </main>
     <nav class="nav" aria-label="Navigation principale">
