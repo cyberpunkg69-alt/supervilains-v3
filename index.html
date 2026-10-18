@@ -982,6 +982,9 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     $('mission-more').addEventListener('click',()=>{missionVisible+=12;renderMissions()});
     $('close-battle').addEventListener('click',flee);$('attack-btn').addEventListener('click',attack);$('weakness-grid').addEventListener('click',e=>{let b=e.target.closest('[data-slot]');if(b)useWeakness(Number(b.dataset.slot))});$('capture-btn').addEventListener('click',startMeter);$('stop-meter').addEventListener('click',stopMeter);$('result-button').addEventListener('click',()=>{stopVoices();hide('overlay-result');switchView('map')});
     $('buy-nets').addEventListener('click',()=>buy('nets'));$('buy-energy').addEventListener('click',()=>buy('energy'));$('buy-upgrade').addEventListener('click',()=>buy('upgrade'));
+    $('buy-scanner').addEventListener('click',()=>purchaseEquipment('scanner'));
+    $('buy-net-upgrade').addEventListener('click',()=>purchaseEquipment('nets'));
+    $('buy-armor').addEventListener('click',()=>purchaseEquipment('armor'));
     document.querySelectorAll('[data-ach-filter]').forEach(btn=>btn.addEventListener('click',()=>{achievementFilter=btn.dataset.achFilter;renderAchievements()}));
     $('sound-toggle').addEventListener('click',()=>{state.sound=!state.sound;save();renderAgent();tone(700,.12)});
     $('voice-toggle').addEventListener('click',()=>{state.voicesEnabled=!state.voicesEnabled;save();renderVoiceControls();if(state.voicesEnabled)playVoiceSeries([commissaireClip('radar')],true);else stopVoices()});
