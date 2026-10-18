@@ -960,6 +960,20 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       if(which==='energy'){if(state.coins<55||state.energy>=state.maxEnergy)return toast('Recharge indisponible');state.coins-=55;state.energy=Math.min(state.maxEnergy,state.energy+20);toast('⚡ Énergie rechargée !')}
       if(which==='upgrade'){let price=190+state.upgrade*100;if(state.upgrade>=reactorMax)return toast('🏆 Réacteur au maximum !');if(state.coins<price)return toast('Pièces insuffisantes');state.coins-=price;state.upgrade++;state.maxEnergy=Math.min(200,state.maxEnergy+5);state.energy=Math.min(state.maxEnergy,state.energy+5);toast('🔋 Réacteur amélioré : '+state.maxEnergy+' ⚡ de capacité !')}
       tone(880,.13);notifySave()}
+    function purchaseEquipment(key){
+      const cfg=workshopConfig[key];
+      if(!cfg)return;
+      const current=equipmentLevel(key);
+      if(current>=cfg.max)return toast('🏆 Équipement au niveau maximum !');
+      if(state.level<cfg.unlock)return toast('🔒 Débloqué au niveau '+cfg.unlock);
+      const cost=equipmentCost(key);
+      if(state.coins<cost)return toast('🪙 Pièces insuffisantes : '+cost+' nécessaires');
+      state.coins-=cost;
+      state.equipment[key]=current+1;
+      const label=key==='scanner'?'Scanner radar':key==='nets'?'Filets renforcés':'Bouclier d\'agent';
+      toast('⚙️ '+label+' amélioré au niveau '+(current+1)+' !');
+      tone(880,.13);notifySave();
+    }
     document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
     $('district-grid').addEventListener('click',e=>{let info=e.target.closest('[data-info]');if(info){e.preventDefault();e.stopPropagation();openSuspectSheet(Number(info.dataset.info));return}let b=e.target.closest('[data-district]');if(b)openDistrict(Number(b.dataset.district))});
     $('radar-targets').addEventListener('click',e=>{let b=e.target.closest('[data-radar-slot]');if(b)identifyRadar(Number(b.dataset.radarSlot))});$('radar-fight').addEventListener('click',confirmRadar);$('close-radar').addEventListener('click',()=>endRadarEscape('',false));$('suspect-close').addEventListener('click',()=>{stopVoices();hide('overlay-suspect')});$('suspect-reroll').addEventListener('click',rerollSuspectReason);
