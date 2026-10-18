@@ -257,6 +257,97 @@
         <p class="section-blurb">Chaque super-méchant arrêté rejoint ton répertoire. Retrouve les 6 super-méchants uniques de Néo-City.</p>
         <div class="ticker" style="margin-bottom:16px"><span class="big-icon">🔒</span><div><b id="prison-counter">0 / 6 super-méchants identifiés</b><p id="prison-summary">Ta chasse ne fait que commencer.</p></div></div>
         <div id="codex-grid" class="codex-grid"></div>
+        <div class="creator-coffre-cta">
+          <div><span class="creator-kicker">🧬 LABORATOIRE DES MÉCHANTS</span>
+            <h3>CRÉE TON PROPRE SUPER-VILAIN</h3>
+            <p>Donne-lui une identité, une faille ultime, une voix et une photo. Sauvegarde sa fiche privée, prête pour les futures images IA.</p>
+          </div>
+          <button id="creator-open" type="button" class="creator-primary">➕ CRÉER MON SUPER-VILAIN</button>
+          <small id="creator-count-summary">Mes créations personnelles · Jusqu'à 10 personnages</small>
+        </div>
+      </section>
+      <section id="view-creator" class="view" aria-label="Créateur personnel de super-vilains">
+        <button id="creator-back" class="creator-back" type="button">← RETOUR AU COFFRE</button>
+        <div class="creator-hero">
+          <div class="creator-kicker">🧬 PROJET SUPERVILAINS · LABORATOIRE PRIVÉ</div>
+          <h2>FABRIQUE TON <em>SUPER-VILAIN.</em></h2>
+          <p>Crée une fiche personnalisée à partir de tes informations et d'une photo. Chaque agent retrouve ses brouillons sur son compte.</p>
+        </div>
+        <div id="creator-alert" class="creator-alert" role="status" aria-live="polite">Vérification de ton compte…</div>
+        <div id="creator-signin" class="creator-panel" hidden>
+          <h3>🔐 CONNECTE TON AGENT</h3>
+          <p>Pour garder ta photo et ta fiche dans ton espace privé, tu dois être connecté à l'ARÈNE. Si tu as déjà une session, elle sera réutilisée automatiquement.</p>
+          <button id="creator-go-arena" class="creator-primary" type="button">🏆 ALLER À L'ARÈNE POUR ME CONNECTER</button>
+          <small>Évite le navigateur intégré de Messenger : ouvre l'application installée sur ton téléphone.</small>
+        </div>
+        <div id="creator-content" hidden>
+          <div class="creator-workflow">
+            <span><b>1</b> Fiche</span><span><b>2</b> Photo</span><span><b>3</b> Brouillon privé</span>
+          </div>
+          <form id="creator-form" class="creator-panel">
+            <div class="creator-section-heading"><span>🦹 IDENTITÉ DU MÉCHANT</span><small>Champs * obligatoires</small></div>
+            <label for="creator-name">Nom du personnage *</label>
+            <input id="creator-name" maxlength="60" required placeholder="Ex. : ZALZAL" autocomplete="off"/>
+            <label for="creator-alias">Alias / surnom</label>
+            <input id="creator-alias" maxlength="80" placeholder="Ex. : Le roi du chaos"/>
+            <label for="creator-description">Description du méchant</label>
+            <textarea id="creator-description" maxlength="1000" rows="3" placeholder="Sa personnalité, ses manies, ce qui le rend hilarant…"></textarea>
+            <div class="creator-section-heading"><span>🎴 FICHE ET FAILLE ULTIME</span></div>
+            <label for="creator-weakness">Faille ultime *</label>
+            <input id="creator-weakness" maxlength="120" required placeholder="Ex. : Sa peur des dictionnaires"/>
+            <label for="creator-weakness-object">Objet qui permet de le capturer</label>
+            <input id="creator-weakness-object" maxlength="120" placeholder="Ex. : Bescherelle"/>
+            <div class="creator-two">
+              <div><label for="creator-danger">Niveau de danger</label>
+                <select id="creator-danger"><option value="1">1 · Farceur</option><option value="2" selected>2 · Agité</option><option value="3">3 · Redoutable</option><option value="4">4 · Cauchemar</option><option value="5">5 · Boss</option></select></div>
+              <div><label for="creator-district">Quartier du méchant</label>
+                <input id="creator-district" maxlength="80" placeholder="Ex. : Le repaire des fautes"/></div>
+            </div>
+            <label for="creator-wanted">Motif de recherche</label>
+            <textarea id="creator-wanted" maxlength="900" rows="2" placeholder="Ex. : A volé toutes les virgules du dictionnaire…"></textarea>
+            <div class="creator-section-heading"><span>🎙️ SA PERSONNALITÉ VOCALE</span></div>
+            <label for="creator-voice">Type de voix synthétique souhaitée</label>
+            <select id="creator-voice">
+              <option value="comique">😂 Comique</option><option value="grave">🎙️ Grave</option>
+              <option value="froid">❄️ Froide</option><option value="theatral">🎭 Théâtrale</option>
+              <option value="diabolique">😈 Diabolique</option><option value="autoritaire">👮 Autoritaire</option>
+            </select>
+            <label for="creator-intro">Phrase de présentation</label>
+            <textarea id="creator-intro" maxlength="350" rows="2" placeholder="Vous n'êtes pas prêts à m'affronter !"></textarea>
+            <label for="creator-taunt">Phrase quand il se moque de toi</label>
+            <textarea id="creator-taunt" maxlength="350" rows="2" placeholder="Même ta grand-mère est plus rapide !"></textarea>
+            <label for="creator-capture">Phrase lors de sa capture</label>
+            <textarea id="creator-capture" maxlength="350" rows="2" placeholder="Non ! Pas la prison !"></textarea>
+            <button id="creator-preview-voice" type="button" class="creator-secondary">🔊 ÉCOUTER UN APERÇU SUR MON TÉLÉPHONE</button>
+            <small class="creator-hint">L'aperçu utilise la synthèse vocale de ton appareil. L'audio définitif du méchant sera généré dans une prochaine étape.</small>
+            <div class="creator-section-heading"><span>📸 PHOTO D'ORIGINE</span></div>
+            <div class="creator-photo-card">
+              <div class="creator-photo-frame"><img id="creator-photo-preview" hidden alt="Aperçu de la photo du futur super-vilain"/><span id="creator-photo-placeholder">📸<small>Photo du personnage</small></span></div>
+              <div class="creator-photo-info"><label for="creator-photo">Choisir une photo *</label>
+                <input id="creator-photo" type="file" accept="image/*"/>
+                <small>JPEG, PNG ou WebP. La photo sera optimisée avant envoi (maximum 8 Mo en ligne). Elle reste privée.</small></div>
+            </div>
+            <label class="creator-consent"><input id="creator-consent" type="checkbox" required/> <span>Je confirme avoir le droit et, s'il y a une personne identifiable, son autorisation d'utiliser cette photo pour créer ce personnage. *</span></label>
+            <div class="creator-section-heading"><span>🎨 FUTURES IMAGES IA</span><small>Génération à connecter</small></div>
+            <div class="creator-future-grid">
+              <div><span>🦹</span><b>PORTRAIT</b><small>Style SUPERVILAINS</small></div>
+              <div><span>😝</span><b>TROLLER</b><small>Langue tirée</small></div>
+              <div><span>⛓️</span><b>CAPTURÉ !</b><small>Prisonnier + menottes</small></div>
+            </div>
+            <p class="creator-hint">Pour l'instant, nous sauvegardons la photo et les informations. Les trois images ci-dessus ne sont pas encore générées par IA.</p>
+            <div class="creator-actions">
+              <button id="creator-save" type="submit" class="creator-primary">💾 ENREGISTRER MON SUPER-VILAIN</button>
+              <button id="creator-new" type="button" class="creator-secondary">➕ COMMENCER UNE NOUVELLE FICHE</button>
+            </div>
+            <p id="creator-save-status" class="creator-hint" role="status" aria-live="polite"></p>
+          </form>
+          <div class="creator-panel">
+            <div class="creator-section-heading"><span>📁 MES SUPER-VILAINS</span><small id="creator-counter">0 / 10</small></div>
+            <p class="creator-hint">Ces fiches sont privées. Tu peux les modifier et les retrouver sur les appareils où tu utilises ton compte ARÈNE.</p>
+            <button id="creator-refresh" class="creator-secondary" type="button">↻ ACTUALISER MES CRÉATIONS</button>
+            <div id="creator-list" class="creator-list">Chargement de tes fiches…</div>
+          </div>
+        </div>
       </section>
       <section id="view-missions" class="view" aria-label="Missions et récompenses">
         <div class="kicker">CENTRE DE COMMANDEMENT</div><h1 class="h1">TES <em>MISSIONS.</em></h1>
