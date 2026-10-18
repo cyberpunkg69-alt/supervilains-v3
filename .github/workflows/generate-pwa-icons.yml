@@ -1,0 +1,52 @@
+name: Build SUPERVILAINS PWA icons
+on:
+  push:
+    paths:
+      - pwa_icons_ready.txt
+permissions:
+  contents: write
+jobs:
+  icons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render PNG icons with Python standard library
+        run: |
+          python3 - <<'PY'
+          import math, zlib, struct, pathlib
+          def chunk(tag, data):
+              return struct.pack(">I",len(data))+tag+data+struct.pack(">I",zlib.crc32(tag+data)&0xffffffff)
+          def polygon(x,y,points):
+              inside=False
+              j=len(points)-1
+              for i in range(len(points)):
+                  ax,ay=points[i]
+                  bx,by=points[j]
+                  if (ay>y)!=(by>y) and x<(bx-ax)*(y-ay)/(by-ay)+ax: inside=not inside
+                  j=i
+              return inside
+          bolt=[(.55,.16),(.31,.52),(.46,.52),(.38,.84),(.73,.43),(.56,.43)]
+          for size in (192,512):
+              lines=[]
+              for y in range(size):
+                  line=bytearray([0])
+                  for x in range(size):
+                      u=(x+.5)/size;v=(y+.5)/size
+                      d=math.hypot(u-.5,v-.5)
+                      c=(12+round(u*14),17+round(v*9),49+round(u*13))
+                      if d<.43:c=(25,39,86)
+                      if .407<d<.438:c=(65,225,228)
+                      if polygon(u,v,bolt):c=(255,198,88)
+                      line.extend((*c,255))
+                  lines.append(bytes(line))
+              raw=b''.join(lines)
+              png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack(">IIBBBBB",size,size,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw,8))+chunk(b'IEND',b'')
+              pathlib.Path(f'icon-{size}.png').write_bytes(png)
+              print('Created PWA icon',size,'x',size,len(png),'bytes')
+          PY
+      - name: Commit icons
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add icon-192.png icon-512.png
+          git diff --cached --quiet || { git commit -m "V4.3: fournir les icones PNG requises pour installer la PWA"; git push; }
