@@ -218,6 +218,136 @@ async function saveForm(e){
 function createText(tag,cls,content){
   const el=document.createElement(tag);if(cls)el.className=cls;if(content!==undefined)el.textContent=content;return el;
 }
+
+/* V4.6 — Image generation UI. Calls the Edge Function with the existing ARENE
+   access token. The private provider key NEVER passes through this JavaScript. */
+let aiConfigured=false,aiCheckComplete=false,aiBusyId=null;
+const IMAGE_VARIANTS=[
+  {key:"portrait",field:"portrait_path",title:"PORTRAIT",emoji:"🦹",detail:"Style SUPERVILAINS"},
+  {key:"troll",field:"troll_path",title:"TROLLER",emoji:"😝",detail:"Langue tirée"},
+  {key:"capture",field:"capture_path",title:"CAPTURÉ !",emoji:"⛓️",detail:"Prisonnier + menottes"},
+];
+function aiNotice(message){
+  const el=$("creator-ai-status");if(el)el.textContent=message;
+}
+async function aiError(error,data){
+  let serverMessage=data?.error;
+  if(!serverMessage&&error?.context?.json){
+    try{const payload=await error.context.json();serverMessage=payload?.error}catch(_){}
+  }
+  return serverMessage||error?.message||"Le moteur IA n'a pas répondu.";
+}
+async function checkImageEngine(){
+  aiCheckComplete=false;
+  aiNotice("⏳ Vérification du moteur IA sécurisé…");
+  if(!db?.functions?.invoke){
+    aiConfigured=false;aiCheckComplete=true;aiNotice("⚠️ Moteur IA indisponible dans cette version du jeu.");return;
+  }
+  try{
+    const {data,error}=await db.functions.invoke("villain-image-ai",{body:{action:"status"}});
+    if(error)throw Error(await aiError(error,data));
+    aiConfigured=!!data?.configured;
+    aiNotice(aiConfigured
+      ?"✅ IA prête : portrait, Troller et Capturé ! · Images privées · 9 images maximum sur 24 h."
+      :"🔒 IA en attente d'activation : l'administrateur doit ajouter OPENAI_API_KEY dans les secrets Supabase. Aucune image ne sera facturée tant qu'elle n'est pas activée.");
+  }catch(e){
+    aiConfigured=false;aiNotice("⚠️ Impossible de joindre le moteur IA : "+errorMessage(e));
+  }finally{aiCheckComplete=true;}
+}
+async function aiSignedImage(path){
+  if(!path||!db)return null;
+  const {data,error}=await db.storage.from("villain-generated").createSignedUrl(path,300);
+  return error?null:data?.signedUrl||null;
+}
+async function generateVariant(row,kind,regenerate){
+  if(!db||!user||!aiConfigured)throw Error("Connecte-toi et active le moteur IA pour générer l'image.");
+  const {data,error}=await db.functions.invoke("villain-image-ai",{
+    body:{action:"generate",villain_id:row.id,kind,regenerate:!!regenerate}
+  });
+  if(error||!data?.ok)throw Error(await aiError(error,data));
+  return data;
+}
+async function generateImages(row,kind=null,regenerate=false){
+  if(aiBusyId)return;
+  if(!row.source_photo_path){status("⚠️ Enregistre la photo d'origine avant de générer les images.","warn");return}
+  if(!aiConfigured){aiNotice("🔒 Le moteur IA doit encore être activé dans Supabase.");return}
+  const variants=kind?IMAGE_VARIANTS.filter(x=>x.key===kind):
+    IMAGE_VARIANTS.filter(x=>!row[x.field]);
+  if(!variants.length)return;
+  const regenCount=Number(row.regenerations_used)||0;
+  if(regenerate&&regenCount>=3){status("⚠️ Les trois régénérations disponibles ont été utilisées.","warn");return}
+  const label=variants.map(x=>x.title).join(" + ");
+  const costWarning="⚠️ "+variants.length+" génération"+(variants.length>1?"s":"")+" d'image"+(variants.length>1?"s":"")+" IA payante"+(variants.length>1?"s":"")+
+    " ("+label+"). Chaque image consomme des crédits du fournisseur IA. Continuer ?";
+  if(!confirm(costWarning))return;
+  aiBusyId=row.id;
+  let created=0;
+  try{
+    for(const variant of variants){
+      aiNotice("🎨 Génération de "+variant.title+"… ("+(created+1)+"/"+variants.length+") · La photo originale reste conservée.");
+      await refreshList();
+      await generateVariant(row,variant.key,regenerate);
+      created++;
+      aiNotice("✅ "+variant.title+" enregistré. "+(created<variants.length?"Passage à l'image suivante…":"Toutes les images demandées sont terminées !"));
+      await refreshList();
+    }
+    status("✅ Image"+(created>1?"s":"")+" IA enregistrée"+(created>1?"s":"")+" dans l'espace privé du personnage !","good");
+  }catch(e){
+    const message=errorMessage(e);
+    status("⚠️ "+message+" · Les images précédemment créées sont conservées.","warn");
+    aiNotice("⚠️ "+created+" image"+(created>1?"s":"")+" créée"+(created>1?"s":"")+". "+message+" · Réessaie plus tard pour les autres.");
+  }finally{
+    aiBusyId=null;
+    try{await refreshList()}catch(_){}
+  }
+}
+function appendGeneratedArt(row,card){
+  const section=createText("section","creator-ai-section");
+  const title=createText("div","creator-ai-title","🎨 IMAGES IA DU PERSONNAGE");
+  const grid=createText("div","creator-ai-gallery");
+  const pictures=IMAGE_VARIANTS.map(variant=>{
+    const panel=createText("div","creator-ai-tile");
+    const frame=createText("div","creator-ai-picture");
+    const placeholder=createText("span","creator-ai-placeholder",variant.emoji);
+    frame.appendChild(placeholder);
+    panel.appendChild(frame);
+    panel.appendChild(createText("b","creator-ai-label",variant.title));
+    const path=row[variant.field];
+    panel.appendChild(createText("small","",path?"✅ Image enregistrée":variant.detail));
+    if(path){
+      aiSignedImage(path).then(url=>{
+        if(!url)return;
+        const img=createText("img","creator-ai-generated");
+        img.src=url;img.alt=variant.title+" — "+row.name;img.loading="lazy";
+        frame.replaceChildren(img);
+        if(variant.key==="capture"){
+          frame.appendChild(createText("span","creator-ai-captured-label","CAPTURÉ !"));
+        }
+      }).catch(()=>{});
+      const remake=createText("button","creator-ai-remake","♻️ REFAIRE");
+      remake.type="button";remake.disabled=!!aiBusyId||!aiConfigured||Number(row.regenerations_used)>=3;
+      remake.addEventListener("click",()=>generateImages(row,variant.key,true));
+      panel.appendChild(remake);
+    }
+    grid.appendChild(panel);
+    return {path};
+  });
+  section.append(title,grid);
+  const count=pictures.filter(x=>!!x.path).length;
+  const action=createText("button","creator-ai-generate",
+    count===3?"✅ 3 IMAGES GÉNÉRÉES":aiBusyId===row.id?"⏳ GÉNÉRATION EN COURS…":
+    "🎨 GÉNÉRER "+(3-count)+" IMAGE"+(3-count>1?"S":"")+" IA");
+  action.type="button";
+  action.disabled=!aiConfigured||!!aiBusyId||count===3||!row.source_photo_path||!aiCheckComplete;
+  if(count<3)action.addEventListener("click",()=>generateImages(row));
+  section.appendChild(action);
+  section.appendChild(createText("p","creator-ai-help",
+    !row.source_photo_path?"📸 Ajoute d'abord une photo source.":
+    !aiConfigured?"🔒 Génération désactivée tant que la clé privée du fournisseur IA n'est pas configurée.":
+    count===3?"✅ Personnage illustré ! Tu peux refaire trois images au total.":
+    "Chaque image est générée séparément, ce qui permet de reprendre en cas d'erreur."));
+  card.appendChild(section);
+}
 function appendRow(row,url){
   const card=createText("article","creator-list-card");
   const header=createText("div","creator-list-head");
