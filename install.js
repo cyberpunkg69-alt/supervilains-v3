@@ -95,7 +95,16 @@ window.addEventListener('appinstalled',()=>{installPrompt=null;status('sv-instal
 window.matchMedia?.('(display-mode: standalone)')?.addEventListener?.('change',renderGate);
 function start(){
  const gate=$('sv-install-gate');if(!gate)return;
- const external=$('sv-install-external');external.href=safeLink();
+ const external=$('sv-install-external');
+ const link=safeLink();
+ if(inApp&&/Android/i.test(navigator.userAgent||'')){
+   external.href='intent://'+link.replace(/^https:\/\//,'')+
+     '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url='+encodeURIComponent(link)+';end';
+   external.textContent='🌐 OUVRIR DANS CHROME';
+ }else{
+   external.href=link;
+   external.textContent='🌐 OUVRIR DANS SAFARI / CHROME';
+ }
  $('sv-install-prompt')?.addEventListener('click',async()=>{
   if(!installPrompt)return;
   const prompt=installPrompt;installPrompt=null;await prompt.prompt();
