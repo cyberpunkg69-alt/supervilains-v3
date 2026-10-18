@@ -63,6 +63,14 @@
     .arena-enemy{font-size:68px;line-height:1.25;filter:drop-shadow(0 7px 20px #0008)}.arena-enemyname{font-size:18px;font-weight:950;margin-top:9px}.arena-encounter .progress{margin:15px 0;height:11px}
     .arena-actions-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.arena-vs{border:1px solid #42577b;border-radius:13px;background:#13203d;padding:12px;margin:10px 0}.arena-vs .row-between{font-size:12px;font-weight:850}.arena-vs small{display:block;margin-top:8px;color:#a5b4d1;font-size:10px}
     .arena-feedline{font-size:11px;color:#bbc9e0;line-height:1.4;padding:10px 0;border-bottom:1px solid #2c3b59}.arena-feedline:last-child,.arena-rankrow:last-child{border:0}
+    .arena-invite-box{border-color:#3e8eaf;background:linear-gradient(125deg,#132b46,#231b43)}
+    .arena-invite-box h3{margin-bottom:6px}
+    .arena-invite-options{margin-top:12px;padding-top:12px;border-top:1px solid #3f5474}
+    .arena-invite-options .arena-field{font-size:11px;min-height:41px;margin:8px 0 10px}
+    .arena-share-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}
+    .arena-share-grid .arena-mini{min-height:45px;font-size:12px;color:#e6f9ff}
+    .arena-incoming{padding:11px 12px;border-radius:10px;border:1px solid #6ad7d0;background:#123445;color:#dcffff;font-size:11px;line-height:1.5;margin:12px 0 0}
+    #arena-share-duel{margin-top:11px}
     .arena-positive{color:var(--green)}.arena-negative{color:var(--pink)}
     .arena-status{font-size:10px;color:#c3d6f1;margin-top:13px;padding:10px 11px;background:#182944;border-radius:9px;border:1px solid #344766;line-height:1.5}
     .arena-status.warn{border-color:#ac6980;color:#ffd4de}.arena-status.good{border-color:#399b83;color:#bdf8e5}
@@ -199,6 +207,24 @@
           <h2>LE MONDE EST <span style="color:var(--cyan)">TON ARÈNE.</span></h2>
           <p>Affronte les autres agents dans les classements, chasse des super-méchants en ligne et défie tes amis pendant 24 h.</p>
         </div>
+        <div class="arena-box arena-invite-box">
+          <div class="row-between"><h3>📨 INVITE TES AMIS</h3><span class="arena-badge">JOUER ENSEMBLE</span></div>
+          <p class="arena-muted">Partage SUPERVILAINS en un clic ! Si tu crées un défi, ton ami recevra aussi son code pour te rejoindre dans l'arène.</p>
+          <button id="arena-invite-open" type="button" class="arena-action">📨 INVITER UN AMI</button>
+          <div id="arena-invite-options" class="arena-invite-options" hidden>
+            <p id="arena-invite-context" class="arena-muted">Invite un ami à rejoindre les agents !</p>
+            <input id="arena-invite-link" class="arena-field" type="text" readonly aria-label="Lien du jeu ou du défi à partager"/>
+            <button id="arena-share-native" type="button" class="arena-action pink">📲 PARTAGER DEPUIS MON TÉLÉPHONE</button>
+            <div class="arena-share-grid">
+              <button type="button" id="arena-share-whatsapp" class="arena-mini">🟢 WhatsApp</button>
+              <button type="button" id="arena-share-messenger" class="arena-mini">💬 Messenger</button>
+              <button type="button" id="arena-share-sms" class="arena-mini">✉️ SMS</button>
+              <button type="button" id="arena-share-copy" class="arena-mini">📋 Copier</button>
+            </div>
+            <p id="arena-share-feedback" class="arena-muted" role="status" aria-live="polite">Choisis une application ou copie ton invitation.</p>
+          </div>
+          <p id="arena-incoming-invite" class="arena-incoming" hidden></p>
+        </div>
         <div id="arena-message" class="arena-status" role="status" aria-live="polite">Initialisation de l'arène…</div>
         <div id="arena-setup" class="arena-box" hidden>
           <h3>🛠️ Serveur à configurer</h3><p class="arena-muted">Le mode solo reste jouable. Pour ouvrir l'arène partagée, déploie la base SQL et complète <b>config.js</b> avec l'URL Supabase et la clé publique. Le guide est fourni dans le ZIP.</p>
@@ -242,6 +268,7 @@
             <p class="arena-muted">Crée un code et envoie-le à un ami. Dès qu'il rejoint, vous avez tous les deux 24 h pour marquer le plus de points dans l'arène.</p>
             <div class="arena-actions-row" style="margin-bottom:10px"><button id="arena-create-duel" class="arena-action outline" type="button">➕ CRÉER UN DÉFI</button><button id="arena-join-duel" class="arena-action" type="button">🤝 REJOINDRE</button></div>
             <input type="text" id="arena-code" class="arena-field" placeholder="Code de 10 caractères" maxlength="10" autocapitalize="characters" spellcheck="false" aria-label="Code du défi reçu" />
+            <button id="arena-share-duel" class="arena-action pink" type="button" hidden>📨 PARTAGER MON DÉFI</button>
             <p class="arena-muted">Un code créé reste valable 24 h pour être accepté. Un duel commencé dure 24 h. Maximum : 5 défis simultanés.</p>
             <div id="arena-duels" class="arena-muted">Aucun défi pour l'instant.</div>
           </div>
