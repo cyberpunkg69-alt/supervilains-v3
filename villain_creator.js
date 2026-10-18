@@ -11,6 +11,12 @@ const FIELDS={
 };
 let db=null,user=null,rows=[],editingId=null,editingRow=null,busy=false,
     photoObjectUrl=null,currentImageUrl=null,requestSequence=0;
+const downloadedPhotoUrls=new Set();
+function rememberPhotoUrl(url){downloadedPhotoUrls.add(url);return url}
+function revokeDownloadedPhotos(){
+  for(const url of downloadedPhotoUrls){try{URL.revokeObjectURL(url)}catch(e){}}
+  downloadedPhotoUrls.clear();
+}
 const isCreatorVisible=()=>!!document.querySelector("#view-creator.active");
 const setVisible=(id,visible)=>{const el=$(id);if(el)el.hidden=!visible;};
 const status=(s,kind="")=>{
@@ -145,8 +151,17 @@ async function preparePhoto(file){
 }
 async function signedPhoto(path){
   if(!path||!db)return null;
-  const {data,error}=await db.storage.from("villain-source").createSignedUrl(path,180);
-  return error?null:data?.signedUrl||null;
+  const storage=db.storage.from("villain-source");
+  // Télécharger depuis Supabase avec la session du propriétaire :
+  // pas de miniature périmée ni d'URL signée mise en cache par le navigateur.
+  try{
+    const {data,error}=await storage.download(path);
+    if(!error&&data&&data.size)return rememberPhotoUrl(URL.createObjectURL(data));
+  }catch(e){}
+  // Compatibilité si un navigateur ne peut pas télécharger un Blob.
+  const {data,error}=await storage.createSignedUrl(path,120);
+  if(error||!data?.signedUrl)return null;
+  return data.signedUrl;
 }
 async function saveForm(e){
   e?.preventDefault?.();if(busy)return;
@@ -207,7 +222,32 @@ function appendRow(row,url){
   const card=createText("article","creator-list-card");
   const header=createText("div","creator-list-head");
   if(url){
-    const img=createText("img");img.src=url;img.alt="Photo privée de "+row.name;img.loading="lazy";header.appendChild(img);
+    const img=createText("img");
+    img.alt="Photo privée de "+row.name;img.loading="lazy";
+    img.addEventListener("error",()=>{
+      img.hidden=true;
+      header.prepend(createText("div","creator-list-placeholder","⚠️"));
+      info.appendChild(createText("p","creator-photo-warning","Photo illisible. Clique sur MODIFIER et choisis-la à nouveau."));
+    });
+    img.addEventListener("load",()=>{
+      // Une photo véritablement blanche dans Storage ne doit pas être confondue
+      // avec une erreur de permission ou de chargement.
+      try{
+        const c=document.createElement("canvas");c.width=20;c.height=20;
+        const ctx=c.getContext("2d",{willReadFrequently:true});
+        if(!ctx||!img.naturalWidth||!img.naturalHeight)return;
+        ctx.drawImage(img,0,0,20,20);
+        const d=ctx.getImageData(0,0,20,20).data;
+        let almostWhite=0;
+        for(let i=0;i<d.length;i+=4)if(d[i]>=245&&d[i+1]>=245&&d[i+2]>=245)almostWhite++;
+        if(almostWhite>=392){
+          img.hidden=true;
+          header.prepend(createText("div","creator-list-placeholder","📷"));
+          info.appendChild(createText("p","creator-photo-warning","Photo enregistrée entièrement blanche. Clique sur MODIFIER, re-sélectionne ta photo puis enregistre : la nouvelle version la conservera intacte."));
+        }
+      }catch(e){/* Les anciennes URL externes peuvent interdire la lecture canvas. */}
+    });
+    img.src=url;header.appendChild(img);
   }else header.appendChild(createText("div","creator-list-placeholder","🦹"));
   const info=createText("div","creator-list-info");
   info.appendChild(createText("h4","",row.name+(row.alias?" · "+row.alias:"")));
@@ -234,7 +274,7 @@ async function refreshList(){
   rows=Array.isArray(data)?data:[];
   $("creator-counter").textContent=rows.length+" / 10";
   $("creator-count-summary").textContent="Mes créations personnelles : "+rows.length+" / 10";
-  const list=$("creator-list");list.replaceChildren();
+  const list=$("creator-list");list.replaceChildren();revokeDownloadedPhotos();
   if(!rows.length){list.appendChild(createText("p","creator-hint","Aucun personnage pour le moment. Crée le premier !"));return;}
   for(const row of rows){
     // Les URL signées sont temporaires : seules les photos du propriétaire sont visibles.
