@@ -402,13 +402,13 @@
                 <small>JPEG, PNG ou WebP : photo originale conservée (jusqu’à 8 Mo). Les photos plus volumineuses sont optimisées. Elle reste privée.</small></div>
             </div>
             <label class="creator-consent"><input id="creator-consent" type="checkbox" required/> <span>Je confirme avoir le droit et, s'il y a une personne identifiable, son autorisation d'utiliser cette photo pour créer ce personnage. *</span></label>
-            <div class="creator-section-heading"><span>🎨 FUTURES IMAGES IA</span><small>Génération à connecter</small></div>
+            <div class="creator-section-heading"><span>🎨 IMAGES IA DU PERSONNAGE</span><small>À partir de la photo source</small></div>
             <div class="creator-future-grid">
               <div><span>🦹</span><b>PORTRAIT</b><small>Style SUPERVILAINS</small></div>
               <div><span>😝</span><b>TROLLER</b><small>Langue tirée</small></div>
               <div><span>⛓️</span><b>CAPTURÉ !</b><small>Prisonnier + menottes</small></div>
             </div>
-            <p class="creator-hint">Pour l'instant, nous sauvegardons la photo et les informations. Les trois images ci-dessus ne sont pas encore générées par IA.</p>
+            <p class="creator-hint">Enregistre d'abord ta fiche et ta photo. Ensuite, retrouve ton personnage dans « Mes super-vilains » et utilise « Générer les 3 images IA ». La génération nécessite un moteur IA activé côté serveur et consomme des crédits.</p>
             <div class="creator-actions">
               <button id="creator-save" type="submit" class="creator-primary">💾 ENREGISTRER MON SUPER-VILAIN</button>
               <button id="creator-new" type="button" class="creator-secondary">➕ COMMENCER UNE NOUVELLE FICHE</button>
@@ -418,6 +418,7 @@
           <div class="creator-panel">
             <div class="creator-section-heading"><span>📁 MES SUPER-VILAINS</span><small id="creator-counter">0 / 10</small></div>
             <p class="creator-hint">Ces fiches sont privées. Tu peux les modifier et les retrouver sur les appareils où tu utilises ton compte ARÈNE.</p>
+            <p id="creator-ai-status" class="creator-hint" role="status" aria-live="polite">Vérification du moteur de génération IA…</p>
             <button id="creator-refresh" class="creator-secondary" type="button">↻ ACTUALISER MES CRÉATIONS</button>
             <div id="creator-list" class="creator-list">Chargement de tes fiches…</div>
           </div>
