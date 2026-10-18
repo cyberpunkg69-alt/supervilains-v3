@@ -358,10 +358,45 @@
         </div>
         <div class="profile-head"><div class="profile-avatar">🦸</div><div class="kicker">DOSSIER DE L'AGENT</div><h2 id="profile-rank">AGENT RECRUE</h2><p id="profile-level">Niveau 1 • Protecteur de Néo-City</p><div class="xp-row"><span>EXPÉRIENCE</span><span id="xp-text">0/200 XP</span></div><div class="progress"><i id="xp-bar" style="width:0%"></i></div></div>
         <div class="profile-grid"><div class="stat-tile"><div class="count" id="prof-total">0</div><small>Criminels capturés</small></div><div class="stat-tile"><div class="count" id="prof-perfect">0</div><small>Captures parfaites</small></div><div class="stat-tile"><div class="count" id="prof-patrol">0</div><small>Patrouilles</small></div><div class="stat-tile"><div class="count" id="prof-missions">0</div><small>Missions terminées</small></div><div class="stat-tile"><div class="count" id="prof-radar">0</div><small>Suspects trouvés au radar</small></div><div class="stat-tile"><div class="count" id="prof-radar-first">0</div><small>Trouvés du premier coup</small></div></div>
-        <div class="section-heading">🛒 ARMURERIE <small>Équipement</small></div>
+        <div class="section-heading">🛠️ ATELIER D'AMÉLIORATIONS <small>Équipements évolutifs</small></div>
+        <div class="workshop-hero">
+          <span class="workshop-kicker">⚙️ CENTRE TECHNOLOGIQUE DE NÉO-CITY</span>
+          <h3>AMÉLIORE TON ÉQUIPEMENT</h3>
+          <p>Investis tes pièces dans des capacités permanentes. Chaque amélioration s'applique immédiatement au mode solo et reste enregistrée dans ta sauvegarde.</p>
+          <div class="workshop-wallet">🪙 <strong id="workshop-wallet">160</strong> pièces disponibles <span>SOLO UNIQUEMENT</span></div>
+        </div>
+        <div class="workshop-card">
+          <div class="workshop-main"><span class="workshop-icon">🔋</span><div class="workshop-copy"><h3>RÉACTEUR ÉVOLUTIF <small id="workshop-reactor-level">NIV. 0 / 33</small></h3>
+            <p>Augmente la réserve de +5 ⚡ par niveau. Recharge accélérée aux paliers 100, 150 et 200 ⚡.</p></div></div>
+          <div class="workshop-progress"><i id="workshop-reactor-bar" style="width:0%"></i></div>
+          <div class="workshop-specs"><span id="workshop-reactor-capacity">⚡ 35 / 200</span><span id="workshop-reactor-regen">⏱️ 45 s / énergie</span></div>
+          <p class="workshop-next" id="workshop-reactor-next">Prochain palier : 100 ⚡ — recharge améliorée</p>
+          <div class="workshop-action"><b id="upgrade-price">🪙 190</b><button id="buy-upgrade" type="button" class="tiny-btn">AMÉLIORER +5 ⚡</button></div>
+        </div>
+        <div class="workshop-card">
+          <div class="workshop-main"><span class="workshop-icon">📡</span><div class="workshop-copy"><h3>SCANNER RADAR <small id="workshop-scanner-level">NIV. 0 / 3</small></h3>
+            <p>Élimine automatiquement jusqu'à 3 fausses pistes avant chaque recherche, sans changer les 5 essais réglementaires.</p></div></div>
+          <div class="workshop-progress"><i id="workshop-scanner-bar" style="width:0%"></i></div>
+          <p class="workshop-next" id="workshop-scanner-bonus">0 signal innocent filtré · Disponible dès le niveau 2</p>
+          <div class="workshop-action"><b id="scanner-price">🪙 360</b><button id="buy-scanner" type="button" class="tiny-btn">AMÉLIORER</button></div>
+        </div>
+        <div class="workshop-card">
+          <div class="workshop-main"><span class="workshop-icon">🕸️</span><div class="workshop-copy"><h3>FILETS RENFORCÉS <small id="workshop-nets-level">NIV. 0 / 5</small></h3>
+            <p>Gagne +3 points de probabilité de capture par niveau, jusqu'à +15, avec une limite totale de 97 %.</p></div></div>
+          <div class="workshop-progress"><i id="workshop-nets-bar" style="width:0%"></i></div>
+          <p class="workshop-next" id="workshop-nets-bonus">Bonus de capture actuel : +0 point · Déblocage niveau 3</p>
+          <div class="workshop-action"><b id="nets-upgrade-price">🪙 330</b><button id="buy-net-upgrade" type="button" class="tiny-btn">AMÉLIORER</button></div>
+        </div>
+        <div class="workshop-card">
+          <div class="workshop-main"><span class="workshop-icon">🛡️</span><div class="workshop-copy"><h3>BOUCLIER D'AGENT <small id="workshop-armor-level">NIV. 0 / 5</small></h3>
+            <p>Réduit de 1 point par niveau les dégâts de contre-attaque sur ton bouclier pendant les combats.</p></div></div>
+          <div class="workshop-progress"><i id="workshop-armor-bar" style="width:0%"></i></div>
+          <p class="workshop-next" id="workshop-armor-bonus">Protection actuelle : 0 · Déblocage niveau 4</p>
+          <div class="workshop-action"><b id="armor-price">🪙 390</b><button id="buy-armor" type="button" class="tiny-btn">AMÉLIORER</button></div>
+        </div>
+        <div class="section-heading">🛒 CONSOMMABLES <small>Ressources immédiates</small></div>
         <div class="shop-card"><div class="shop-icon">🕸️</div><div class="shop-desc"><strong>Pack de 3 filets ioniques</strong><p>3 nouvelles tentatives de capture.</p></div><div><div class="shop-price">🪙 90</div><button class="tiny-btn" id="buy-nets" type="button">ACHETER</button></div></div>
         <div class="shop-card"><div class="shop-icon">⚡</div><div class="shop-desc"><strong>Recharge d'énergie</strong><p>Récupère instantanément 20 points d'énergie.</p></div><div><div class="shop-price">🪙 55</div><button class="tiny-btn" id="buy-energy" type="button">ACHETER</button></div></div>
-        <div class="shop-card"><div class="shop-icon">🔋</div><div class="shop-desc"><strong>Surcapacité du réacteur</strong><p>+5 d'énergie maximale, bonus permanent.</p></div><div><div class="shop-price" id="upgrade-price">🪙 190</div><button class="tiny-btn" id="buy-upgrade" type="button">AMÉLIORER</button></div></div>
         <div class="privacy">💾 Ta partie est sauvegardée automatiquement sur ce navigateur. La campagne est sauvegardée sur ce navigateur. L’ARÈNE en ligne possède sa progression compétitive séparée, associée à ton compte.</div>
         <button id="sound-toggle" class="button outline" style="width:100%;margin-top:12px" type="button">🔇 Activer les sons</button>
 
