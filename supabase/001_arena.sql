@@ -269,6 +269,6 @@ revoke all on function public.arena_create_duel() from PUBLIC,anon;
 revoke all on function public.arena_join_duel(text) from PUBLIC,anon;
 revoke all on function public.arena_my_duels() from PUBLIC,anon;
 grant execute on function public.arena_register(text),public.arena_start(),
- public.arena_attack(uuid),public.arena_capture(uuid),public.arena_flee(),
+ public.arena_attack(uuid),public.arena_capture(uuid),public.arena_flee(uuid),
  public.arena_my_stats(),public.arena_leaderboard(text),public.arena_feed(),
  public.arena_create_duel(),public.arena_join_duel(text),public.arena_my_duels() to authenticated;
