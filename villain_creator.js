@@ -54,7 +54,7 @@ function resetForm(){
 }
 function payloadFromForm(){
   const payload={photo_permission:true};
-  for(const [field,id] of Object.entries(FIELDS))payload[field]=$(id).value.trim();
+  for(const [field,id] of Object.entries(FIELDS))payload[field]=String($(id).value??"").trim();
   payload.danger_level=Number($("creator-danger").value);
   return payload;
 }
