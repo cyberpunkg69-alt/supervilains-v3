@@ -1,7 +1,7 @@
 {
-  "name": "SUPERVILAINS V4.5 — Opération Minuit",
+  "name": "SUPERVILAINS V4.6 — Opération Minuit",
   "short_name": "SUPERVILAINS",
-  "description": "Chasse aux super-vilains, 50 missions, arène compétitive et création de méchants personnels avec photo et fiche privées.",
+  "description": "Capture des méchants, arène en ligne et créateur de super-vilains avec fiches inventées aléatoirement.",
   "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
