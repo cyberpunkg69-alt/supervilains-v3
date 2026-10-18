@@ -271,7 +271,7 @@ async function downloadSourcePhoto(row){
     const {data,error}=await db.storage.from("villain-source").download(row.source_photo_path);
     if(error||!data)throw error||Error("Photo introuvable");
     const link=document.createElement("a"),url=URL.createObjectURL(data);
-    link.href=url;link.download=(row.name||"supervilain").replace(/[^a-z0-9_-]/gi,"_")+"_source.jpg";
+    link.href=url;link.download=(row.name||"supervilain").replace(/[^a-z0-9_-]/gi,"_")+"_source."+String(row.source_photo_path.split(".").pop()||"jpg");
     document.body.appendChild(link);link.click();link.remove();
     setTimeout(()=>URL.revokeObjectURL(url),30000);
     status("📸 Photo source téléchargée. Il faudra la joindre manuellement dans ChatGPT.","good");
