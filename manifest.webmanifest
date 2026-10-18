@@ -1,7 +1,7 @@
 {
   "name": "SUPERVILAINS — Meme Hunt",
-  "short_name": "SUPERVILAINS V3",
-  "description": "Capture six super-méchants, exploite leur faille ultime et défie tes amis.",
+  "short_name": "SUPERVILAINS V3.8",
+  "description": "50 missions, radar à 10 suspects, failles ultimes et 30 succès à débloquer !",
   "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
