@@ -1,7 +1,7 @@
 {
-  "name": "SUPERVILAINS V4.4 — Opération Minuit",
+  "name": "SUPERVILAINS V4.5 — Opération Minuit",
   "short_name": "SUPERVILAINS",
-  "description": "50 missions, 30 succès, arène multijoueur et atelier d’améliorations : réacteur 200 ⚡, scanner radar, filets et bouclier évolutifs.",
+  "description": "Chasse aux super-vilains, 50 missions, arène compétitive et création de méchants personnels avec photo et fiche privées.",
   "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
