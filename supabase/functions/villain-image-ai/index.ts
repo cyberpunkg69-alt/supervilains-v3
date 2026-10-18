@@ -9,12 +9,54 @@ const MODEL="gpt-image-1.5";
 function publicError(e){
   const m=String(e?.message||"Generation indisponible");
   if(/Quota de 9|Quota global|3 regenerations|deja en cours|deja creee|Photo source|Personnage introuvable|non autorise/i.test(m))return m;
-  if(/rate limit|429/i.test(m))return "Trop de demandes IA. Réessaie dans quelques minutes.";
-  if(/billing|credit|insufficient_quota/i.test(m))return "Crédits IA insuffisants. L'administrateur doit recharger le fournisseur.";
+  if(m==="provider_quota_exhausted")return "Crédits ou limite de dépenses de l’API IA atteints. Vérifie Facturation et Limites sur platform.openai.com : réessayer immédiatement ne résoudra pas ce blocage.";
+  if(m==="provider_verification_required")return "Le compte API doit être vérifié pour utiliser ce modèle d’images. Vérifie l’organisation sur platform.openai.com.";
+  if(m==="provider_rate_limited")return "Limite de débit temporaire de l’API d’images. Attends quelques minutes avant un nouvel essai.";
+  if(m==="provider_429_unknown")return "L’API d’images a répondu 429. Vérifie d’abord les crédits, limites de dépenses et limites de débit sur platform.openai.com avant de réessayer.";
+  if(m==="provider_unauthorized")return "La clé IA ne permet pas d’accéder au modèle. Vérifie la clé et les autorisations dans Supabase.";
+  if(m==="provider_invalid_request")return "La configuration de génération d’images n’est pas acceptée par l’API. L’administrateur doit vérifier le modèle et ses paramètres.";
+  if(m==="provider_unavailable")return "L’API d’images est temporairement indisponible. Réessaie plus tard.";
+  if(/rate limit|429/i.test(m))return "L’API d’images a refusé la demande. Vérifie ses limites et sa facturation avant de réessayer.";
+  if(/billing|credit|insufficient_quota/i.test(m))return "Crédits IA insuffisants. Vérifie la facturation de l’API.";
   if(/401|invalid_api_key/i.test(m))return "Clé IA invalide : vérifie les secrets Supabase.";
   if(/content policy|safety|moderation/i.test(m))return "Le fournisseur IA a refusé cette image. Essaie une autre photo.";
   if(/timeout|abort/i.test(m))return "Temps de génération dépassé. Tu peux réessayer.";
   return "La génération de cette image a échoué. Réessaie plus tard.";
+}
+// Classify provider failures from structured code/type BEFORE using HTTP status.
+// A 429 can represent insufficient credits or a spend cap, not just traffic.
+function classifyProviderError(httpStatus, rawBody){
+  let details={};
+  try{
+    const body=JSON.parse(rawBody);
+    if(body&&typeof body.error==="object"&&body.error)details=body.error;
+  }catch(_){}
+  const code=String(details.code||"").toLowerCase().slice(0,100);
+  const type=String(details.type||"").toLowerCase().slice(0,100);
+  const message=String(details.message||"").toLowerCase().slice(0,500);
+  const combined=code+" "+type+" "+message;
+  let reason;
+  if(/insufficient_quota|credit_balance_exhausted|organization_usage_limit_exceeded|organization_spend_limit_exceeded|project_spend_limit_exceeded|billing_hard_limit_reached|billing_not_active|out.of.credit|credit balance|billing|spend limit|exceeded your current quota|quota exceeded/i.test(combined)){
+    reason="provider_quota_exhausted";
+  }else if(/organization verification|verify your organization|must be verified|verification required/i.test(combined)){
+    reason="provider_verification_required";
+  }else if(httpStatus===401||httpStatus===403){
+    reason="provider_unauthorized";
+  }else if(httpStatus===429){
+    reason=/rate.limit|too many requests|requests per minute|tokens per minute|images per minute|ipm|rpm/i.test(combined)
+      ?"provider_rate_limited":"provider_429_unknown";
+  }else if(httpStatus===400||httpStatus===404||httpStatus===422){
+    reason="provider_invalid_request";
+  }else if(httpStatus>=500){
+    reason="provider_unavailable";
+  }else{
+    reason="provider_unavailable";
+  }
+  // Only operational metadata. Never log raw body, uploaded images or API keys.
+  console.error("SUPERVILAINS_IMAGE_PROVIDER_REJECTED",{
+    status:httpStatus,provider_code:code,provider_type:type,reason
+  });
+  return new Error(reason);
 }
 function prompt(v,kind){
  const fixed=[
@@ -61,11 +103,7 @@ async function edit(key,blob,v,kind){
  });
  if(!response.ok){
   const body=await response.text();
-  if(response.status===429)throw Error("429 rate limit");
-  if(response.status===401||response.status===403)throw Error("401 invalid_api_key");
-  if(/billing|insufficient_quota|balance|credit/i.test(body))throw Error("insufficient_quota");
-  if(/policy|moderation|safety|not allowed/i.test(body))throw Error("content policy");
-  throw Error("Provider HTTP "+response.status);
+  throw classifyProviderError(response.status,body);
  }
  const body=await response.json();
  if(!body?.data?.[0]?.b64_json)throw Error("Réponse IA sans image");
