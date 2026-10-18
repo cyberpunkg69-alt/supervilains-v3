@@ -699,7 +699,50 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       $('mission-more').hidden=sorted.length<=missionVisible;
       if(!$('mission-more').hidden)$('mission-more').textContent=`VOIR LES ${Math.min(12,sorted.length-missionVisible)} MISSIONS SUIVANTES (${sorted.length-missionVisible} restantes)`;
     }
-    function renderAgent(){$('profile-rank').textContent=rank();$('profile-level').textContent=`Niveau ${state.level} • Chasseur viral de SUPERVILAINS`;$('xp-text').textContent=`${state.xp}/${xpGoal(state.level)} XP`;$('xp-bar').style.width=`${100*state.xp/xpGoal(state.level)}%`;$('prof-total').textContent=state.captured;$('prof-perfect').textContent=state.perfect;$('prof-patrol').textContent=state.patrols;$('prof-missions').textContent=state.claimed.length;$('prof-radar').textContent=state.radarFinds;$('prof-radar-first').textContent=state.radarFirst;$('upgrade-price').textContent=`🪙 ${190+state.upgrade*100}`;$('buy-nets').disabled=state.coins<90;$('buy-energy').disabled=state.coins<55||state.energy===state.maxEnergy;$('buy-upgrade').disabled=state.coins<190+state.upgrade*100||state.upgrade>=8;$('sound-toggle').textContent=state.sound?'🔊 Désactiver les sons':'🔇 Activer les sons';renderVoiceControls()}
+    function renderWorkshop(){
+      $('workshop-wallet').textContent=Number(state.coins).toLocaleString('fr-FR');
+      $('workshop-reactor-level').textContent='NIV. '+state.upgrade+' / '+reactorMax;
+      $('workshop-reactor-bar').style.width=(state.upgrade/reactorMax*100)+'%';
+      $('workshop-reactor-capacity').textContent='⚡ '+state.maxEnergy+' / 200';
+      const seconds=energyInterval()/1000;
+      $('workshop-reactor-regen').textContent='⏱️ '+String(seconds).replace('.',',')+' s / énergie';
+      const stage=nextReactorStage();
+      $('workshop-reactor-next').textContent=stage?'Prochain palier : '+stage+' ⚡ — recharge améliorée':'🏆 RÉACTEUR ULTIME — capacité et recharge au maximum';
+      const reactorMaxed=state.upgrade>=reactorMax;
+      const reactorCost=190+state.upgrade*100;
+      $('upgrade-price').textContent=reactorMaxed?'🏆 MAXIMUM':'🪙 '+reactorCost.toLocaleString('fr-FR');
+      $('buy-upgrade').textContent=reactorMaxed?'MAXIMUM ATTEINT':'AMÉLIORER +5 ⚡';
+      $('buy-upgrade').disabled=reactorMaxed||state.coins<reactorCost;
+      $('buy-upgrade').closest('.workshop-card')?.classList.toggle('is-maxed',reactorMaxed);
+      for(const key of ['scanner','nets','armor']){
+        const config=workshopConfig[key],level=equipmentLevel(key);
+        const maxed=level>=config.max,locked=state.level<config.unlock;
+        const labels={scanner:'scanner',nets:'nets',armor:'armor'};
+        const name=labels[key];
+        $('workshop-'+name+'-level').textContent='NIV. '+level+' / '+config.max;
+        $('workshop-'+name+'-bar').style.width=(100*level/config.max)+'%';
+        const detail=key==='scanner'?level+' faux signal'+(level>1?'x':'')+' filtré'+(level>1?'s':'')+' au radar':
+          key==='nets'?'Bonus de capture : +'+(level*3)+' points':'Protection du bouclier : -'+level+' dégât'+(level>1?'s':'')+' par contre-attaque';
+        $('workshop-'+name+'-bonus').textContent=detail+(locked?' · 🔒 Déblocage niveau '+config.unlock:'');
+        const priceId=key==='scanner'?'scanner-price':key==='nets'?'nets-upgrade-price':'armor-price';
+        const buttonId=key==='scanner'?'buy-scanner':key==='nets'?'buy-net-upgrade':'buy-armor';
+        const price=equipmentCost(key),button=$(buttonId);
+        $(priceId).textContent=maxed?'🏆 MAXIMUM':'🪙 '+price.toLocaleString('fr-FR');
+        button.textContent=maxed?'MAXIMUM ATTEINT':locked?'🔒 NIVEAU '+config.unlock:'AMÉLIORER';
+        button.disabled=maxed||locked||state.coins<price;
+        button.closest('.workshop-card')?.classList.toggle('is-maxed',maxed);
+        button.closest('.workshop-card')?.classList.toggle('is-locked',locked);
+      }
+    }
+    function renderAgent(){
+      $('profile-rank').textContent=rank();$('profile-level').textContent=`Niveau ${state.level} • Chasseur viral de SUPERVILAINS`;
+      $('xp-text').textContent=`${state.xp}/${xpGoal(state.level)} XP`;$('xp-bar').style.width=`${100*state.xp/xpGoal(state.level)}%`;
+      $('prof-total').textContent=state.captured;$('prof-perfect').textContent=state.perfect;$('prof-patrol').textContent=state.patrols;
+      $('prof-missions').textContent=state.claimed.length;$('prof-radar').textContent=state.radarFinds;$('prof-radar-first').textContent=state.radarFirst;
+      $('buy-nets').disabled=state.coins<90;$('buy-energy').disabled=state.coins<55||state.energy===state.maxEnergy;
+      $('sound-toggle').textContent=state.sound?'🔊 Désactiver les sons':'🔇 Activer les sons';
+      renderWorkshop();renderVoiceControls();
+    }
     function renderAll(){renderStats();renderMap();renderCodex();renderMissions();renderAgent();renderAchievements()}
     function notifySave(){checkAchievements();save();renderAll()}
     function switchView(view){document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active',el.id==='view-'+view));document.querySelectorAll('.nav-btn').forEach(el=>el.classList.toggle('active',el.dataset.view===view));window.scrollTo({top:0,behavior:'instant'});if(view==='agent')renderAgent();if(view==='missions')renderMissions();if(view==='achievements')renderAchievements()}
