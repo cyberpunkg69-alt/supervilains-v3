@@ -595,10 +595,19 @@ const wantedReasons=[
   '{name} est recherché(e) pour avoir transformé une livraison de savon en saga criminelle.',
   '{name} aurait pris le contrôle d’un groupe de discussion pour y vendre des devinettes douteuses.',
 ];
-const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Date.now(),coins:160,nets:5,owned:{},captured:0,perfect:0,patrols:0,robot:0,visited:{},claimed:[],upgrade:0,sound:false,started:false,ultimate:0,ultimateByVillain:{},weaknessAttempts:0,radarFinds:0,radarFirst:0,radarMisses:0,radarEscapes:0,achievements:{},voicesEnabled:false});
+const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Date.now(),coins:160,nets:5,owned:{},captured:0,perfect:0,patrols:0,robot:0,visited:{},claimed:[],upgrade:0,equipment:{scanner:0,nets:0,armor:0},sound:false,started:false,ultimate:0,ultimateByVillain:{},weaknessAttempts:0,radarFinds:0,radarFirst:0,radarMisses:0,radarEscapes:0,achievements:{},voicesEnabled:false});
     const storageKey='supervilains_operation_minuit_v3_meme';
     let state=initial();
     try{let saved=JSON.parse(localStorage.getItem(storageKey)||'null');if(saved&&[1,3].includes(saved.version)){state={...initial(),...saved};state.owned=saved.owned||{};state.visited=saved.visited||{};state.claimed=Array.isArray(saved.claimed)?saved.claimed:[];state.ultimateByVillain=saved.ultimateByVillain&&typeof saved.ultimateByVillain==='object'?saved.ultimateByVillain:{};state.achievements=saved.achievements&&typeof saved.achievements==='object'?saved.achievements:{}}}catch(e){}
+    // V4.4 : les anciens fichiers de sauvegarde v1/v3 restent entièrement compatibles.
+    state.upgrade=Math.max(0,Math.min(33,Math.trunc(Number(state.upgrade)||0)));
+    if(!state.equipment||typeof state.equipment!=='object'||Array.isArray(state.equipment))state.equipment={};
+    ['scanner','nets','armor'].forEach((name)=>{
+      const cap=name==='scanner'?3:5;
+      state.equipment[name]=Math.max(0,Math.min(cap,Math.trunc(Number(state.equipment[name])||0)));
+    });
+    state.maxEnergy=Math.max(35+state.upgrade*5,Number(state.maxEnergy)||35);
+    state.energy=Math.max(0,Math.min(Number(state.energy)||0,state.maxEnergy));
     let enemy=null, radar=null, meterAnimation=0, meterStart=0, meterPos=.5, meterDirection=1, meterActive=false, busy=false, audioCtx=null, toastTimer=0, suspectDistrictId=null, suspectReason='';
     const $=id=>document.getElementById(id);
     const save=()=>{try{localStorage.setItem(storageKey,JSON.stringify(state))}catch(e){}};
