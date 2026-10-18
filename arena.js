@@ -48,11 +48,28 @@ async function shareNativeInvitation(){
   try{await navigator.share({title:"SUPERVILAINS — OPÉRATION MINUIT",text:inviteText(shareDuelCode)});inviteFeedback("Menu de partage ouvert. Choisis un destinataire.");}
   catch(e){if(e?.name!=="AbortError")inviteFeedback("Partage indisponible : utilise les boutons WhatsApp, SMS ou Copier.");}
 }
+const isMessengerBrowser=()=>/FBAN|FBAV|Messenger|FB_IAB/i.test(navigator.userAgent||"");
+function renderIncomingDuel(){
+  if(!inviteDuelCode)return;
+  const status=$("arena-incoming-status");
+  if(!status)return;
+  const ready=!!(db&&user&&profile?.registered);
+  vis("arena-accept-invite",ready);
+  vis("arena-open-browser",!user);
+  $("arena-open-browser").href=inviteUrl(inviteDuelCode);
+  if(!db){status.textContent="Vérification de ta session…";return;}
+  if(ready){status.textContent="✅ Connecté comme "+profile.handle+". Accepte le défi directement, sans e-mail !";return;}
+  if(user){status.textContent="✅ Session retrouvée. Choisis ton pseudo d'agent, puis accepte le défi.";return;}
+  status.textContent=isMessengerBrowser()?
+    "📱 Messenger utilise un navigateur séparé : ton compte Chrome n'y est pas reconnu. Ouvre le lien dans Chrome via le menu ⋮ de Messenger, sans redemander d'e-mail.":
+    "🔐 Aucun compte connecté dans ce navigateur. Ouvre ce lien dans ton navigateur habituel pour retrouver ta session.";
+}
 function setupIncomingDuel(){
   if(!inviteDuelCode)return;
   $("arena-code").value=inviteDuelCode;
+  $("arena-incoming-text").textContent="Code du défi : "+inviteDuelCode+" · Accepte pour rejoindre le duel.";
   vis("arena-incoming-invite",true);
-  $("arena-incoming-invite").textContent="⚔️ Un ami t'a invité à un duel ! Code : "+inviteDuelCode+". Connecte-toi puis appuie sur REJOINDRE pour accepter le défi.";
+  renderIncomingDuel();
   document.querySelector('[data-view="arena"]')?.click();
 }
 function clearIncomingDuel(){
