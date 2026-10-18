@@ -170,6 +170,25 @@
   </style>
 </head>
 <body>
+  <div id="sv-install-gate" class="sv-mobile-gate" role="dialog" aria-modal="true" aria-labelledby="sv-install-title" hidden>
+    <div class="sv-mobile-card">
+      <div class="sv-mobile-badge">🛡️ PROTÈGE TA PROGRESSION</div>
+      <div class="sv-mobile-logo">🦹📲</div>
+      <h2 id="sv-install-title">INSTALLE SUPERVILAINS AVANT DE JOUER !</h2>
+      <p>Pour conserver tes captures, tes 50 missions et tes succès, joue depuis l'application installée sur ton téléphone, pas dans Messenger.</p>
+      <div id="sv-install-instructions" class="sv-steps">Recherche de la méthode d'installation…</div>
+      <button id="sv-install-prompt" type="button" hidden>📲 INSTALLER L'APPLICATION</button>
+      <a id="sv-install-external" class="sv-secondary" href="https://cyberpunkg69-alt.github.io/supervilains-v3/" hidden>🌐 OUVRIR DANS CHROME / SAFARI</a>
+      <button id="sv-install-copy-link" class="sv-secondary" type="button">🔗 COPIER LE LIEN DU JEU</button>
+      <div id="sv-install-old-save" class="sv-rescue" hidden>
+        <strong>⚠️ Tu as déjà commencé une partie ici ?</strong>
+        <p>Exporte ta sauvegarde AVANT de fermer Messenger. Puis importe-la dans la version installée.</p>
+        <button id="sv-install-export" type="button" class="sv-secondary">📋 COPIER MA SAUVEGARDE</button>
+        <button id="sv-install-download" type="button" class="sv-secondary">💾 ENREGISTRER MA SAUVEGARDE</button>
+      </div>
+      <p id="sv-install-status" class="sv-note" role="status" aria-live="polite">Après installation, lance le jeu depuis son icône sur l'écran d'accueil.</p>
+    </div>
+  </div>
   <div class="shell">
     <header class="topbar">
       <div class="topline">
