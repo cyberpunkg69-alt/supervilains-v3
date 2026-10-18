@@ -898,7 +898,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       $('battle-name').textContent=villain.name;$('battle-description').textContent=villain.line+` • Danger ${villain.danger}/6 ${villain.boss?'• BOSS':''} • 🎴 6 cartes mystère`;
       $('battle-message').className='battle-message';$('battle-message').textContent='Choisis UNE carte mystère. Bonne carte = capture instantanée + bonus !';renderBattle();show('overlay-battle');tone(390,.16);
     }
-    function odds(){if(!enemy)return 0;let v=villains[enemy.id],wounded=(1-enemy.hp/enemy.maxhp),boost=enemy.exposed?26:0;return clamp(Math.round(44+wounded*55-v.danger*5-(v.boss?7:0)+boost),14,97)}
+    function odds(){if(!enemy)return 0;let v=villains[enemy.id],wounded=(1-enemy.hp/enemy.maxhp),boost=enemy.exposed?26:0;return clamp(Math.round(44+wounded*55-v.danger*5-(v.boss?7:0)+boost+equipmentLevel('nets')*3),14,97)}
     function renderBattle(){
       if(!enemy)return;
       const v=villains[enemy.id];$('hp-number').textContent=`${enemy.hp} / ${enemy.maxhp}`;
