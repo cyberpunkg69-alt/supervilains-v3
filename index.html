@@ -107,6 +107,44 @@
     .achievement-pop.visible{opacity:1;visibility:visible;transform:translate(-50%,0)}
     .achievement-pop .medal{font-size:34px}.achievement-pop strong{font-size:12px}.achievement-pop small{font-size:10px;color:#ffe4a6}
     @media(max-width:350px){.nav-btn{font-size:7px}.nav-btn .nicon{font-size:17px}.weak-btn{min-height:75px}}
+
+    /* V3.8 — Radar à dix inconnus et centre des 50 missions */
+    .radar-modal{width:min(100%,460px)}
+    .radar-head{padding:18px 18px 5px}
+    .radar-badge{color:var(--cyan);font-size:10px;font-weight:950;letter-spacing:1.4px}
+    .radar-title{font-size:clamp(23px,6vw,29px);line-height:1.12;margin:10px 0 7px;font-weight:1000}
+    .radar-sub{font-size:11px;color:#b4c9e0;line-height:1.45;margin:0}
+    .radar-progress{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:11px 0 0;font-size:10px;font-weight:900;color:#8deae8}
+    .radar-progress b{font-size:12px;color:#f9d786}
+    .radar-screen{height:clamp(255px,78vw,342px);width:min(calc(100% - 28px),342px);aspect-ratio:1;max-height:342px;margin:12px auto;position:relative;border-radius:50%;overflow:hidden;border:2px solid #63ecd4a0;background:repeating-radial-gradient(circle at center,transparent 0px,transparent 53px,#83e8c32c 54px,#83e8c32c 55px),linear-gradient(155deg,#0b3c47,#09192e 66%);box-shadow:0 0 0 6px #56dfb416,0 0 35px #18e4a119 inset}
+    .radar-screen:before{content:'';position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0deg,transparent 265deg,#5bfbd822 310deg,#7fffdc58 359deg,transparent 360deg);animation:radarSpin 5s linear infinite;pointer-events:none}
+    .radar-screen:after{content:'';position:absolute;top:50%;left:50%;width:5px;height:5px;transform:translate(-50%,-50%);background:#c0ffe3;border-radius:50%;box-shadow:0 0 12px #78ffdc;pointer-events:none}
+    @keyframes radarSpin{to{transform:rotate(360deg)}}
+    .radar-axis{position:absolute;z-index:0;background:#59f6da22;pointer-events:none}
+    .radar-axis.horizontal{height:1px;width:100%;top:50%}.radar-axis.vertical{width:1px;height:100%;left:50%}
+    .radar-unknown{position:absolute;z-index:2;left:var(--x);top:var(--y);transform:translate(-50%,-50%);width:clamp(42px,12vw,50px);height:clamp(42px,12vw,50px);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;border:2px solid #7dfadd;background:linear-gradient(150deg,#143d59,#16254b);color:white;box-shadow:0 0 15px #30efbf5c,0 6px 12px #0009;font-weight:950;cursor:pointer;touch-action:manipulation}
+    .radar-unknown .radar-q{font-size:21px;line-height:1}.radar-unknown small{font-size:8px;opacity:.8}
+    .radar-unknown:not(:disabled):active{transform:translate(-50%,-50%) scale(.91)}
+    .radar-unknown.missed{border-color:#dc7589;background:#452b46;color:#ffb8c4;box-shadow:none;opacity:.62}
+    .radar-unknown.found{border-color:#ffe39d;background:#315449;color:#fff9b6;box-shadow:0 0 22px #ffefa988}
+    .radar-unknown:disabled{cursor:default}
+    .radar-message{background:#13203c;border:1px solid #3e5979;border-radius:12px;padding:12px 13px;font-size:12px;line-height:1.45;color:#dce9f5;margin:0 15px 15px;min-height:54px}
+    .radar-message.warn{border-color:#8b5169;color:#ffc2cb}
+    .radar-reveal{display:none;margin:0 15px 15px;border:1px solid #3e9f8b;border-radius:15px;padding:12px;background:linear-gradient(125deg,#1a4447,#202d51);align-items:center;gap:12px}
+    .radar-reveal.visible{display:flex}
+    .radar-reveal img{width:82px;height:82px;object-fit:cover;border-radius:13px;border:2px solid #bffde3;flex-shrink:0}
+    .radar-reveal h3{margin:0 0 5px;font-size:19px;font-weight:950}.radar-reveal p{color:#bce8dd;font-size:11px;margin:0 0 10px}
+    .radar-reveal .button{min-height:44px;padding:10px;font-size:11px}
+    .radar-caption{padding:0 16px 15px;color:#98adca;font-size:10px;text-align:center;line-height:1.4}
+    .mission-dashboard{border:1px solid #6572a6;background:linear-gradient(120deg,#1c294c,#33254e);border-radius:16px;padding:15px;margin:0 0 13px}
+    .mission-dashboard strong{font-size:23px;color:#f0d992}.mission-dashboard small{font-size:11px;color:#b8c6e0;display:block;margin-top:3px}
+    .mission-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:12px 0}
+    .mission-tab{border:1px solid #435576;border-radius:9px;background:#1a2440;color:#c4d5ed;font-size:9px;font-weight:850;padding:11px 2px;white-space:nowrap}
+    .mission-tab.active{border-color:#67e6db;background:#1b454d;color:#e8ffff}
+    .mission-more{width:100%;border:1px solid #6882af;background:#1d2b4d;color:#d7edff;border-radius:12px;padding:13px;font-size:12px;font-weight:900;margin-bottom:14px}
+    .mission-level{color:#81edc8;font-size:9px;font-weight:850;margin-top:4px;letter-spacing:.2px}
+    @media(max-width:350px){.radar-unknown{width:39px;height:39px}.mission-tab{font-size:8px}}
+    @media(prefers-reduced-motion:reduce){.radar-screen:before{animation:none}}
   </style>
 </head>
 <body>
@@ -132,7 +170,7 @@
         </div>
         <div class="section-heading">🗺️ CARTE DES QUARTIERS <small>Appuie pour patrouiller</small></div>
         <div id="district-grid" class="district-grid"></div>
-        <div class="ticker"><span class="big-icon">📡</span><div><b>Radar des criminels actif</b><p>Les signalements reviennent à chaque patrouille. Capture-les tous pour compléter ton dossier.</p></div></div>
+        <div class="ticker"><span class="big-icon">📡</span><div><b>10 inconnus sur le radar</b><p>Repère le vrai criminel en 5 tentatives. Après cinq mauvaises identifications, il reste en fuite !</p></div></div>
       </section>
       <section id="view-prison" class="view" aria-label="Collection des super-méchants">
         <div class="kicker">DOSSIERS CONFIDENTIELS</div><h1 class="h1">LE <em>COFFRE.</em></h1>
@@ -142,8 +180,10 @@
       </section>
       <section id="view-missions" class="view" aria-label="Missions et récompenses">
         <div class="kicker">CENTRE DE COMMANDEMENT</div><h1 class="h1">TES <em>MISSIONS.</em></h1>
-        <p class="section-blurb">Remplis les objectifs pour gagner des crédits et du matériel. Chaque mission est récupérable une fois.</p>
-        <div id="mission-list"></div>
+        <p class="section-blurb">50 missions pour devenir une légende de Néo-City : chasse, radar, précision, failles et promotions. Chaque récompense se récupère une fois.</p>
+        <div class="mission-dashboard"><strong id="mission-count">0 / 50</strong><small>Missions récompensées · <span id="mission-available">0 récompense disponible</span></small><div class="progress" style="margin-top:12px"><i id="mission-progress" style="width:0%"></i></div></div>
+        <div class="mission-tabs" role="group" aria-label="Trier les missions"><button class="mission-tab active" type="button" data-mission-filter="all">TOUTES</button><button class="mission-tab" type="button" data-mission-filter="ready">À PRENDRE</button><button class="mission-tab" type="button" data-mission-filter="active">EN COURS</button><button class="mission-tab" type="button" data-mission-filter="done">FINIES</button></div>
+        <div id="mission-list"></div><button id="mission-more" class="mission-more" type="button" hidden>VOIR PLUS DE MISSIONS</button>
         <div class="ticker"><span class="big-icon">🎖️</span><div><b>Pour débloquer les quartiers</b><p>Arrête des suspects et termine des missions afin de gagner de l'expérience.</p></div></div>
       </section>
       <section id="view-arena" class="view" aria-label="Arène multijoueur et compétitions">
@@ -214,14 +254,14 @@
       </section>
       <section id="view-agent" class="view" aria-label="Profil et équipement">
         <div class="profile-head"><div class="profile-avatar">🦸</div><div class="kicker">DOSSIER DE L'AGENT</div><h2 id="profile-rank">AGENT RECRUE</h2><p id="profile-level">Niveau 1 • Protecteur de Néo-City</p><div class="xp-row"><span>EXPÉRIENCE</span><span id="xp-text">0/200 XP</span></div><div class="progress"><i id="xp-bar" style="width:0%"></i></div></div>
-        <div class="profile-grid"><div class="stat-tile"><div class="count" id="prof-total">0</div><small>Criminels capturés</small></div><div class="stat-tile"><div class="count" id="prof-perfect">0</div><small>Captures parfaites</small></div><div class="stat-tile"><div class="count" id="prof-patrol">0</div><small>Patrouilles</small></div><div class="stat-tile"><div class="count" id="prof-missions">0</div><small>Missions terminées</small></div></div>
+        <div class="profile-grid"><div class="stat-tile"><div class="count" id="prof-total">0</div><small>Criminels capturés</small></div><div class="stat-tile"><div class="count" id="prof-perfect">0</div><small>Captures parfaites</small></div><div class="stat-tile"><div class="count" id="prof-patrol">0</div><small>Patrouilles</small></div><div class="stat-tile"><div class="count" id="prof-missions">0</div><small>Missions terminées</small></div><div class="stat-tile"><div class="count" id="prof-radar">0</div><small>Suspects trouvés au radar</small></div><div class="stat-tile"><div class="count" id="prof-radar-first">0</div><small>Trouvés du premier coup</small></div></div>
         <div class="section-heading">🛒 ARMURERIE <small>Équipement</small></div>
         <div class="shop-card"><div class="shop-icon">🕸️</div><div class="shop-desc"><strong>Pack de 3 filets ioniques</strong><p>3 nouvelles tentatives de capture.</p></div><div><div class="shop-price">🪙 90</div><button class="tiny-btn" id="buy-nets" type="button">ACHETER</button></div></div>
         <div class="shop-card"><div class="shop-icon">⚡</div><div class="shop-desc"><strong>Recharge d'énergie</strong><p>Récupère instantanément 20 points d'énergie.</p></div><div><div class="shop-price">🪙 55</div><button class="tiny-btn" id="buy-energy" type="button">ACHETER</button></div></div>
         <div class="shop-card"><div class="shop-icon">🔋</div><div class="shop-desc"><strong>Surcapacité du réacteur</strong><p>+5 d'énergie maximale, bonus permanent.</p></div><div><div class="shop-price" id="upgrade-price">🪙 190</div><button class="tiny-btn" id="buy-upgrade" type="button">AMÉLIORER</button></div></div>
         <div class="privacy">💾 Ta partie est sauvegardée automatiquement sur ce navigateur. La campagne est sauvegardée sur ce navigateur. L’ARÈNE en ligne possède sa progression compétitive séparée, associée à ton compte.</div>
         <button id="sound-toggle" class="button outline" style="width:100%;margin-top:12px" type="button">🔇 Activer les sons</button>
-        <p class="footer-note">SUPERVILAINS — Meme Hunt · V3.7</p>
+        <p class="footer-note">SUPERVILAINS — Meme Hunt · V3.8</p>
       </section>
     </main>
     <nav class="nav" aria-label="Navigation principale">
@@ -234,6 +274,19 @@
     </nav>
   </div>
   <div id="achievement-pop" class="achievement-pop" aria-live="polite" aria-atomic="true"></div>
+  <div id="overlay-radar" class="overlay" role="dialog" aria-modal="true" aria-label="Recherche du méchant au radar">
+    <div class="dialog radar-modal">
+      <div class="radar-head"><div class="overlay-top"><span class="radar-badge">📡 RECHERCHE DE SUSPECT</span><button class="xbtn" id="close-radar" type="button" aria-label="Abandonner la recherche">×</button></div>
+        <h2 class="radar-title">10 INCONNUS.<br><span style="color:var(--cyan)">1 SEUL MÉCHANT.</span></h2>
+        <p class="radar-sub" id="radar-description">Les identités sont brouillées. Appuie sur un signal pour l'identifier.</p>
+        <div class="radar-progress"><span id="radar-sector">SECTEUR CONFIDENTIEL</span><b id="radar-attempts">0 / 5 ESSAIS</b></div>
+      </div>
+      <div id="radar-screen" class="radar-screen" aria-label="10 signaux inconnus à identifier"><span class="radar-axis horizontal"></span><span class="radar-axis vertical"></span><div id="radar-targets"></div></div>
+      <p id="radar-message" class="radar-message" role="status" aria-live="polite">Identifie le bon signal avant que le suspect disparaisse !</p>
+      <div class="radar-reveal" id="radar-reveal"><img id="radar-portrait" src="" alt="Suspect identifié"><div><h3 id="radar-name">CIBLE TROUVÉE</h3><p>🎯 Signal confirmé. Le criminel est démasqué !</p><button id="radar-fight" class="button primary" type="button">⚡ AFFRONTER CE MÉCHANT</button></div></div>
+      <p class="radar-caption">🔒 Signaux mélangés à chaque nouvelle patrouille · 5 erreurs = cible toujours en fuite</p>
+    </div>
+  </div>
   <div id="overlay-battle" class="overlay" role="dialog" aria-modal="true" aria-label="Affrontement d'un super-méchant">
     <div class="dialog">
       <div class="encounter-header"><div class="overlay-top"><span class="eyebrow" id="battle-district">⚠️ MENACE DÉTECTÉE</span><button class="xbtn" type="button" id="close-battle" aria-label="Fuir">×</button></div></div>
@@ -247,7 +300,7 @@
     <div class="dialog mini-dialog"><div class="overline">🕸️ FILET IONIQUE ARMÉ</div><h2>VISE LE <span style="color:var(--cyan)">CENTRE !</span></h2><p>Arrête le curseur dans la zone turquoise pour améliorer tes chances d'emprisonner le suspect.</p><div class="meter-wrap"><div class="meter" id="meter"><div class="meter-zone" id="meter-zone"></div><div class="meter-pointer" id="meter-pointer"></div></div><div class="meter-indicators"><span>IMPRÉCIS</span><span>PARFAIT</span><span>IMPRÉCIS</span></div></div><p style="font-size:10px;margin-bottom:15px">La difficulté dépend de la puissance du méchant.</p><button class="button capture" id="stop-meter" style="width:100%;font-size:17px;min-height:62px" type="button">🎯 LANCER LE FILET !</button></div>
   </div>
   <div id="overlay-result" class="overlay" role="dialog" aria-modal="true" aria-label="Résultat de l'affrontement"><div class="dialog mini-dialog"><span class="result-icon" id="result-icon">🏆</span><div class="overline" id="result-kicker">CIBLE IMMOBILISÉE</div><h2 id="result-title">CAPTURE RÉUSSIE !</h2><p id="result-text">Félicitations agent.</p><div class="result-gif-frame" id="result-gif-frame" hidden><img id="result-gif" alt="Animation du méchant capturé en train de pleurer" /></div><div class="result-stats" id="result-stats"></div><button id="result-button" type="button" class="button primary" style="width:100%">RETOURNER À LA CARTE</button></div></div>
-  <div id="overlay-tutorial" class="overlay" role="dialog" aria-modal="true" aria-label="Bienvenue dans Supervilains"><div class="dialog mini-dialog tutorial-page"><div class="tutorial-logo">🦹</div><div class="overline">BIENVENUE AGENT</div><h2>LA CHASSE <span style="color:var(--pink)">COMMENCE !</span></h2><p>6 super-méchants mème sèment le chaos sur les réseaux. Repère-les, découvre leur faille ultime et capture-les avant tout le monde.</p><div class="tutorial-features"><div class="tutorial-feature"><span>🗺️</span><div><strong>EXPLORE LES QUARTIERS</strong><small>Repère les criminels dans la ville.</small></div></div><div class="tutorial-feature"><span>🎴</span><div><strong>UNE CARTE, UNE CHANCE</strong><small>Six cartes cachées et mélangées. Le bon choix capture immédiatement et donne un bonus !</small></div></div><div class="tutorial-feature"><span>🕸️</span><div><strong>CAPTURE AU BON MOMENT</strong><small>Vise juste, collecte les récompenses et progresse.</small></div></div></div><button class="button primary" id="start-game" type="button" style="width:100%;font-size:14px">🚀 DÉMARRER LA MISSION</button></div></div>
+  <div id="overlay-tutorial" class="overlay" role="dialog" aria-modal="true" aria-label="Bienvenue dans Supervilains"><div class="dialog mini-dialog tutorial-page"><div class="tutorial-logo">🦹</div><div class="overline">BIENVENUE AGENT</div><h2>LA CHASSE <span style="color:var(--pink)">COMMENCE !</span></h2><p>6 super-méchants mème sèment le chaos sur les réseaux. Retrouve-les parmi 10 inconnus au radar, découvre leur faille ultime et capture-les avant tout le monde.</p><div class="tutorial-features"><div class="tutorial-feature"><span>🗺️</span><div><strong>EXPLORE LES QUARTIERS</strong><small>Repère les criminels dans la ville.</small></div></div><div class="tutorial-feature"><span>📡</span><div><strong>CHERCHE LE VRAI SUSPECT</strong><small>10 signaux inconnus sur le radar. 5 tentatives pour démasquer le bon !</small></div></div><div class="tutorial-feature"><span>🎴</span><div><strong>UNE CARTE, UNE CHANCE</strong><small>Six cartes cachées et mélangées. Le bon choix capture immédiatement et donne un bonus !</small></div></div><div class="tutorial-feature"><span>🕸️</span><div><strong>CAPTURE AU BON MOMENT</strong><small>Vise juste, collecte les récompenses et progresse.</small></div></div></div><button class="button primary" id="start-game" type="button" style="width:100%;font-size:14px">🚀 DÉMARRER LA MISSION</button></div></div>
   <div id="toast" role="status" aria-live="polite"></div>
   <script>
   (()=>{'use strict';
@@ -276,11 +329,11 @@ const villains=[
   {name:'LUDO',icon:'📘',line:'Maître des fautes et des légendes bancales. Le Bescherelle est sa kryptonite.',danger:4,type:'Texte toxique',color:'#ffc861',boss:true,portrait:'assets/ludo.png',weakness:'bescherelle',weaknessName:'Bescherelle',weaknessIcon:'📘'},
   {name:'ERIC',icon:'🧴',line:'Le boss final aromatique. Un simple déodorant suffit à briser son aura pestilentielle.',danger:5,type:'Boss',color:'#ff8a5b',boss:true,portrait:'assets/eric.png',weakness:'deodorant',weaknessName:'Déodorant',weaknessIcon:'🧴'}
 ];
-const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Date.now(),coins:160,nets:5,owned:{},captured:0,perfect:0,patrols:0,robot:0,visited:{},claimed:[],upgrade:0,sound:false,started:false,ultimate:0,ultimateByVillain:{},weaknessAttempts:0,achievements:{}});
+const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Date.now(),coins:160,nets:5,owned:{},captured:0,perfect:0,patrols:0,robot:0,visited:{},claimed:[],upgrade:0,sound:false,started:false,ultimate:0,ultimateByVillain:{},weaknessAttempts:0,radarFinds:0,radarFirst:0,radarMisses:0,radarEscapes:0,achievements:{}});
     const storageKey='supervilains_operation_minuit_v3_meme';
     let state=initial();
     try{let saved=JSON.parse(localStorage.getItem(storageKey)||'null');if(saved&&[1,3].includes(saved.version)){state={...initial(),...saved};state.owned=saved.owned||{};state.visited=saved.visited||{};state.claimed=Array.isArray(saved.claimed)?saved.claimed:[];state.ultimateByVillain=saved.ultimateByVillain&&typeof saved.ultimateByVillain==='object'?saved.ultimateByVillain:{};state.achievements=saved.achievements&&typeof saved.achievements==='object'?saved.achievements:{}}}catch(e){}
-    let enemy=null, meterAnimation=0, meterStart=0, meterPos=.5, meterDirection=1, meterActive=false, busy=false, audioCtx=null, toastTimer=0;
+    let enemy=null, radar=null, meterAnimation=0, meterStart=0, meterPos=.5, meterDirection=1, meterActive=false, busy=false, audioCtx=null, toastTimer=0;
     const $=id=>document.getElementById(id);
     const save=()=>{try{localStorage.setItem(storageKey,JSON.stringify(state))}catch(e){}};
     const rand=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
@@ -290,6 +343,25 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     const unlocked=()=>districts.filter(d=>state.level>=d.min).length;
     const rank=()=>state.level>=10?'SEIGNEUR DES MÈMES':state.level>=6?'CHASSEUR VIRAL':state.level>=3?'AGENT CRINGE CONFIRMÉ':'AGENT RECRUE';
     const missionData=[{id:'c2',name:'Première humiliation',desc:'Capture 2 super-méchants.',key:'captured',total:2,coins:120,xp:90,nets:1},{id:'d4',name:'Scroll infini',desc:'Effectue 4 patrouilles.',key:'patrols',total:4,coins:110,xp:90,nets:1},{id:'p2',name:'Clip parfait',desc:'Réussis 2 captures parfaites.',key:'perfect',total:2,coins:160,xp:150,nets:2},{id:'c6',name:'Top 6 du cringe',desc:'Capture les 6 super-méchants.',key:'captured',total:6,coins:360,xp:320,nets:3},{id:'v6',name:'Tour complet du feed',desc:'Patrouille dans les 6 zones.',key:'visited',total:6,coins:400,xp:350,nets:3}];
+    // Les cinq missions historiques conservent leurs identifiants. +45 missions inédites.
+    const baseMissionIds=missionData.map(m=>m.id);
+    const missionSeries=[
+      {key:'captured',targets:[8,15,28,48,80],names:['Réveil du coffre','Coup de filet en série','La prison déborde','Terreur des criminels','Légende des menottes'],title:'captures réalisées'},
+      {key:'patrols',targets:[10,22,40,70,115],names:['Bottes sur le bitume','Inspecteur nocturne','Les six rues du danger','Marathon des patrouilles','Néon-City ne dort jamais'],title:'patrouilles effectuées'},
+      {key:'perfect',targets:[4,9,17,30,50],names:['Viseur de compétition','Le filet chirurgical','Précision absolue','Chasseur de pixels','Main de maître'],title:'captures parfaites réalisées'},
+      {key:'radarFinds',targets:[2,6,12,25,45],names:['Première interception','Écho du crime','Pisteur numérique','Maître des fréquences','Fantôme du radar'],title:'suspects identifiés au radar'},
+      {key:'radarFirst',targets:[1,3,7,14,26],names:['Instinct de limier','Œil du scanner','Zéro fausse piste','Sixième sens électronique','Prémonition néon'],title:'suspects trouvés au premier essai du radar'},
+      {key:'ultimate',targets:[2,5,10,18,32],names:['Cartomancien débutant','Sixième sens des failles','Cartes fatales','Le destin dans la main','Seigneur des faiblesses'],title:'captures immédiates grâce à une faille ultime'},
+      {key:'netCaptures',targets:[3,8,15,26,45],names:['Premier lancer','Toile de justicier','Attrape-cringe','Chasseur aux mille filets','L’as du filet ionique'],title:'captures obtenues grâce au filet'},
+      {key:'claimed',targets:[3,8,16,28,42],names:['Petit carnet rempli','Dossier bien classé','Agent des récompenses','Collectionneur de contrats','Centre de commandement conquis'],title:'récompenses de missions récupérées'},
+      {key:'level',targets:[3,5,8,12,17],names:['Promotion express','Galons du matin','Vétéran de minuit','Commandant du ridicule','Légende de Néo-City'],title:'niveau d’agent atteint'}
+    ];
+    missionSeries.forEach((series,group)=>series.targets.forEach((total,tier)=>missionData.push({
+      id:`extra_${group}_${tier}`,name:series.names[tier],desc:`Objectif : ${total} ${series.title}.`,
+      key:series.key,total,coins:110+group*25+tier*120,xp:75+group*20+tier*95,nets:1+Math.floor(tier/2),category:series.title
+    })));
+    if(missionData.length!==50||new Set(missionData.map(m=>m.id)).size!==50)throw Error('Les 50 missions ne sont pas uniques');
+
     // Les 30 succès représentent exactement 1000 G (score interne au jeu).
     const achievements=[
       ...villains.map((v,i)=>({id:'first_'+i,name:'Premier dossier : '+v.name,description:'Capturer '+v.name+' une fois.',icon:'🕸️',points:10,target:1,progress:()=>Number(state.owned[i]||0)})),
@@ -299,7 +371,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       {id:'patrol25',name:'Radar sans repos',description:'Effectuer 25 patrouilles.',icon:'📡',points:50,target:25,progress:()=>state.patrols},
       {id:'catch30',name:'Collectionneur redoutable',description:'Réussir 30 captures.',icon:'🏆',points:50,target:30,progress:()=>state.captured},
       {id:'perfect10',name:'Visée légendaire',description:'Réussir 10 captures parfaites au filet.',icon:'🎯',points:50,target:10,progress:()=>state.perfect},
-      {id:'missions5',name:'Agent irréprochable',description:'Récupérer les 5 récompenses de missions.',icon:'📜',points:50,target:5,progress:()=>state.claimed.length},
+      {id:'missions5',name:'Agent irréprochable',description:'Récupérer les 5 récompenses de missions.',icon:'📜',points:50,target:5,progress:()=>baseMissionIds.filter(id=>state.claimed.includes(id)).length},
       {id:'fullroster',name:'La prison est pleine',description:'Capturer chacun des 6 super-méchants.',icon:'🏰',points:100,target:6,progress:()=>seen()},
       {id:'sixsecrets',name:'Maître des failles',description:'Trouver la carte fatale des 6 super-méchants.',icon:'💎',points:100,target:6,progress:()=>villains.filter((v,i)=>Number(state.ultimateByVillain[i]||0)>0).length}
     ];
@@ -319,14 +391,29 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       const selected=achievements.filter(a=>achievementFilter==='all'||(achievementFilter==='unlocked'?achievementUnlocked(a):!achievementUnlocked(a)));
       $('achievement-list').innerHTML=selected.length?selected.map(a=>{const done=achievementUnlocked(a),progress=Math.min(a.target,Math.max(0,Number(a.progress())||0));return `<div class="achievement-card ${done?'unlocked':''}"><div class="achievement-medal">${done?a.icon:'🔒'}</div><div class="achievement-details"><div class="achievement-name">${a.name}</div><div class="achievement-desc">${a.description}</div><div class="achievement-progress">${done?'✅ Débloqué':`${progress} / ${a.target}`}</div></div><span class="achievement-points">${a.points} G</span></div>`}).join(''):'<div class="empty">Aucun succès dans ce filtre.</div>';
     }
-    const missionValue=m=>m.key==='visited'?Object.keys(state.visited).length:(state[m.key]||0);
+    const missionValue=m=>m.key==='visited'?Object.keys(state.visited).length:m.key==='netCaptures'?Math.max(0,state.captured-state.ultimate):m.key==='claimed'?state.claimed.length:(Number(state[m.key])||0);
     function regen(){let now=Date.now();if(!Number.isFinite(state.lastEnergy)||state.lastEnergy>now)state.lastEnergy=now;if(state.energy>=state.maxEnergy){state.lastEnergy=now;return}let ticks=Math.floor((now-state.lastEnergy)/45000);if(ticks>0){state.energy=Math.min(state.maxEnergy,state.energy+ticks);state.lastEnergy+=ticks*45000;save()}}
     function addXP(n){state.xp+=n;let leveled=0;while(state.xp>=xpGoal(state.level)){state.xp-=xpGoal(state.level);state.level++;leveled++;state.coins+=50;state.nets+=1}if(leveled){tone(700,.14);setTimeout(()=>toast(`🎉 NIVEAU ${state.level} ! Quartiers et récompenses débloqués.`),160)}return leveled}
     function renderStats(){regen();$('top-level').textContent=`AGENT · NIV. ${state.level}`;$('top-energy').textContent=`${state.energy}/${state.maxEnergy}`;$('top-coins').textContent=state.coins;$('top-nets').textContent=state.nets;$('stat-captured').textContent=state.captured;$('stat-unique').textContent=`${seen()}/${villains.length}`;$('stat-districts').textContent=`${unlocked()}/${districts.length}`}
     function renderMap(){let html='';districts.forEach(d=>{let lock=state.level<d.min;html+=`<button class="district ${lock?'locked':''}" data-district="${d.id}" style="--glow:${d.color};--haze:${d.glow};--stroke:${d.stroke}" type="button" aria-label="${d.name}, ${lock?'verrouillé jusqu’au niveau '+d.min:'patrouiller'}"><span class="district-lvl">NIV. ${d.min}+</span><span class="district-icon">${d.icon}</span><strong>${d.name}</strong><span class="district-sub">${lock?`🔒 DÉBLOQUER NIV. ${d.min}`:'<i class="live-dot"></i> SIGNAL DÉTECTÉ'}</span></button>`});$('district-grid').innerHTML=html}
     function renderCodex(){let html='';villains.forEach((v,id)=>{let count=state.owned[id]||0;html+=`<div class="codex-tile ${count?'':'unknown'}" title="${count?v.line:'Identité inconnue'}"><span class="codex-icon">${count?`<img class="codex-face" loading="lazy" src="${v.portrait}" alt="${v.name}">`:'❔'}</span><span class="codex-name">${count?v.name:'DOSSIER ???'}</span><div class="codex-rarity">${count?`×${count} ARRÊTÉ${count>1?'S':''}`:v.boss?'🔒 BOSS':'NON CAPTURÉ'}</div></div>`});$('codex-grid').innerHTML=html;$('prison-counter').textContent=`${seen()} / 6 super-méchants identifiés`;$('prison-summary').textContent=seen()===6?'Les 6 super-méchants ont été capturés ! 🏆':`Encore ${6-seen()} suspects à découvrir.`}
-    function renderMissions(){let html='';missionData.forEach(m=>{let p=missionValue(m),done=state.claimed.includes(m.id),ready=p>=m.total;html+=`<div class="mission"><div class="row-between"><div class="mission-title">${done?'✅ ':'🎯 '}${m.name}</div><div style="font-size:10px;color:var(--cyan);font-weight:900">${Math.min(p,m.total)}/${m.total}</div></div><div class="mission-desc">${m.desc}</div><div class="progress"><i style="width:${Math.min(100,p/m.total*100)}%"></i></div><div class="mission-footer"><div class="mission-reward">🪙 ${m.coins} · ⭐ ${m.xp} XP · 🕸️ ${m.nets}</div><button type="button" class="tiny-btn" data-claim="${m.id}" ${done||!ready?'disabled':''}>${done?'RÉCUPÉRÉ':ready?'RÉCUPÉRER':'EN COURS'}</button></div></div>`});$('mission-list').innerHTML=html}
-    function renderAgent(){$('profile-rank').textContent=rank();$('profile-level').textContent=`Niveau ${state.level} • Chasseur viral de SUPERVILAINS`;$('xp-text').textContent=`${state.xp}/${xpGoal(state.level)} XP`;$('xp-bar').style.width=`${100*state.xp/xpGoal(state.level)}%`;$('prof-total').textContent=state.captured;$('prof-perfect').textContent=state.perfect;$('prof-patrol').textContent=state.patrols;$('prof-missions').textContent=state.claimed.length;$('upgrade-price').textContent=`🪙 ${190+state.upgrade*100}`;$('buy-nets').disabled=state.coins<90;$('buy-energy').disabled=state.coins<55||state.energy===state.maxEnergy;$('buy-upgrade').disabled=state.coins<190+state.upgrade*100||state.upgrade>=8;$('sound-toggle').textContent=state.sound?'🔊 Désactiver les sons':'🔇 Activer les sons'}
+    let missionFilter='all',missionVisible=12;
+    function renderMissions(){
+      const completed=missionData.filter(m=>state.claimed.includes(m.id)).length;
+      const available=missionData.filter(m=>!state.claimed.includes(m.id)&&missionValue(m)>=m.total).length;
+      $('mission-count').textContent=`${completed} / ${missionData.length}`;
+      $('mission-available').textContent=`${available} récompense${available>1?'s':''} disponible${available>1?'s':''}`;
+      $('mission-progress').style.width=`${completed/missionData.length*100}%`;
+      document.querySelectorAll('[data-mission-filter]').forEach(btn=>{const active=btn.dataset.missionFilter===missionFilter;btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active))});
+      const sorted=missionData.map((m,i)=>({m,i,done:state.claimed.includes(m.id),ready:missionValue(m)>=m.total}))
+        .filter(x=>missionFilter==='all'||(missionFilter==='ready'?!x.done&&x.ready:missionFilter==='active'?!x.done&&!x.ready:x.done))
+        .sort((a,b)=>(a.done?2:a.ready?0:1)-(b.done?2:b.ready?0:1)||a.i-b.i);
+      const visible=sorted.slice(0,missionVisible);
+      $('mission-list').innerHTML=visible.map(({m,done,ready})=>{const p=Math.max(0,missionValue(m));return `<div class="mission"><div class="row-between"><div><div class="mission-title">${done?'✅ ':ready?'🎁 ':'🎯 '}${m.name}</div><div class="mission-level">${m.category||'MISSION HISTORIQUE'}</div></div><div style="font-size:11px;color:var(--cyan);font-weight:900;white-space:nowrap">${Math.min(p,m.total)}/${m.total}</div></div><div class="mission-desc">${m.desc}</div><div class="progress"><i style="width:${Math.min(100,p/m.total*100)}%"></i></div><div class="mission-footer"><div class="mission-reward">🪙 ${m.coins} · ⭐ ${m.xp} XP · 🕸️ ${m.nets}</div><button type="button" class="tiny-btn" data-claim="${m.id}" ${done||!ready?'disabled':''}>${done?'RÉCUPÉRÉ':ready?'RÉCUPÉRER':'EN COURS'}</button></div></div>`}).join('')||'<div class="empty">Aucune mission dans ce filtre.</div>';
+      $('mission-more').hidden=sorted.length<=missionVisible;
+      if(!$('mission-more').hidden)$('mission-more').textContent=`VOIR LES ${Math.min(12,sorted.length-missionVisible)} MISSIONS SUIVANTES (${sorted.length-missionVisible} restantes)`;
+    }
+    function renderAgent(){$('profile-rank').textContent=rank();$('profile-level').textContent=`Niveau ${state.level} • Chasseur viral de SUPERVILAINS`;$('xp-text').textContent=`${state.xp}/${xpGoal(state.level)} XP`;$('xp-bar').style.width=`${100*state.xp/xpGoal(state.level)}%`;$('prof-total').textContent=state.captured;$('prof-perfect').textContent=state.perfect;$('prof-patrol').textContent=state.patrols;$('prof-missions').textContent=state.claimed.length;$('prof-radar').textContent=state.radarFinds;$('prof-radar-first').textContent=state.radarFirst;$('upgrade-price').textContent=`🪙 ${190+state.upgrade*100}`;$('buy-nets').disabled=state.coins<90;$('buy-energy').disabled=state.coins<55||state.energy===state.maxEnergy;$('buy-upgrade').disabled=state.coins<190+state.upgrade*100||state.upgrade>=8;$('sound-toggle').textContent=state.sound?'🔊 Désactiver les sons':'🔇 Activer les sons'}
     function renderAll(){renderStats();renderMap();renderCodex();renderMissions();renderAgent();renderAchievements()}
     function notifySave(){checkAchievements();save();renderAll()}
     function switchView(view){document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active',el.id==='view-'+view));document.querySelectorAll('.nav-btn').forEach(el=>el.classList.toggle('active',el.dataset.view===view));window.scrollTo({top:0,behavior:'instant'});if(view==='agent')renderAgent();if(view==='missions')renderMissions();if(view==='achievements')renderAchievements()}
@@ -345,7 +432,94 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       const img=$('villain-figure').querySelector('img');img.onerror=()=>normalPortrait(id);
       if(type==='troller')reactionTimeout=setTimeout(()=>{if(enemy&&enemy.id===id)normalPortrait(id)},1380);
     }
-    function openDistrict(id){regen();let d=districts[id];if(!d)return;if(state.level<d.min){toast(`🔒 Quartier accessible au niveau ${d.min}.`);return}if(enemy)return;const pool=d.villains;const missing=pool.filter(i=>!state.owned[i]);const villainId=missing.length&&Math.random()<.68?missing[rand(0,missing.length-1)]:pool[rand(0,pool.length-1)];const villain=villains[villainId];const maxhp=68+villain.danger*19+(villain.boss?20:0);enemy={id:villainId,district:id,hp:maxhp,maxhp,shield:100,attacks:0,exposed:false,weaknessUsed:null,guessUsed:false,selectedSlot:-1,cards:shuffleCards()};state.patrols++;state.visited[id]=true;notifySave();$('battle-district').textContent=`⚠️ ${d.name} · ${villain.boss?'BOSS VIRAL':'SUSPECT VIRAL'}`;$('encounter-scene').style.setProperty('--scenecolor',villain.color+'aa');normalPortrait(villainId);$('battle-name').textContent=villain.name;$('battle-description').textContent=villain.line+` • Danger ${villain.danger}/6 ${villain.boss?'• BOSS':''} • 🎴 6 cartes mystère`;$('battle-message').className='battle-message';$('battle-message').textContent='Choisis UNE carte mystère. Bonne carte = capture instantanée + bonus !';renderBattle();show('overlay-battle');tone(390,.16)}
+    // Le radar est une étape distincte : l'identité du criminel ne s'affiche qu'après découverte.
+    const radarPositions=[[50,14],[74,22],[85,42],[77,68],[57,83],[32,78],[15,58],[21,32],[44,43],[62,53]];
+    const radarPhrases=[
+      'Le signal s’est évanoui dans la brume numérique.',
+      'Mauvaise piste : ce passant n’a rien à se reprocher.',
+      'Le criminel te nargue depuis les ombres de Néo-City.',
+      'Une silhouette disparaît au coin de la rue.',
+      'Le scanner a confondu un innocent avec le suspect.',
+      'Faux contact ! La cible brouille toujours les fréquences.',
+      'Le méchant vient de changer de planque.',
+      'Aucune trace criminelle sur ce signal.',
+      'Trop tard : ce point lumineux était un leurre.',
+      'Le radar s’affole, mais le fugitif reste introuvable.',
+      'Une fausse alerte traverse le réseau de surveillance.',
+      'Le suspect a coupé sa balise au dernier instant.',
+      'Échec de l’identification : le criminel court toujours.',
+      'Un passant surpris, mais pas l’ombre du méchant.',
+      'Le contact a disparu derrière les immeubles.',
+      'Le brouillage viral masque encore la bonne identité.',
+      'Un signal fantôme vient de piéger ton enquête.',
+      'Le fugitif garde une longueur d’avance.',
+      'La centrale confirme : aucun suspect à cet emplacement.',
+      'La cible reste cachée. Reprends ton souffle, agent !'
+    ];
+    if(radarPhrases.length!==20||new Set(radarPhrases).size!==20)throw Error('20 messages de fuite requis');
+    const shuffled=arr=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=rand(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+    function startRadar(villainId,districtId){
+      radar={id:villainId,district:districtId,targetSlot:rand(0,9),misses:[],found:false,phraseOrder:shuffled(radarPhrases),message:'Dix inconnus détectés. Trouve le méchant en cinq essais maximum !'};
+      $('radar-sector').textContent=districts[districtId].name;
+      $('radar-description').textContent='Le signal du méchant est noyé parmi 9 innocents. Chaque erreur élimine un signal.';
+      renderRadar();show('overlay-radar');tone(470,.15);
+    }
+    function renderRadar(){
+      if(!radar)return;
+      $('radar-attempts').textContent=`${radar.misses.length} / 5 ESSAIS`;
+      const failed=radar.misses.length>0&&!radar.found;
+      $('radar-message').className='radar-message'+(failed?' warn':'');
+      $('radar-message').textContent=radar.message;
+      $('radar-targets').innerHTML=radarPositions.map(([x,y],i)=>{
+        const miss=radar.misses.includes(i),found=radar.found&&radar.targetSlot===i;
+        return `<button type="button" class="radar-unknown ${miss?'missed':''} ${found?'found':''}" data-radar-slot="${i}" style="--x:${x}%;--y:${y}%" aria-label="Signal inconnu ${i+1}${miss?', innocent':''}${found?', criminel identifié':''}" ${radar.found||miss?'disabled':''}><span class="radar-q">${miss?'×':found?'✓':'?'}</span><small>${String(i+1).padStart(2,'0')}</small></button>`;
+      }).join('');
+      const reveal=$('radar-reveal');reveal.classList.toggle('visible',radar.found);
+      if(radar.found){const v=villains[radar.id];$('radar-name').textContent=v.name;$('radar-portrait').src=v.portrait;$('radar-portrait').alt='Portrait de '+v.name;}
+    }
+    function identifyRadar(slot){
+      if(!radar||radar.found||!Number.isInteger(slot)||slot<0||slot>9||radar.misses.includes(slot))return;
+      if(slot===radar.targetSlot){
+        radar.found=true;state.radarFinds++;if(radar.misses.length===0)state.radarFirst++;
+        radar.message=`🎯 IDENTITÉ CONFIRMÉE : ${villains[radar.id].name} ! Appuie sur AFFRONTER pour lancer le combat.`;
+        tone(900,.2);vibrate([30,50,65]);renderRadar();notifySave();return;
+      }
+      radar.misses.push(slot);state.radarMisses++;
+      const phrase=radar.phraseOrder[radar.misses.length-1];
+      radar.message=`❌ SIGNAL ${String(slot+1).padStart(2,'0')} : INNOCENT. ${phrase} (${5-radar.misses.length} essai${radar.misses.length===4?'':'s'} restant${radar.misses.length===4?'':'s'})`;
+      tone(160,.11);vibrate(60);
+      if(radar.misses.length>=5){endRadarEscape(phrase,true);return;}
+      renderRadar();notifySave();
+    }
+    function endRadarEscape(phrase,failedFive=false){
+      if(!radar)return;
+      if(failedFive)state.radarEscapes++;
+      radar=null;hide('overlay-radar');
+      $('result-icon').textContent='💨';$('result-gif-frame').hidden=true;$('result-gif').removeAttribute('src');
+      $('result-kicker').textContent='LE SUSPECT EST TOUJOURS EN FUITE';$('result-title').textContent='POURSUITE TERMINÉE';
+      $('result-text').textContent=failedFive?`Après cinq mauvaises identifications, le criminel reste en fuite. ${phrase}`:'Recherche interrompue. Le criminel reste en fuite et pourra être recherché lors d’une autre patrouille.';
+      $('result-stats').innerHTML=failedFive?'<span>📡 5 tentatives échouées</span><span>🕵️ Suspect non identifié</span>':'<span>📡 Recherche interrompue</span><span>🕵️ Suspect non identifié</span>';
+      $('result-button').textContent='RECOMMENCER UNE PATROUILLE';
+      show('overlay-result');notifySave();
+    }
+    function confirmRadar(){if(!radar||!radar.found)return;const id=radar.id,zone=radar.district;radar=null;hide('overlay-radar');beginBattle(id,zone)}
+    function openDistrict(id){
+      regen();let d=districts[id];if(!d)return;
+      if(state.level<d.min){toast(`🔒 Quartier accessible au niveau ${d.min}.`);return}
+      if(enemy||radar||$('overlay-result').classList.contains('visible'))return;
+      const pool=d.villains,missing=pool.filter(i=>!state.owned[i]);
+      const villainId=missing.length&&Math.random()<.68?missing[rand(0,missing.length-1)]:pool[rand(0,pool.length-1)];
+      state.patrols++;state.visited[id]=true;notifySave();startRadar(villainId,id);
+    }
+    function beginBattle(villainId,id){
+      const d=districts[id],villain=villains[villainId];
+      const maxhp=68+villain.danger*19+(villain.boss?20:0);
+      enemy={id:villainId,district:id,hp:maxhp,maxhp,shield:100,attacks:0,exposed:false,weaknessUsed:null,guessUsed:false,selectedSlot:-1,cards:shuffleCards()};
+      $('battle-district').textContent=`⚠️ ${d.name} · ${villain.boss?'BOSS VIRAL':'SUSPECT VIRAL'}`;
+      $('encounter-scene').style.setProperty('--scenecolor',villain.color+'aa');normalPortrait(villainId);
+      $('battle-name').textContent=villain.name;$('battle-description').textContent=villain.line+` • Danger ${villain.danger}/6 ${villain.boss?'• BOSS':''} • 🎴 6 cartes mystère`;
+      $('battle-message').className='battle-message';$('battle-message').textContent='Choisis UNE carte mystère. Bonne carte = capture instantanée + bonus !';renderBattle();show('overlay-battle');tone(390,.16);
+    }
     function odds(){if(!enemy)return 0;let v=villains[enemy.id],wounded=(1-enemy.hp/enemy.maxhp),boost=enemy.exposed?26:0;return clamp(Math.round(44+wounded*55-v.danger*5-(v.boss?7:0)+boost),14,97)}
     function renderBattle(){
       if(!enemy)return;
@@ -414,17 +588,20 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       tone(880,.13);notifySave()}
     document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
     $('district-grid').addEventListener('click',e=>{let b=e.target.closest('[data-district]');if(b)openDistrict(Number(b.dataset.district))});
+    $('radar-targets').addEventListener('click',e=>{let b=e.target.closest('[data-radar-slot]');if(b)identifyRadar(Number(b.dataset.radarSlot))});$('radar-fight').addEventListener('click',confirmRadar);$('close-radar').addEventListener('click',()=>endRadarEscape('',false));
     $('mission-list').addEventListener('click',e=>{let b=e.target.closest('[data-claim]');if(b)claim(b.dataset.claim)});
+    document.querySelectorAll('[data-mission-filter]').forEach(btn=>btn.addEventListener('click',()=>{missionFilter=btn.dataset.missionFilter;missionVisible=12;renderMissions()}));
+    $('mission-more').addEventListener('click',()=>{missionVisible+=12;renderMissions()});
     $('close-battle').addEventListener('click',flee);$('attack-btn').addEventListener('click',attack);$('weakness-grid').addEventListener('click',e=>{let b=e.target.closest('[data-slot]');if(b)useWeakness(Number(b.dataset.slot))});$('capture-btn').addEventListener('click',startMeter);$('stop-meter').addEventListener('click',stopMeter);$('result-button').addEventListener('click',()=>{hide('overlay-result');switchView('map')});
     $('buy-nets').addEventListener('click',()=>buy('nets'));$('buy-energy').addEventListener('click',()=>buy('energy'));$('buy-upgrade').addEventListener('click',()=>buy('upgrade'));
     document.querySelectorAll('[data-ach-filter]').forEach(btn=>btn.addEventListener('click',()=>{achievementFilter=btn.dataset.achFilter;renderAchievements()}));
     $('sound-toggle').addEventListener('click',()=>{state.sound=!state.sound;save();renderAgent();tone(700,.12)});
     $('start-game').addEventListener('click',()=>{state.started=true;save();hide('overlay-tutorial');toast('📡 Choisis un quartier pour commencer !')});
-    document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('overlay-result').classList.contains('visible')){$('result-button').click()}else if($('overlay-meter').classList.contains('visible')){$('stop-meter').click()}else if(enemy)flee()}else if((e.key===' '||e.key==='Enter')&&$('overlay-meter').classList.contains('visible')&&document.activeElement.tagName!=='BUTTON'){e.preventDefault();stopMeter()}});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('overlay-result').classList.contains('visible')){$('result-button').click()}else if($('overlay-meter').classList.contains('visible')){$('stop-meter').click()}else if(radar)endRadarEscape('',false);else if(enemy)flee()}else if((e.key===' '||e.key==='Enter')&&$('overlay-meter').classList.contains('visible')&&document.activeElement.tagName!=='BUTTON'){e.preventDefault();stopMeter()}});
     setInterval(()=>{let before=state.energy;regen();if(before!==state.energy){renderStats();if(enemy)renderBattle();renderAgent()}},2000);
     try{if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./service-worker.js').catch(()=>{})}catch(e){}
     checkAchievements(true);save();renderAll();if(!state.started)show('overlay-tutorial');
-    window.__gameTest={getState:()=>JSON.parse(JSON.stringify(state)),getEnemy:()=>enemy&&JSON.parse(JSON.stringify(enemy)),getAchievements:()=>achievements.map(a=>({id:a.id,points:a.points,unlocked:achievementUnlocked(a),progress:a.progress(),target:a.target})),openDistrict,attack,useWeakness,stopMeter,claim,buy,switchView};
+    window.__gameTest={getState:()=>JSON.parse(JSON.stringify(state)),getEnemy:()=>enemy&&JSON.parse(JSON.stringify(enemy)),getRadar:()=>radar&&JSON.parse(JSON.stringify(radar)),getMissions:()=>missionData.map(m=>({id:m.id,key:m.key,total:m.total,claimed:state.claimed.includes(m.id),progress:missionValue(m)})),identifyRadar,confirmRadar,closeRadar:()=>endRadarEscape("",false),getAchievements:()=>achievements.map(a=>({id:a.id,points:a.points,unlocked:achievementUnlocked(a),progress:a.progress(),target:a.target})),openDistrict,attack,useWeakness,stopMeter,claim,buy,switchView};
   })();
   </script>
   <script src="config.js"></script>
