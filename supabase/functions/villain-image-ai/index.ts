@@ -87,8 +87,18 @@ Deno.serve(async request=>{
  try{body=await request.json();}catch(_){return send({error:"JSON invalide"},400);}
  const key=Deno.env.get("OPENAI_API_KEY");
  const enabled=!!key&&Deno.env.get("AI_IMAGE_GENERATION_DISABLED")!=="true";
- if(body.action==="status")return send({configured:enabled,
-  info:enabled?"Moteur IA prêt, limite de 9 images sur 24 h par joueur.":"Ajoute OPENAI_API_KEY dans Edge Function Secrets de Supabase."});
+ if(body.action==="status"){
+  // A key alone is not enough: validate the service_role database grants too.
+  const {error:accessError}=await admin.from("custom_villains")
+    .select("id",{head:true,count:"exact"}).eq("owner_user_id",info.user.id).limit(1);
+  const ready=enabled&&!accessError;
+  return send({configured:ready,
+    info:accessError
+      ?"Le serveur IA n'a pas accès aux fiches. Vérifier les droits SQL du service_role."
+      :ready
+        ?"Moteur IA prêt : 9 images maximum par joueur sur 24 h."
+        :"Ajoute OPENAI_API_KEY dans les secrets Supabase pour activer les images."});
+ }
  if(body.action!=="generate")return send({error:"Action invalide"},400);
  if(!enabled)return send({error:"Moteur IA non encore activé : renseigne OPENAI_API_KEY dans Supabase > Edge Functions > Secrets."},503);
  const id=body.villain_id,kind=body.kind;
@@ -100,7 +110,11 @@ Deno.serve(async request=>{
  const {data:v,error:loadError}=await admin.from("custom_villains")
   .select("id,owner_user_id,name,alias,source_photo_path,photo_permission_confirmed_at,portrait_path,troll_path,capture_path,regenerations_used")
   .eq("owner_user_id",uid).eq("id",id).maybeSingle();
- if(loadError||!v)return send({error:"Super-vilain introuvable"},404);
+ if(loadError){
+  console.error("custom_villains service_role SELECT failed:",loadError.code||"db_error");
+  return send({error:"Le serveur IA ne peut pas lire les fiches. Autorisations SQL à vérifier."},503);
+ }
+ if(!v)return send({error:"Super-vilain introuvable dans le compte actuellement connecté"},404);
  if(!v.source_photo_path||!v.photo_permission_confirmed_at)return send({error:"Enregistre la photo originale avant la génération"},400);
  const {data:job,error:reserve}=await admin.rpc("custom_villain_begin_image_job",{
    p_user_id:uid,p_villain_id:id,p_kind:kind,p_regenerate:body.regenerate===true
