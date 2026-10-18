@@ -167,7 +167,21 @@
     .voice-note{font-size:10px;line-height:1.4;color:#91abc8;margin-top:9px}
 @media(max-width:350px){.radar-unknown{width:39px;height:39px}.mission-tab{font-size:8px}}
     @media(prefers-reduced-motion:reduce){.radar-screen:before{animation:none}}
-  </style>
+  
+    /* V4.3 — installation mobile et protection des sauvegardes */
+    .sv-mobile-gate,.sv-backup-shade{position:fixed;inset:0;z-index:220;display:flex;align-items:center;justify-content:center;padding:16px;background:#06091af2;backdrop-filter:blur(12px);color:#e9f6ff}
+    .sv-mobile-gate[hidden],.sv-backup-shade[hidden]{display:none!important}
+    .sv-mobile-card,.sv-backup-card{width:min(100%,430px);max-height:calc(100dvh - 32px);overflow:auto;padding:22px 18px;border:1px solid #5079aa;border-radius:21px;background:linear-gradient(145deg,#152647,#18183b 68%,#081626);box-shadow:0 22px 85px #000a;text-align:center}
+    .sv-mobile-badge{display:inline-flex;align-items:center;border:1px solid #4e919b;background:#123b4f;color:#99fff3;border-radius:999px;font-size:10px;letter-spacing:1px;font-weight:950;padding:8px 12px}
+    .sv-mobile-logo{font-size:50px;line-height:1.5}.sv-mobile-card h2,.sv-backup-card h2{margin:10px 0 8px;font-size:23px;font-weight:1000;line-height:1.12}.sv-mobile-card p,.sv-backup-card p{font-size:12px;color:#bdcdeb;line-height:1.55;margin:10px 0}
+    .sv-mobile-card button,.sv-mobile-card a,.sv-backup-card button{display:flex;align-items:center;justify-content:center;width:100%;min-height:46px;margin-top:10px;border:1px solid #5378a7;border-radius:12px;padding:11px 13px;background:linear-gradient(120deg,#49ddd9,#8992ff);font-size:12px;font-weight:950;color:#0c1733;text-decoration:none}
+    .sv-mobile-card .sv-secondary,.sv-backup-card .sv-secondary{background:#142b4d;color:#e9f5ff}.sv-steps{padding:12px;margin:12px 0;border:1px solid #415778;border-radius:12px;background:#0c1931;text-align:left;font-size:12px;line-height:1.6;color:#c8dafa}
+    .sv-rescue{margin-top:14px;padding-top:12px;border-top:1px solid #465777}.sv-rescue strong{font-size:12px;color:#fff3ad}.sv-rescue p{font-size:11px}.sv-note{font-size:10px!important;color:#92aac8!important}
+    .sv-backup-shade{z-index:230}.sv-backup-card{text-align:left}.sv-backup-card textarea{display:block;width:100%;min-height:132px;resize:vertical;padding:11px;border:1px solid #6980a3;border-radius:9px;color:white;background:#0a1632;font:12px/1.5 monospace}
+    .sv-backup-card input[type=file]{display:block;margin:12px 0;width:100%;color:#c6d8ef;font-size:12px}.sv-backup-card .sv-status{min-height:20px;font-size:11px;color:#9cfff0}
+    .sv-backup-agent{border:1px solid #425b87;padding:14px;border-radius:13px;background:linear-gradient(135deg,#13253f,#1b2043);margin-top:16px}.sv-backup-agent h3{font-size:13px;margin:0 0 7px;color:#b3f9f3}
+    .sv-backup-agent p{font-size:11px;line-height:1.5;color:#abbde1;margin:6px 0}.sv-backup-agent .sv-agent-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.sv-backup-agent button{min-height:44px;border:1px solid #476d90;border-radius:10px;background:#193759;padding:8px 7px;font-size:11px;font-weight:850}
+</style>
 </head>
 <body>
   <div id="sv-install-gate" class="sv-mobile-gate" role="dialog" aria-modal="true" aria-labelledby="sv-install-title" hidden>
