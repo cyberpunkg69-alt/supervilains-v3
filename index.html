@@ -249,6 +249,17 @@
     .creator-list-controls button{min-height:39px;border-radius:9px;background:#1c3762;border:1px solid #567aa6;padding:8px 5px;font-size:10px;font-weight:800}
     .creator-list-controls button:last-child{background:#422439;border-color:#7b536e;color:#ffd9e4}
     @media(max-width:370px){.creator-two{grid-template-columns:1fr}.creator-photo-card{gap:8px}.creator-photo-frame{flex-basis:88px;width:88px;height:116px}.creator-panel{padding:12px}}
+
+    /* V4.6 — fiche de super-vilain aléatoire */
+    .creator-random-panel{padding:14px;border:1px solid #7e6bcc;background:linear-gradient(122deg,#332052,#122d50);border-radius:14px;margin-bottom:19px;box-shadow:0 9px 24px #0b0b2b66}
+    .creator-random-top{display:flex;gap:10px;align-items:start}
+    .creator-random-emoji{font-size:31px;line-height:1.1}
+    .creator-random-top strong{color:#f6e8ff;font-size:12px;font-weight:950;letter-spacing:.3px}
+    .creator-random-top p{margin:5px 0 10px;font-size:10px;line-height:1.5;color:#c4c9eb}
+    .creator-random-button{width:100%;min-height:46px;border:1px solid #fff8ab;border-radius:11px;background:linear-gradient(105deg,#ffdb72,#fe98bd);font-size:12px;letter-spacing:.3px;font-weight:950;color:#291234;box-shadow:0 5px 20px #efad7760;cursor:pointer}
+    .creator-random-button:active{transform:scale(.99)}
+    .creator-random-button:disabled{opacity:.5;cursor:not-allowed}
+    .creator-random-panel>small{display:block;margin-top:10px;line-height:1.5;color:#c5cee6;font-size:10px}
 </style>
 </head>
 <body>
@@ -340,6 +351,14 @@
             <span><b>1</b> Fiche</span><span><b>2</b> Photo</span><span><b>3</b> Brouillon privé</span>
           </div>
           <form id="creator-form" class="creator-panel">
+            <div class="creator-random-panel">
+              <div class="creator-random-top"><span class="creator-random-emoji">🎲</span><div>
+                <strong>INVENTEUR DE SUPER-VILAINS</strong>
+                <p>Une idée folle en un clic : identité, faille ultime, motif de recherche, répliques et personnalité vocale.</p>
+              </div></div>
+              <button id="creator-random" type="button" class="creator-random-button">🎲 REMPLIR ALÉATOIREMENT</button>
+              <small>La photo et son autorisation ne seront jamais modifiées. Lis et adapte la fiche avant de l'enregistrer.</small>
+            </div>
             <div class="creator-section-heading"><span>🦹 IDENTITÉ DU MÉCHANT</span><small>Champs * obligatoires</small></div>
             <label for="creator-name">Nom du personnage *</label>
             <input id="creator-name" maxlength="60" required placeholder="Ex. : ZALZAL" autocomplete="off"/>
