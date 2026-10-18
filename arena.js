@@ -75,6 +75,8 @@ function setupIncomingDuel(){
 function clearIncomingDuel(){
   inviteDuelCode=null;
   vis("arena-incoming-invite",false);
+  vis("arena-accept-invite",false);
+  vis("arena-open-browser",false);
   try{
     sessionStorage.removeItem("supervilains_pending_duel");
     localStorage.removeItem("supervilains_pending_duel_v41");
@@ -85,7 +87,7 @@ function clearIncomingDuel(){
 const showMessage=(s,t="")=>{const n=$("arena-message");n.className="arena-status"+(t?" "+t:"");n.textContent=s;};
 const messageError=e=>String(e&&e.message||"Erreur du serveur. Réessaie.");
 const RPC=async(fn,args={})=>{if(!db)throw Error("Arène non configurée");const {data,error}=await db.rpc(fn,args);if(error)throw error;return data;};
-function working(yes){loading=yes;["arena-send-link","arena-register-btn","arena-hunt","arena-attack","arena-capture","arena-flee","arena-create-duel","arena-join-duel","arena-refresh"].forEach(id=>{if($(id))$(id).disabled=yes;});if(!yes)renderEncounter();}
+function working(yes){loading=yes;["arena-send-link","arena-register-btn","arena-hunt","arena-attack","arena-capture","arena-flee","arena-create-duel","arena-join-duel","arena-accept-invite","arena-refresh"].forEach(id=>{if($(id))$(id).disabled=yes;});if(!yes)renderEncounter();}
 async function action(fn){if(loading)return;working(true);try{await fn();}catch(e){showMessage("⚠️ "+messageError(e),"warn");}finally{working(false);}}
 function renderEncounter(){vis("arena-encounter",!!active);if(!active)return;
 const [name,icon,danger]=HEROES[Number(active.villain_id)]||["CIBLE","👾",1],hits=Number(active.hits)||0;
@@ -112,7 +114,7 @@ const canInvite=r.state==="waiting"&&validDuelCode(r.code);
 return '<div class="arena-vs"><div class="row-between"><b>'+escapeHtml(state)+'</b><b style="color:var(--cyan)">'+escapeHtml(r.code)+'</b></div><small>'+details+'</small>'+scores+(canInvite?'<button class="arena-mini" type="button" data-share-duel="'+escapeHtml(r.code)+'" style="margin-top:10px;width:100%">📨 INVITER UN AMI À CE DÉFI</button>':"")+'</div>';}).join("");
 }
 async function refresh(){if(!db||!user||refreshing||document.hidden)return;refreshing=true;try{
-profile=await RPC("arena_my_stats");vis("arena-register",!profile.registered);vis("arena-home",!!profile.registered);
+profile=await RPC("arena_my_stats");vis("arena-register",!profile.registered);vis("arena-home",!!profile.registered);renderIncomingDuel();
 if(!profile.registered){showMessage("Choisis ton pseudo pour rejoindre l'arène.");return;}
 $("arena-username").textContent=profile.handle;$("arena-total").textContent=profile.captures;
 $("arena-weekpoints").textContent=Number(profile.score_week).toLocaleString("fr-FR");
