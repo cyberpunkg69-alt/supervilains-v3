@@ -23,14 +23,6 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
-      - name: Rendre les GIFs disponibles si archive presente
-        shell: bash
-        run: |
-          if [ -f SUPERVILAINS_12_GIFS_REACTIONS.zip ]; then
-            mkdir -p assets/reactions
-            unzip -oqj SUPERVILAINS_12_GIFS_REACTIONS.zip -d assets/reactions
-            echo "Les 12 GIFs sont extraits pour le site."
-          fi
       - name: Preparer le site
         uses: actions/upload-pages-artifact@v3
         with:

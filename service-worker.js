@@ -1,4 +1,4 @@
-const CACHE="supervilains-v3-2-crying";
+const CACHE="supervilains-v3-3-portraits-valides";
 const FILES=["./","./index.html","./arena.js","./config.js","./manifest.webmanifest","./icon.svg","./assets/reactions/manu_capture.svg","./assets/reactions/lea_capture.svg","./assets/reactions/natsu_capture.svg","./assets/reactions/amelie_capture.svg","./assets/reactions/ludo_capture.svg","./assets/reactions/eric_capture.svg"];
 self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));

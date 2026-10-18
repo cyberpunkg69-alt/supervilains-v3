@@ -176,7 +176,7 @@
         <div class="shop-card"><div class="shop-icon">🔋</div><div class="shop-desc"><strong>Surcapacité du réacteur</strong><p>+5 d'énergie maximale, bonus permanent.</p></div><div><div class="shop-price" id="upgrade-price">🪙 190</div><button class="tiny-btn" id="buy-upgrade" type="button">AMÉLIORER</button></div></div>
         <div class="privacy">💾 Ta partie est sauvegardée automatiquement sur ce navigateur. La campagne est sauvegardée sur ce navigateur. L’ARÈNE en ligne possède sa progression compétitive séparée, associée à ton compte.</div>
         <button id="sound-toggle" class="button outline" style="width:100%;margin-top:12px" type="button">🔇 Activer les sons</button>
-        <p class="footer-note">SUPERVILAINS — Meme Hunt · V3.2</p>
+        <p class="footer-note">SUPERVILAINS — Meme Hunt · V3.3</p>
       </section>
     </main>
     <nav class="nav" aria-label="Navigation principale">
@@ -222,12 +222,12 @@ const weaknessItems=[
   {id:'deodorant',label:'Déodorant',icon:'🧴'}
 ];
 const villains=[
-  {name:'MANU',icon:'🪥',line:'Le seigneur du malaise viral. Il détourne les brosses à dents pour semer le chaos.',danger:1,type:'Mème',color:'#40c4ff',boss:false,portrait:'assets/manu.jpg',weakness:'toothbrush',weaknessName:'Brosse à dents',weaknessIcon:'🪥'},
-  {name:'LÉA',icon:'👓',line:'Vision floue, intentions floues. Elle voit tout de travers et terrorise les timelines.',danger:2,type:'Mème',color:'#a27bff',boss:false,portrait:'assets/lea.webp',weakness:'glasses',weaknessName:'Lunettes',weaknessIcon:'👓'},
-  {name:'NATSU',icon:'🍗',line:'Reine du gras absolu. Plus le magret est proche, plus sa défense mentale s’écroule.',danger:2,type:'Food boss',color:'#4ee2ac',boss:false,portrait:'assets/natsu.jpg',weakness:'magret',weaknessName:'Magret de canard',weaknessIcon:'🍗'},
-  {name:'AMÉLIE',icon:'🎤',line:'Star du live maudit. Dès qu’un micro apparaît, la panique monte et tout part en vrille.',danger:3,type:'Live',color:'#ff6f91',boss:true,portrait:'assets/amelie.jpg',weakness:'microphone',weaknessName:'Micro',weaknessIcon:'🎤'},
-  {name:'LUDO',icon:'📘',line:'Maître des fautes et des légendes bancales. Le Bescherelle est sa kryptonite.',danger:4,type:'Texte toxique',color:'#ffc861',boss:true,portrait:'assets/ludo.jpg',weakness:'bescherelle',weaknessName:'Bescherelle',weaknessIcon:'📘'},
-  {name:'ERIC',icon:'🧴',line:'Le boss final aromatique. Un simple déodorant suffit à briser son aura pestilentielle.',danger:5,type:'Boss',color:'#ff8a5b',boss:true,portrait:'assets/eric.jpg',weakness:'deodorant',weaknessName:'Déodorant',weaknessIcon:'🧴'}
+  {name:'MANU',icon:'🪥',line:'Le seigneur du malaise viral. Il détourne les brosses à dents pour semer le chaos.',danger:1,type:'Mème',color:'#40c4ff',boss:false,portrait:'assets/manu.png',weakness:'toothbrush',weaknessName:'Brosse à dents',weaknessIcon:'🪥'},
+  {name:'LÉA',icon:'👓',line:'Vision floue, intentions floues. Elle voit tout de travers et terrorise les timelines.',danger:2,type:'Mème',color:'#a27bff',boss:false,portrait:'assets/lea.png',weakness:'glasses',weaknessName:'Lunettes',weaknessIcon:'👓'},
+  {name:'NATSU',icon:'🍗',line:'Reine du gras absolu. Plus le magret est proche, plus sa défense mentale s’écroule.',danger:2,type:'Food boss',color:'#4ee2ac',boss:false,portrait:'assets/natsu.png',weakness:'magret',weaknessName:'Magret de canard',weaknessIcon:'🍗'},
+  {name:'AMÉLIE',icon:'🎤',line:'Star du live maudit. Dès qu’un micro apparaît, la panique monte et tout part en vrille.',danger:3,type:'Live',color:'#ff6f91',boss:true,portrait:'assets/amelie.png',weakness:'microphone',weaknessName:'Micro',weaknessIcon:'🎤'},
+  {name:'LUDO',icon:'📘',line:'Maître des fautes et des légendes bancales. Le Bescherelle est sa kryptonite.',danger:4,type:'Texte toxique',color:'#ffc861',boss:true,portrait:'assets/ludo.png',weakness:'bescherelle',weaknessName:'Bescherelle',weaknessIcon:'📘'},
+  {name:'ERIC',icon:'🧴',line:'Le boss final aromatique. Un simple déodorant suffit à briser son aura pestilentielle.',danger:5,type:'Boss',color:'#ff8a5b',boss:true,portrait:'assets/eric.png',weakness:'deodorant',weaknessName:'Déodorant',weaknessIcon:'🧴'}
 ];
 const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Date.now(),coins:160,nets:5,owned:{},captured:0,perfect:0,patrols:0,robot:0,visited:{},claimed:[],upgrade:0,sound:false,started:false});
     const storageKey='supervilains_operation_minuit_v3_meme';
