@@ -917,7 +917,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       }).join('');
     }
     function message(txt,warn=false){$('battle-message').textContent=txt;$('battle-message').className='battle-message'+(warn?' warn':'')}
-    function hitByVillain(){if(!enemy)return false;let d=villains[enemy.id].danger;enemy.shield=Math.max(0,enemy.shield-rand(5,10)+(-d*2));vibrate(40);if(enemy.shield<=0){endBattle('escape');return true}return false}
+    function hitByVillain(){if(!enemy)return false;let d=villains[enemy.id].danger;const damage=Math.max(1,rand(5,10)+d*2-equipmentLevel('armor'));enemy.shield=Math.max(0,enemy.shield-damage);vibrate(40);if(enemy.shield<=0){endBattle('escape');return true}return false}
     function attack(){regen();if(!enemy||busy)return;if(state.energy<3){toast('⚡ Énergie insuffisante ! Recharge dans AGENT.');return}state.energy-=3;enemy.attacks++;let dmg=rand(16,24)+Math.floor(state.level/3)*2;enemy.hp=Math.max(1,enemy.hp-dmg);$('villain-figure').classList.remove('hit');void $('villain-figure').offsetWidth;$('villain-figure').classList.add('hit');tone(220,.08);vibrate(25);reactionPortrait(enemy.id,'troller');if(!hitByVillain()){message(`⚡ Troll critique : -${dmg} résistance ! La cible perd ses moyens.`);renderBattle()}notifySave()}
     function useWeakness(slot){
       if(!enemy||busy||enemy.guessUsed||!Number.isInteger(slot)||slot<0||slot>=enemy.cards.length)return;
