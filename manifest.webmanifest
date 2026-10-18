@@ -1,7 +1,7 @@
 {
-  "name": "SUPERVILAINS V4 — Opération Minuit",
-  "short_name": "SUPERVILAINS V4",
-  "description": "50 missions, radar, 100 motifs absurdes, 30 succès et 24 répliques vocales officielles !",
+  "name": "SUPERVILAINS V4.3 — Opération Minuit",
+  "short_name": "SUPERVILAINS",
+  "description": "Installe SUPERVILAINS pour jouer, capturer les méchants, progresser dans 50 missions et défier tes amis dans l'arène.",
   "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
@@ -11,10 +11,22 @@
   "theme_color": "#090b1e",
   "icons": [
     {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
       "src": "icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
