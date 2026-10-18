@@ -132,18 +132,20 @@ async function saveForm(e){
     if(file){
       setSaveStatus("Optimisation de la photo sur ton téléphone…");
       const image=await jpegFromPhoto(file);
-      const random=crypto.randomUUID?.()||String(Date.now())+"-"+Math.random().toString(36).slice(2);
-      const path=user.id+"/"+id+"/source-"+random+".jpg";
+      // Un seul objet par personnage : remplacements sans fichiers orphelins.
+      const path=user.id+"/"+id+"/source.jpg";
       setSaveStatus("Envoi de la photo privée à Supabase…");
       const {error:uploadError}=await db.storage.from("villain-source").upload(path,image,{
-        contentType:"image/jpeg",cacheControl:"3600",upsert:false
+        contentType:"image/jpeg",cacheControl:"60",upsert:true
       });
       if(uploadError)throw Error("Photo non envoyée : "+errorMessage(uploadError)+". Le brouillon a été conservé, tu peux réessayer.");
       setSaveStatus("Association de la photo au personnage…");
       let attached=false;
       try{attached=await rpc("custom_villain_attach_photo",{p_villain_id:id,p_object_path:path})}
       catch(err){
-        await db.storage.from("villain-source").remove([path]).catch(()=>{});
+        // Ne jamais effacer l'ancienne photo si elle a été remplacée au même chemin.
+        if(editingRow?.source_photo_path!==path)
+          await db.storage.from("villain-source").remove([path]).catch(()=>{});
         throw err;
       }
       if(attached!==true)throw Error("Photo non associée : vérifie ton compte et réessaie.");
