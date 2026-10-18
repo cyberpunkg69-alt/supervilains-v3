@@ -152,16 +152,19 @@ async function preparePhoto(file){
 async function signedPhoto(path){
   if(!path||!db)return null;
   const storage=db.storage.from("villain-source");
-  // Télécharger depuis Supabase avec la session du propriétaire :
-  // pas de miniature périmée ni d'URL signée mise en cache par le navigateur.
+  // L'URL signée se charge comme une image native (pas de Blob révoqué
+  // prématurément lors des actualisations rapides de la galerie).
+  // Chaque rechargement produit un nouveau jeton temporaire.
+  try{
+    const {data,error}=await storage.createSignedUrl(path,300);
+    if(!error&&data?.signedUrl)return data.signedUrl;
+  }catch(e){}
+  // Certains navigateurs PWA gèrent mieux un Blob chargé avec leur session.
   try{
     const {data,error}=await storage.download(path);
-    if(!error&&data&&data.size)return rememberPhotoUrl(URL.createObjectURL(data));
+    if(!error&&data?.size>0)return rememberPhotoUrl(URL.createObjectURL(data));
   }catch(e){}
-  // Compatibilité si un navigateur ne peut pas télécharger un Blob.
-  const {data,error}=await storage.createSignedUrl(path,120);
-  if(error||!data?.signedUrl)return null;
-  return data.signedUrl;
+  return null;
 }
 async function saveForm(e){
   e?.preventDefault?.();if(busy)return;
@@ -354,10 +357,22 @@ function appendRow(row,url){
   if(url){
     const img=createText("img");
     img.alt="Photo privée de "+row.name;img.loading="lazy";
-    img.addEventListener("error",()=>{
+    let retriedPhoto=false;
+    img.addEventListener("error",async()=>{
+      if(!retriedPhoto&&row.source_photo_path){
+        retriedPhoto=true;
+        try{
+          const {data,error}=await db.storage.from("villain-source").download(row.source_photo_path);
+          if(!error&&data?.size>0){
+            const retryUrl=rememberPhotoUrl(URL.createObjectURL(data));
+            img.src=retryUrl;
+            return;
+          }
+        }catch(e){}
+      }
       img.hidden=true;
-      header.prepend(createText("div","creator-list-placeholder","⚠️"));
-      info.appendChild(createText("p","creator-photo-warning","Photo illisible. Clique sur MODIFIER et choisis-la à nouveau."));
+      header.prepend(createText("div","creator-list-placeholder","📷"));
+      info.appendChild(createText("p","creator-photo-warning","Impossible d'afficher la photo. Clique sur ACTUALISER ou vérifie la photo depuis MODIFIER."));
     });
     img.addEventListener("load",()=>{
       // Une photo véritablement blanche dans Storage ne doit pas être confondue
