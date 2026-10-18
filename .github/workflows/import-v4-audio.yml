@@ -1,7 +1,7 @@
 name: Importer les voix SUPERVILAINS V4
 on:
   push:
-    paths: ['audio_import_v4.json']
+    paths: ['audio_import_v4_ready.txt']
   workflow_dispatch:
 permissions:
   contents: write
@@ -16,10 +16,12 @@ jobs:
         run: |
           python3 - <<'PY'
           import json, pathlib, re, time, urllib.request
-          p = pathlib.Path("audio_import_v4.json")
+          p = pathlib.Path("audio_import_v4_ready.txt")
           if not p.exists():
-              raise SystemExit("Aucun manifeste audio en attente")
-          clips = json.loads(p.read_text(encoding="utf-8"))
+              raise SystemExit("Aucun import en attente")
+          clips = {}
+          for part in ("audio_import_v4_0.json","audio_import_v4_1.json"):
+              clips.update(json.loads(pathlib.Path(part).read_text(encoding="utf-8")))
           assert len(clips)==24, f"24 extraits attendus, recu {len(clips)}"
           dest = pathlib.Path("assets/audio/v4")
           dest.mkdir(parents=True, exist_ok=True)
@@ -45,11 +47,13 @@ jobs:
                           raise
                       time.sleep(3)
           p.unlink()
+          pathlib.Path('audio_import_v4_0.json').unlink()
+          pathlib.Path('audio_import_v4_1.json').unlink()
           PY
       - name: Versionner les MP3 officiels
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A assets/audio/v4 audio_import_v4.json
+          git add -A assets/audio/v4 audio_import_v4_0.json audio_import_v4_1.json audio_import_v4_ready.txt
           git commit -m "SUPERVILAINS V4 : integrer 24 voix fixes et personnelles"
           git push
