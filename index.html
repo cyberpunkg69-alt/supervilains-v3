@@ -848,14 +848,14 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       $('radar-message').className='radar-message'+(failed?' warn':'');
       $('radar-message').textContent=radar.message;
       $('radar-targets').innerHTML=radarPositions.map(([x,y],i)=>{
-        const miss=radar.misses.includes(i),found=radar.found&&radar.targetSlot===i;
-        return `<button type="button" class="radar-unknown ${miss?'missed':''} ${found?'found':''}" data-radar-slot="${i}" style="--x:${x}%;--y:${y}%" aria-label="Signal inconnu ${i+1}${miss?', innocent':''}${found?', criminel identifié':''}" ${radar.found||miss?'disabled':''}><span class="radar-q">${miss?'×':found?'✓':'?'}</span><small>${String(i+1).padStart(2,'0')}</small></button>`;
+        const miss=radar.misses.includes(i),scanned=radar.scanned?.includes(i)||false,found=radar.found&&radar.targetSlot===i;
+        return `<button type="button" class="radar-unknown ${miss?'missed':''} ${scanned?'scanned':''} ${found?'found':''}" data-radar-slot="${i}" style="--x:${x}%;--y:${y}%" aria-label="Signal inconnu ${i+1}${scanned?', innocent filtré':miss?', innocent':''}${found?', criminel identifié':''}" ${radar.found||miss||scanned?'disabled':''}><span class="radar-q">${scanned?'⊘':miss?'×':found?'✓':'?'}</span><small>${scanned?'OK':String(i+1).padStart(2,'0')}</small></button>`;
       }).join('');
       const reveal=$('radar-reveal');reveal.classList.toggle('visible',radar.found);
       if(radar.found){const v=villains[radar.id];$('radar-name').textContent=v.name;$('radar-portrait').src=v.portrait;$('radar-portrait').alt='Portrait de '+v.name;}
     }
     function identifyRadar(slot){
-      if(!radar||radar.found||!Number.isInteger(slot)||slot<0||slot>9||radar.misses.includes(slot))return;
+      if(!radar||radar.found||!Number.isInteger(slot)||slot<0||slot>9||radar.misses.includes(slot)||radar.scanned?.includes(slot))return;
       if(slot===radar.targetSlot){
         radar.found=true;state.radarFinds++;if(radar.misses.length===0)state.radarFirst++;
         radar.message=`🎯 IDENTITÉ CONFIRMÉE : ${villains[radar.id].name} ! Appuie sur AFFRONTER pour lancer le combat.`;
