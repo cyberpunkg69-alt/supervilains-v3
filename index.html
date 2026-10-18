@@ -667,6 +667,17 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       $('achievement-list').innerHTML=selected.length?selected.map(a=>{const done=achievementUnlocked(a),progress=Math.min(a.target,Math.max(0,Number(a.progress())||0));return `<div class="achievement-card ${done?'unlocked':''}"><div class="achievement-medal">${done?a.icon:'🔒'}</div><div class="achievement-details"><div class="achievement-name">${a.name}</div><div class="achievement-desc">${a.description}</div><div class="achievement-progress">${done?'✅ Débloqué':`${progress} / ${a.target}`}</div></div><span class="achievement-points">${a.points} G</span></div>`}).join(''):'<div class="empty">Aucun succès dans ce filtre.</div>';
     }
     const missionValue=m=>m.key==='visited'?Object.keys(state.visited).length:m.key==='netCaptures'?Math.max(0,state.captured-state.ultimate):m.key==='claimed'?state.claimed.length:(Number(state[m.key])||0);
+    // V4.4 — bonus réellement appliqués au moteur SOLO. Aucun effet sur l'ARÈNE serveur.
+    const workshopConfig={
+      scanner:{max:3,unlock:2,base:360,step:250},
+      nets:{max:5,unlock:3,base:330,step:260},
+      armor:{max:5,unlock:4,base:390,step:260}
+    };
+    const reactorMax=33;
+    const equipmentLevel=key=>Math.max(0,Math.min(workshopConfig[key].max,Math.trunc(Number(state.equipment?.[key])||0)));
+    const equipmentCost=key=>workshopConfig[key].base+equipmentLevel(key)*workshopConfig[key].step;
+    const energyInterval=()=>state.maxEnergy>=200?22500:state.maxEnergy>=150?29000:state.maxEnergy>=100?36000:45000;
+    const nextReactorStage=()=>state.maxEnergy<100?100:state.maxEnergy<150?150:state.maxEnergy<200?200:null;
     function regen(){let now=Date.now();if(!Number.isFinite(state.lastEnergy)||state.lastEnergy>now)state.lastEnergy=now;if(state.energy>=state.maxEnergy){state.lastEnergy=now;return}let ticks=Math.floor((now-state.lastEnergy)/45000);if(ticks>0){state.energy=Math.min(state.maxEnergy,state.energy+ticks);state.lastEnergy+=ticks*45000;save()}}
     function addXP(n){state.xp+=n;let leveled=0;while(state.xp>=xpGoal(state.level)){state.xp-=xpGoal(state.level);state.level++;leveled++;state.coins+=50;state.nets+=1}if(leveled){tone(700,.14);setTimeout(()=>toast(`🎉 NIVEAU ${state.level} ! Quartiers et récompenses débloqués.`),160)}return leveled}
     function renderStats(){regen();$('top-level').textContent=`AGENT · NIV. ${state.level}`;$('top-energy').textContent=`${state.energy}/${state.maxEnergy}`;$('top-coins').textContent=state.coins;$('top-nets').textContent=state.nets;$('stat-captured').textContent=state.captured;$('stat-unique').textContent=`${seen()}/${villains.length}`;$('stat-districts').textContent=`${unlocked()}/${districts.length}`}
