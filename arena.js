@@ -10,9 +10,14 @@ const duelCodePattern=/^[A-F0-9]{10}$/;
 const gameLink=()=>new URL("./",location.href).href;
 const validDuelCode=v=>duelCodePattern.test(String(v||"").toUpperCase())?String(v).toUpperCase():null;
 try{
-  const urlCode=new URL(location.href).searchParams.get("duel");
-  inviteDuelCode=validDuelCode(urlCode)||validDuelCode(sessionStorage.getItem("supervilains_pending_duel"));
-  if(inviteDuelCode)sessionStorage.setItem("supervilains_pending_duel",inviteDuelCode);
+  const urlCode=validDuelCode(new URL(location.href).searchParams.get("duel"));
+  const saved=JSON.parse(localStorage.getItem("supervilains_pending_duel_v41")||"null");
+  const localCode=saved&&Number.isFinite(saved.ts)&&Date.now()-saved.ts<24*60*60*1000?validDuelCode(saved.code):null;
+  inviteDuelCode=urlCode||localCode||validDuelCode(sessionStorage.getItem("supervilains_pending_duel"));
+  if(inviteDuelCode){
+    sessionStorage.setItem("supervilains_pending_duel",inviteDuelCode);
+    localStorage.setItem("supervilains_pending_duel_v41",JSON.stringify({code:inviteDuelCode,ts:Date.now()}));
+  }
 }catch(e){}
 function inviteUrl(code=null){const u=new URL(gameLink());if(code)u.searchParams.set("duel",code);return u.href;}
 function inviteText(code=null){
@@ -53,7 +58,11 @@ function setupIncomingDuel(){
 function clearIncomingDuel(){
   inviteDuelCode=null;
   vis("arena-incoming-invite",false);
-  try{sessionStorage.removeItem("supervilains_pending_duel");const u=new URL(location.href);u.searchParams.delete("duel");history.replaceState(history.state,"",u.pathname+u.search+u.hash)}catch(e){}
+  try{
+    sessionStorage.removeItem("supervilains_pending_duel");
+    localStorage.removeItem("supervilains_pending_duel_v41");
+    const u=new URL(location.href);u.searchParams.delete("duel");history.replaceState(history.state,"",u.pathname+u.search+u.hash);
+  }catch(e){}
 }
 
 const showMessage=(s,t="")=>{const n=$("arena-message");n.className="arena-status"+(t?" "+t:"");n.textContent=s;};
@@ -106,8 +115,9 @@ const {data,error}=await db.auth.getSession();if(error)throw error;user=data.ses
 }catch(e){showMessage("⚠️ "+messageError(e),"warn");}}
 function on(id,fn){const x=$(id);if(x)x.addEventListener("click",fn);}
 on("arena-send-link",()=>action(async()=>{const email=$("arena-email").value.trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw Error("Adresse e-mail invalide.");
-const callbackUrl=new URL(location.origin+location.pathname);if(inviteDuelCode)callbackUrl.searchParams.set("duel",inviteDuelCode);
-const {error}=await db.auth.signInWithOtp({email,options:{emailRedirectTo:callbackUrl.href,shouldCreateUser:true}});if(error)throw error;showMessage("📩 Lien envoyé. Consulte ta boîte mail !","good");}));
+// L'URL de retour doit correspondre exactement à la liste autorisée dans Supabase.
+const callbackUrl=location.origin+location.pathname;
+const {error}=await db.auth.signInWithOtp({email,options:{emailRedirectTo:callbackUrl,shouldCreateUser:true}});if(error)throw error;showMessage("📩 Lien envoyé. Consulte ta boîte mail !","good");}));
 on("arena-register-btn",()=>action(async()=>{const handle=$("arena-handle").value.trim();if(!/^[A-Za-z0-9_]{3,18}$/.test(handle))throw Error("Pseudo : 3 à 18 caractères, lettres, chiffres et _.");await RPC("arena_register",{p_handle:handle});await refresh();}));
 on("arena-logout",()=>action(async()=>{const {error}=await db.auth.signOut();if(error)throw error;user=null;active=null;await authView();}));
 on("arena-hunt",()=>action(async()=>{active=await RPC("arena_start");renderEncounter();vis("arena-last-result",false);showMessage("📡 Signal détecté. Capture le super-méchant !","good");}));
