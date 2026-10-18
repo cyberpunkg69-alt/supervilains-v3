@@ -209,7 +209,7 @@ async function saveForm(e){
       editingRow={...editingRow,id,source_photo_path:path,status:"draft"};
     }
     setSaveStatus("✅ Fiche et photo enregistrées dans ton compte !");
-    status("✅ Ton super-vilain est enregistré dans ton espace privé. La génération IA viendra à l'étape suivante.","good");
+    status("✅ Ton super-vilain est enregistré dans ton espace privé. Utilise ChatGPT pour créer les trois portraits, puis importe-les ci-dessous.","good");
     await refreshList();
     resetForm();
     setSaveStatus("✅ Sauvegarde terminée. Vérifie la photo dans « Mes super-vilains » ci-dessous.");
@@ -222,133 +222,176 @@ function createText(tag,cls,content){
   const el=document.createElement(tag);if(cls)el.className=cls;if(content!==undefined)el.textContent=content;return el;
 }
 
-/* V4.6 — Image generation UI. Calls the Edge Function with the existing ARENE
-   access token. The private provider key NEVER passes through this JavaScript. */
-let aiConfigured=false,aiCheckComplete=false,aiBusyId=null;
+/* V4.8 — Créations ChatGPT manuelles : aucun appel à une API d'images.
+   L'agent copie une consigne, utilise son ChatGPT, puis importe 3 fichiers privés. */
+let manualBusyId=null;
 const IMAGE_VARIANTS=[
-  {key:"portrait",field:"portrait_path",title:"PORTRAIT",emoji:"🦹",detail:"Style SUPERVILAINS"},
+  {key:"portrait",field:"portrait_path",title:"PORTRAIT",emoji:"🦹",detail:"Portrait normal"},
   {key:"troll",field:"troll_path",title:"TROLLER",emoji:"😝",detail:"Langue tirée"},
-  {key:"capture",field:"capture_path",title:"CAPTURÉ !",emoji:"⛓️",detail:"Prisonnier + menottes"},
+  {key:"capture",field:"capture_path",title:"CAPTURÉ",emoji:"⛓️",detail:"Prisonnier + menottes"},
 ];
 function aiNotice(message){
   const el=$("creator-ai-status");if(el)el.textContent=message;
-}
-async function aiError(error,data){
-  let serverMessage=data?.error;
-  if(!serverMessage&&error?.context?.json){
-    try{const payload=await error.context.json();serverMessage=payload?.error}catch(_){}
-  }
-  return serverMessage||error?.message||"Le moteur IA n'a pas répondu.";
-}
-async function checkImageEngine(){
-  aiCheckComplete=false;
-  aiNotice("⏳ Vérification du moteur IA sécurisé…");
-  if(!db?.functions?.invoke){
-    aiConfigured=false;aiCheckComplete=true;aiNotice("⚠️ Moteur IA indisponible dans cette version du jeu.");return;
-  }
-  try{
-    const {data,error}=await db.functions.invoke("villain-image-ai",{body:{action:"status"}});
-    if(error)throw Error(await aiError(error,data));
-    aiConfigured=!!data?.configured;
-    aiNotice(aiConfigured
-      ?"🔑 Moteur d'images connecté. Les crédits API et les limites de dépenses doivent aussi être actifs (distincts de ChatGPT Plus). Limite du jeu : 9 tentatives par 24 h."
-      :"🔒 IA en attente d'activation : clé OPENAI_API_KEY à configurer dans Supabase. Aucun appel d'image payant n'est possible tant qu'elle est absente.");
-  }catch(e){
-    aiConfigured=false;aiNotice("⚠️ Impossible de joindre le moteur IA : "+errorMessage(e));
-  }finally{aiCheckComplete=true;}
 }
 async function aiSignedImage(path){
   if(!path||!db)return null;
   const {data,error}=await db.storage.from("villain-generated").createSignedUrl(path,300);
   return error?null:data?.signedUrl||null;
 }
-async function generateVariant(row,kind,regenerate){
-  if(!db||!user||!aiConfigured)throw Error("Connecte-toi et active le moteur IA pour générer l'image.");
-  const {data,error}=await db.functions.invoke("villain-image-ai",{
-    body:{action:"generate",villain_id:row.id,kind,regenerate:!!regenerate}
-  });
-  if(error||!data?.ok)throw Error(await aiError(error,data));
-  return data;
+function imagePrompt(row,variant){
+  const brief=[
+    "SUPERVILAINS — CRÉATION D'UN PORTRAIT DE JEU VIDÉO.",
+    "Utilise la PHOTO QUE JE JOINS dans ChatGPT comme référence du visage. Je confirme disposer de l'autorisation de la personne photographiée.",
+    "Créer UN SEUL FICHIER IMAGE carré et net, une caricature amusante, volontairement grotesque mais reconnaissable, visuel de jeu mobile, rendu illustré haut de gamme, couleurs vives, fond dramatique, sans éléments de véritable violence.",
+    "Conserver exactement le même visage, coiffure et style graphique pour les trois situations.",
+    "Personnage : "+row.name+". Alias : "+(row.alias||"aucun")+".",
+    "Personnalité : "+(row.description||"super-vilain humoristique")+".",
+    "Faille ultime : "+row.weakness_label+". Objet de capture : "+(row.weakness_object||row.weakness_label)+".",
+  ];
+  if(variant.key==="portrait")brief.push("IMAGE À CRÉER : portrait NORMAL de super-vilain, air malicieux et sûr de lui. Aucun texte.");
+  if(variant.key==="troll")brief.push("IMAGE À CRÉER : personnage TROLLÉ faisant une grimace exagérée et TIRANT CLAIREMENT LA LANGUE. Aucun texte.");
+  if(variant.key==="capture")brief.push("IMAGE À CRÉER : personnage CAPTURÉ, triste ou en pleurs, en tenue de prisonnier avec MENOTTES visibles, sans scène violente. Inscrire « CAPTURÉ ! » en bas, de façon lisible.");
+  brief.push("Produis uniquement l'image de cette situation. Pas de triptyque, pas de collage, pas de personnage supplémentaire. Enregistre ensuite l'image sur mon téléphone pour l'importer dans SUPERVILAINS.");
+  return brief.join("\n");
 }
-async function generateImages(row,kind=null,regenerate=false){
-  if(aiBusyId)return;
-  if(!row.source_photo_path){status("⚠️ Enregistre la photo d'origine avant de générer les images.","warn");return}
-  if(!aiConfigured){aiNotice("🔒 Le moteur IA doit encore être activé dans Supabase.");return}
-  const variants=kind?IMAGE_VARIANTS.filter(x=>x.key===kind):
-    IMAGE_VARIANTS.filter(x=>!row[x.field]);
-  if(!variants.length)return;
-  const regenCount=Number(row.regenerations_used)||0;
-  if(regenerate&&regenCount>=3){status("⚠️ Les trois régénérations disponibles ont été utilisées.","warn");return}
-  const label=variants.map(x=>x.title).join(" + ");
-  const costWarning="⚠️ "+variants.length+" génération"+(variants.length>1?"s":"")+" d'image"+(variants.length>1?"s":"")+" IA payante"+(variants.length>1?"s":"")+
-    " ("+label+"). Chaque image consomme des crédits du fournisseur IA. Continuer ?";
-  if(!confirm(costWarning))return;
-  aiBusyId=row.id;
-  let created=0;
+async function copyPrompt(row,variant){
+  const content=imagePrompt(row,variant);
   try{
-    for(const variant of variants){
-      aiNotice("🎨 Génération de "+variant.title+"… ("+(created+1)+"/"+variants.length+") · La photo originale reste conservée.");
-      await refreshList();
-      await generateVariant(row,variant.key,regenerate);
-      created++;
-      aiNotice("✅ "+variant.title+" enregistré. "+(created<variants.length?"Passage à l'image suivante…":"Toutes les images demandées sont terminées !"));
-      await refreshList();
+    if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(content);
+    else{
+      const el=document.createElement("textarea");el.value=content;el.style.position="fixed";el.style.left="-9999px";document.body.appendChild(el);el.select();
+      if(!document.execCommand("copy"))throw Error("Copie indisponible");el.remove();
     }
-    status("✅ Image"+(created>1?"s":"")+" IA enregistrée"+(created>1?"s":"")+" dans l'espace privé du personnage !","good");
+    status("📋 Consigne « "+variant.title+" » copiée ! Ouvre ChatGPT, colle le texte et JOINS LA PHOTO avant de générer.","good");
+  }catch(e){window.prompt("Copie cette consigne pour ChatGPT :",content);}
+}
+async function downloadSourcePhoto(row){
+  if(!row.source_photo_path)return;
+  try{
+    const {data,error}=await db.storage.from("villain-source").download(row.source_photo_path);
+    if(error||!data)throw error||Error("Photo introuvable");
+    const link=document.createElement("a"),url=URL.createObjectURL(data);
+    link.href=url;link.download=(row.name||"supervilain").replace(/[^a-z0-9_-]/gi,"_")+"_source.jpg";
+    document.body.appendChild(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+    status("📸 Photo source téléchargée. Il faudra la joindre manuellement dans ChatGPT.","good");
+  }catch(e){status("⚠️ Téléchargement impossible : "+errorMessage(e),"warn")}
+}
+async function uploadManualImage(row,variant,file){
+  if(manualBusyId)return;
+  try{
+    if(!db||!user)throw Error("Connecte-toi à l'ARÈNE.");
+    if(!row.source_photo_path)throw Error("Enregistre d'abord la photo originale.");
+    if(!file) return;
+    if(!["draft","failed"].includes(row.status))throw Error("Rouvre d'abord ce personnage pour modifier ses images.");
+    if(!["image/png","image/jpeg","image/webp"].includes(file.type.toLowerCase()))
+      throw Error("Utilise une image PNG, JPEG ou WebP téléchargée depuis ChatGPT.");
+    if(file.size>25*1024*1024)throw Error("Image trop grande : 25 Mo maximum.");
+    manualBusyId=row.id;aiNotice("⏳ Importation de « "+variant.title+" »…");
+    const image=await preparePhoto(file);
+    const path=user.id+"/"+row.id+"/"+variant.key+"."+image.ext;
+    const {error}=await db.storage.from("villain-generated").upload(path,image.blob,{
+      contentType:image.type,cacheControl:"0",upsert:true
+    });
+    if(error)throw Error("Stockage : "+errorMessage(error));
+    const saved=await rpc("custom_villain_attach_manual_image",{
+      p_villain_id:row.id,p_kind:variant.key,p_object_path:path
+    });
+    if(saved!==true)throw Error("Image envoyée mais non associée à la fiche. Réessaie.");
+    const oldPath=row[variant.field];
+    if(oldPath&&oldPath!==path){
+      await db.storage.from("villain-generated").remove([oldPath]).catch(()=>{});
+    }
+    aiNotice("✅ Image « "+variant.title+" » enregistrée sans API payante !");
+    status("✅ Portrait importé et sauvegardé dans Supabase. Les images sont privées.","good");
   }catch(e){
-    const message=errorMessage(e);
-    status("⚠️ "+message+" · Les images précédemment créées sont conservées.","warn");
-    aiNotice("⚠️ "+created+" image"+(created>1?"s":"")+" créée"+(created>1?"s":"")+". "+message+" · Réessaie plus tard pour les autres.");
+    aiNotice("⚠️ "+errorMessage(e));status("⚠️ "+errorMessage(e),"warn");
   }finally{
-    aiBusyId=null;
-    try{await refreshList()}catch(_){}
+    manualBusyId=null;
+    try{await refreshList()}catch(e){status("⚠️ Actualisation : "+errorMessage(e),"warn")}
   }
+}
+async function finalizeManual(row){
+  if(manualBusyId)return;
+  if(!IMAGE_VARIANTS.every(v=>!!row[v.field])){status("⚠️ Importe les trois portraits avant de valider.","warn");return;}
+  if(!confirm("Valider les trois portraits de « "+row.name+" » ? La fiche restera PRIVÉE et ne sera pas publiée automatiquement."))return;
+  manualBusyId=row.id;
+  try{
+    const ok=await rpc("custom_villain_finalize_manual",{p_villain_id:row.id});
+    if(ok!==true)throw Error("Validation impossible : vérifie les trois images.");
+    status("✅ Personnage validé ! Les trois portraits restent privés tant que tu ne décides pas de les publier.","good");
+    aiNotice("✅ Trois portraits validés et sauvegardés dans ton compte.");
+  }catch(e){status("⚠️ "+errorMessage(e),"warn")}
+  finally{manualBusyId=null;await refreshList().catch(()=>{})}
+}
+async function reopenManual(row){
+  if(manualBusyId)return;
+  manualBusyId=row.id;
+  try{
+    const ok=await rpc("custom_villain_reopen_manual",{p_villain_id:row.id});
+    if(ok!==true)throw Error("Ce personnage ne peut pas être rouvert.");
+    status("✏️ Personnage rouvert : tu peux corriger sa fiche et remplacer les images.","good");
+  }catch(e){status("⚠️ "+errorMessage(e),"warn")}
+  finally{manualBusyId=null;await refreshList().catch(()=>{})}
 }
 function appendGeneratedArt(row,card){
   const section=createText("section","creator-ai-section");
-  const title=createText("div","creator-ai-title","🎨 IMAGES IA DU PERSONNAGE");
+  section.appendChild(createText("div","creator-ai-title","🎨 3 PORTRAITS AVEC TON CHATGPT — SANS API"));
+  section.appendChild(createText("p","creator-ai-help",
+    "1. Copie la consigne d'une image. 2. Ouvre ChatGPT et joins ta photo originale. 3. Enregistre le résultat sur ton téléphone. 4. Importe-le ici."));
+  const actions=createText("div","creator-manual-actions");
+  const download=createText("button","creator-ai-remake","📸 RÉCUPÉRER MA PHOTO");
+  download.type="button";download.disabled=!row.source_photo_path||!!manualBusyId;
+  download.addEventListener("click",()=>downloadSourcePhoto(row));
+  const open=createText("a","creator-chatgpt-link","✨ OUVRIR CHATGPT ↗");
+  open.href="https://chatgpt.com/";open.target="_blank";open.rel="noopener noreferrer";
+  actions.append(download,open);section.appendChild(actions);
   const grid=createText("div","creator-ai-gallery");
-  const pictures=IMAGE_VARIANTS.map(variant=>{
+  let count=0;
+  for(const variant of IMAGE_VARIANTS){
     const panel=createText("div","creator-ai-tile");
     const frame=createText("div","creator-ai-picture");
-    const placeholder=createText("span","creator-ai-placeholder",variant.emoji);
-    frame.appendChild(placeholder);
-    panel.appendChild(frame);
-    panel.appendChild(createText("b","creator-ai-label",variant.title));
+    frame.appendChild(createText("span","creator-ai-placeholder",variant.emoji));
     const path=row[variant.field];
-    panel.appendChild(createText("small","",path?"✅ Image enregistrée":variant.detail));
     if(path){
+      count++;
       aiSignedImage(path).then(url=>{
-        if(!url)return;
+        if(!url||!frame.isConnected)return;
         const img=createText("img","creator-ai-generated");
         img.src=url;img.alt=variant.title+" — "+row.name;img.loading="lazy";
         frame.replaceChildren(img);
-        if(variant.key==="capture"){
-          frame.appendChild(createText("span","creator-ai-captured-label","CAPTURÉ !"));
-        }
+        if(variant.key==="capture")frame.appendChild(createText("span","creator-ai-captured-label","CAPTURÉ !"));
       }).catch(()=>{});
-      const remake=createText("button","creator-ai-remake","♻️ REFAIRE");
-      remake.type="button";remake.disabled=!!aiBusyId||!aiConfigured||Number(row.regenerations_used)>=3;
-      remake.addEventListener("click",()=>generateImages(row,variant.key,true));
-      panel.appendChild(remake);
     }
-    grid.appendChild(panel);
-    return {path};
-  });
-  section.append(title,grid);
-  const count=pictures.filter(x=>!!x.path).length;
-  const action=createText("button","creator-ai-generate",
-    count===3?"✅ 3 IMAGES GÉNÉRÉES":aiBusyId===row.id?"⏳ GÉNÉRATION EN COURS…":
-    "🎨 GÉNÉRER "+(3-count)+" IMAGE"+(3-count>1?"S":"")+" IA");
-  action.type="button";
-  action.disabled=!aiConfigured||!!aiBusyId||count===3||!row.source_photo_path||!aiCheckComplete;
-  if(count<3)action.addEventListener("click",()=>generateImages(row));
-  section.appendChild(action);
-  section.appendChild(createText("p","creator-ai-help",
-    !row.source_photo_path?"📸 Ajoute d'abord une photo source.":
-    !aiConfigured?"🔒 Génération désactivée tant que la clé privée du fournisseur IA n'est pas configurée.":
-    count===3?"✅ Personnage illustré ! Tu peux refaire trois images au total.":
-    "Chaque image est générée séparément, ce qui permet de reprendre en cas d'erreur."));
+    panel.appendChild(frame);
+    panel.appendChild(createText("b","creator-ai-label",variant.title));
+    panel.appendChild(createText("small","",path?"✅ Importée":variant.detail));
+    const copy=createText("button","creator-ai-remake","📋 CONSIGNE");
+    copy.type="button";copy.addEventListener("click",()=>copyPrompt(row,variant));
+    panel.appendChild(copy);
+    const upload=createText("button","creator-ai-remake",path?"🔁 REMPLACER":"📥 IMPORTER");
+    upload.type="button";upload.disabled=!!manualBusyId||!row.source_photo_path||!["draft","failed"].includes(row.status);
+    const picker=createText("input");
+    picker.type="file";picker.accept="image/png,image/jpeg,image/webp";picker.hidden=true;
+    picker.setAttribute("aria-label","Importer l'image "+variant.title);
+    picker.addEventListener("change",()=>{
+      const file=picker.files?.[0];if(file)uploadManualImage(row,variant,file);
+      picker.value="";
+    });
+    upload.addEventListener("click",()=>picker.click());
+    panel.append(upload,picker);grid.appendChild(panel);
+  }
+  section.appendChild(grid);
+  section.appendChild(createText("p","creator-ai-help","Portraits enregistrés : "+count+" / 3. ChatGPT est ouvert séparément avec le compte du joueur. Aucune clé OpenAI dans SUPERVILAINS."));
+  if(row.status==="ready"){
+    const done=createText("button","creator-ai-generate","✅ PERSONNAGE VALIDÉ — PRIVÉ");
+    done.type="button";done.disabled=true;section.appendChild(done);
+  }else{
+    const ready=createText("button","creator-ai-generate",count===3?"✅ VALIDER MON PERSONNAGE":"📥 ENCORE "+(3-count)+" PORTRAIT"+(3-count>1?"S":"")+" À IMPORTER");
+    ready.type="button";ready.disabled=count!==3||!!manualBusyId;
+    ready.addEventListener("click",()=>finalizeManual(row));
+    section.appendChild(ready);
+  }
   card.appendChild(section);
 }
 function appendRow(row,url){
@@ -398,12 +441,13 @@ function appendRow(row,url){
   info.appendChild(createText("h4","",row.name+(row.alias?" · "+row.alias:"")));
   info.appendChild(createText("p","",row.weakness_label?"🎴 Faille : "+row.weakness_label:"Fiche en préparation"));
   info.appendChild(createText("div","creator-list-status",
-    row.status==="ready"?"✅ PRÊT":row.status==="generating"?"🎨 EN GÉNÉRATION":row.status==="failed"?"⚠️ À REPRENDRE":"📝 BROUILLON PRIVÉ"));
+    row.status==="ready"?"✅ VALIDÉ · PRIVÉ":row.status==="generating"?"🎨 ANCIEN TRAITEMENT":row.status==="failed"?"⚠️ À REPRENDRE":"📝 BROUILLON PRIVÉ"));
   header.appendChild(info);card.appendChild(header);
   const controls=createText("div","creator-list-controls");
   const edit=createText("button","","✏️ MODIFIER");
   edit.type="button";edit.disabled=!["draft","failed"].includes(row.status);
   edit.addEventListener("click",()=>editRow(row));
+  if(row.status==="ready"){const reopen=createText("button","","🔓 ROUVRIR");reopen.type="button";reopen.addEventListener("click",()=>reopenManual(row));controls.appendChild(reopen);}
   const del=createText("button","","🗑️ SUPPRIMER");
   del.type="button";del.disabled=!["draft","failed"].includes(row.status);
   del.addEventListener("click",()=>deleteRow(row));
@@ -449,6 +493,8 @@ async function deleteRow(row){
       const {error}=await db.storage.from("villain-source").remove([row.source_photo_path]);
       if(error)throw Error("Suppression de la photo impossible : "+errorMessage(error));
     }
+    const images=[row.portrait_path,row.troll_path,row.capture_path].filter(Boolean);
+    if(images.length)await db.storage.from("villain-generated").remove(images).catch(()=>{});
     const deleted=await rpc("custom_villain_delete_draft",{p_villain_id:row.id});
     if(deleted!==true)throw Error("Impossible de supprimer ce brouillon : il a peut-être déjà été publié ou supprimé.");
     if(editingId===row.id)resetForm();
@@ -490,7 +536,7 @@ async function syncAccount(){
     setVisible("creator-signin",!user);setVisible("creator-content",!!user);
     if(!user){status("🔐 Connecte-toi à l'ARÈNE pour sauvegarder tes personnages entre tes appareils.");return}
     status("✅ Agent connecté : tes créations restent privées et liées à ton compte.","good");
-    await checkImageEngine();
+    aiNotice("✨ Génère tes portraits dans ChatGPT avec ton propre compte, puis importe-les ici. Aucune API payante.");
     await refreshList();
   }catch(err){
     user=null;setVisible("creator-signin",true);setVisible("creator-content",false);
