@@ -393,6 +393,7 @@ function appendRow(row,url){
   del.type="button";del.disabled=!["draft","failed"].includes(row.status);
   del.addEventListener("click",()=>deleteRow(row));
   controls.append(edit,del);card.appendChild(controls);
+  appendGeneratedArt(row,card);
   $("creator-list").appendChild(card);
 }
 async function refreshList(){
@@ -474,6 +475,7 @@ async function syncAccount(){
     setVisible("creator-signin",!user);setVisible("creator-content",!!user);
     if(!user){status("🔐 Connecte-toi à l'ARÈNE pour sauvegarder tes personnages entre tes appareils.");return}
     status("✅ Agent connecté : tes créations restent privées et liées à ton compte.","good");
+    await checkImageEngine();
     await refreshList();
   }catch(err){
     user=null;setVisible("creator-signin",true);setVisible("creator-content",false);
