@@ -893,6 +893,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     function renderAll(){renderStats();renderMap();renderCodex();renderMissions();renderAgent();renderAchievements()}
     function notifySave(){checkAchievements();save();renderAll()}
     function switchView(view){document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active',el.id==='view-'+view));document.querySelectorAll('.nav-btn').forEach(el=>el.classList.toggle('active',el.dataset.view===view));window.scrollTo({top:0,behavior:'instant'});if(view==='agent')renderAgent();if(view==='missions')renderMissions();if(view==='achievements')renderAchievements()}
+    window.SUPERVILAINS_NAVIGATE=(view)=>switchView(view);
     function toast(s){let el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2500)}
     function tone(f=430,sec=.12){if(!state.sound)return;try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();let osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type='triangle';osc.frequency.setValueAtTime(f,audioCtx.currentTime);gain.gain.setValueAtTime(.08,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+sec);osc.connect(gain);gain.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+sec)}catch(e){}}
     const vibrate=n=>{try{navigator.vibrate?.(n)}catch(e){}};
