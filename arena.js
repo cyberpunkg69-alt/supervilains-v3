@@ -155,6 +155,7 @@ on("arena-create-duel",()=>action(async()=>{
 }));
 on("arena-join-duel",()=>action(async()=>{const code=$("arena-code").value.trim().toUpperCase();if(!duelCodePattern.test(code))throw Error("Code de défi invalide.");await RPC("arena_join_duel",{p_code:code});if(code===inviteDuelCode)clearIncomingDuel();await refresh();showMessage("⚔️ Défi accepté : 24 h pour battre ton adversaire !","good");}));
 document.querySelectorAll("[data-period]").forEach(btn=>btn.addEventListener("click",()=>{period=btn.dataset.period;document.querySelectorAll("[data-period]").forEach(b=>b.classList.toggle("active",b.dataset.period===period));$("arena-period-label").textContent=period==="week"?"Classement hebdomadaire (UTC)":period==="month"?"Classement mensuel (UTC)":"Classement général";refresh();}));
+on("arena-accept-invite",()=>{if(inviteDuelCode&&user&&profile?.registered)$("arena-join-duel").click()});
 on("arena-invite-open",()=>{
   if(!$("arena-invite-options").hidden){vis("arena-invite-options",false);return;}
   openInvitation();
