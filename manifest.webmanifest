@@ -1,7 +1,7 @@
 {
-  "name": "SUPERVILAINS V4.3 — Opération Minuit",
+  "name": "SUPERVILAINS V4.4 — Opération Minuit",
   "short_name": "SUPERVILAINS",
-  "description": "Installe SUPERVILAINS pour jouer, capturer les méchants, progresser dans 50 missions et défier tes amis dans l'arène.",
+  "description": "50 missions, 30 succès, arène multijoueur et atelier d’améliorations : réacteur 200 ⚡, scanner radar, filets et bouclier évolutifs.",
   "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
