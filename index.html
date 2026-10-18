@@ -834,6 +834,9 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     function rerollSuspectReason(){if(suspectDistrictId===null)return;const v=districtVillain(suspectDistrictId);if(!v)return;let next=randomWantedReason(v.name),guard=0;while(next===suspectReason&&guard<6){next=randomWantedReason(v.name);guard++}suspectReason=next;$('suspect-reason').textContent=suspectReason;tone(760,.05)}
     function startRadar(villainId,districtId){
       radar={id:villainId,district:districtId,targetSlot:rand(0,9),misses:[],found:false,phraseOrder:shuffled(radarPhrases),message:'Dix inconnus détectés. Trouve le méchant en cinq essais maximum !'};
+      // Le scanner écarte seulement des innocents ; le criminel n'est jamais révélé.
+      radar.scanned=shuffled(Array.from({length:10},(_,i)=>i).filter(i=>i!==radar.targetSlot)).slice(0,equipmentLevel('scanner'));
+      if(radar.scanned.length)radar.message='📡 Scanner actif : '+radar.scanned.length+' signal'+(radar.scanned.length>1?'s':'')+' innocent'+(radar.scanned.length>1?'s':'')+' filtré'+(radar.scanned.length>1?'s':'')+'. Tu conserves tes 5 essais !';
       $('radar-sector').textContent=districts[districtId].name;
       $('radar-description').textContent='Le signal du méchant est noyé parmi 9 innocents. Chaque erreur élimine un signal.';
       renderRadar();show('overlay-radar');tone(470,.15);playVoiceSeries([commissaireClip('radar')]);
