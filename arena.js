@@ -123,7 +123,7 @@ const [board,duels,feed]=await Promise.all([RPC("arena_leaderboard",{p_period:pe
 boardRender(board);duelsRender(duels);feedRender(feed);lastRefresh=Date.now();showMessage("✅ Arène connectée : classement à jour !","good");
 }catch(e){showMessage("⚠️ "+messageError(e),"warn");}finally{refreshing=false;}}
 function publishVoiceIdentity(){try{window.dispatchEvent(new CustomEvent('supervilains:identity',{detail:{id:user?.id||null}}))}catch(e){}}
-async function authView(){publishVoiceIdentity();vis("arena-auth",!!db&&!user);vis("arena-register",false);vis("arena-home",false);if(!user){showMessage("Connecte-toi par e-mail pour rejoindre les compétitions.");return;}await refresh();}
+async function authView(){publishVoiceIdentity();renderIncomingDuel();vis("arena-auth",!!db&&!user);vis("arena-register",false);vis("arena-home",false);if(!user){showMessage("Connecte-toi par e-mail pour rejoindre les compétitions.");return;}await refresh();}
 async function connect(){const cfg=window.SUPERVILAINS_ONLINE||{};
 if(!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(cfg.url||"")||!/^(sb_publishable_[a-zA-Z0-9_-]+|eyJ[a-zA-Z0-9._-]+)$/.test(cfg.publishableKey||"")){
 vis("arena-setup",true);showMessage("🌙 Le mode solo est disponible. Active Supabase pour les classements en ligne.");return;}
