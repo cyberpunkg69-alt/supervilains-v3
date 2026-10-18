@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" type="image/png" href="icon.svg">
+  <link rel="icon" type="image/png" href="icon-192.png">
   <title>SUPERVILAINS — Meme Hunt</title>
   <style>
     :root{--bg:#080b1b;--pane:#11172d;--pane2:#18203c;--border:#283254;--ink:#eef5ff;--dim:#95a4c9;--cyan:#4ce9e5;--pink:#ff5a9e;--gold:#ffc861;--green:#63ebb0;--red:#ff717a;--purple:#bda0ff;--navh:78px}
@@ -68,11 +68,45 @@
     .arena-status.warn{border-color:#ac6980;color:#ffd4de}.arena-status.good{border-color:#399b83;color:#bdf8e5}
     @media(max-width:350px){.nav-btn{font-size:8px}.nav-btn .nicon{font-size:18px}.arena-rankrow{grid-template-columns:25px minmax(0,1fr) 63px 39px;gap:3px}}
 
-    .villain-figure img{width:min(61vw,190px);height:min(61vw,190px);object-fit:cover;border-radius:18px;border:3px solid #ffffff55;box-shadow:0 12px 30px #0008}
-    .result-gif-frame{margin:12px auto 15px;max-width:205px;border:2px solid #81e6f955;border-radius:17px;overflow:hidden;box-shadow:0 10px 30px #0009}
-    .result-gif-frame[hidden]{display:none}.result-gif-frame img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
-    .codex-face{display:block;width:62px;height:62px;object-fit:cover;margin:0 auto;border-radius:12px;border:1px solid #fff4}
-    .codex-icon{height:68px}.codex-tile{min-height:145px}
+    .villain-figure img{width:min(61vw,190px);height:min(61vw,190px);object-fit:cover;border-radius:18px;border:3px solid #ffffff55;box-shadow:0 12px 30px #0008}.villain-figure.react{animation:hit .35s ease}.result-gif-frame{margin:10px auto 14px;max-width:220px;border-radius:15px;overflow:hidden;border:2px solid #81e6f955;box-shadow:0 10px 30px #0009}.result-gif-frame[hidden]{display:none}.result-gif-frame img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover}.codex-face{width:64px;height:64px;object-fit:cover;border-radius:12px;border:2px solid #ffffff38;display:block;margin:auto}.codex-icon{height:68px!important}.codex-tile{min-height:144px!important}
+
+    /* V3.7 • cartes mystère et succès 1000 G */
+    .nav{grid-template-columns:repeat(6,minmax(0,1fr))}
+    .nav-btn{font-size:8px;gap:3px;padding:6px 0}
+    .nav-btn .nicon{font-size:20px}
+    .battle-weakness{background:linear-gradient(155deg,#1d2249,#10172e);border-color:#7864cc88}
+    .weakness-title{color:var(--gold)}
+    .weakness-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .weak-btn{position:relative;min-height:86px;overflow:hidden;background:linear-gradient(140deg,#4f3287,#192456 80%);border:1px solid #8d72d0;padding:9px 3px;border-radius:12px;box-shadow:0 5px 16px #0005;transition:transform .15s,background .18s}
+    .weak-btn:not(:disabled):active{transform:scale(.95)}
+    .weak-btn .wicon{font-size:27px;color:#f7c7ff;text-shadow:0 2px 16px #7f68ff}
+    .weak-btn .wlabel{color:#e9dff7;font-size:9px;line-height:1.1}
+    .weak-btn.mystery-card .wicon{font-size:31px}
+    .weak-btn.mystery-card .wlabel{letter-spacing:1px}
+    .weak-btn.revealed-card{background:linear-gradient(145deg,#244b60,#122536);border-color:var(--cyan)}
+    .weak-btn.missed-card{background:#4b273b;border-color:#f86d89}
+    .weak-btn.active{border:1px solid #56ffc4;background:#21464b}
+    .weak-btn:disabled{opacity:.78}
+    .weakness-help strong{color:var(--gold)}
+    .achievement-banner{background:linear-gradient(125deg,#29405b,#2f2150);border:1px solid #8a76dd;border-radius:20px;padding:18px;box-shadow:0 15px 32px #0005}
+    .achievement-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .achievement-score{font-weight:1000;font-size:clamp(22px,6vw,30px);color:#fbe09a;letter-spacing:-.8px;white-space:nowrap}
+    .achievement-small{color:#bccbec;font-size:10px;letter-spacing:1.3px;text-transform:uppercase}
+    .achievement-controls{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:15px 0}
+    .achievement-filter{border:1px solid #49537d;background:#1b2544;border-radius:10px;padding:10px 3px;color:#c7d2ed;font-size:11px;font-weight:850}
+    .achievement-filter.active{border-color:#66e8db;background:#21434b;color:#dcffff}
+    .achievement-card{display:flex;align-items:center;gap:11px;border:1px solid #374461;background:linear-gradient(135deg,#1a2545,#121a31);border-radius:14px;padding:12px;margin-bottom:9px}
+    .achievement-card.unlocked{border-color:#ac9561;background:linear-gradient(135deg,#37304e,#242642)}
+    .achievement-medal{width:44px;height:44px;flex-shrink:0;border:1px solid #415574;background:#12182d;border-radius:13px;display:grid;place-items:center;font-size:24px}
+    .achievement-card.unlocked .achievement-medal{border-color:#d7bd78;background:#50422a}
+    .achievement-details{flex:1;min-width:0}.achievement-name{font-weight:900;font-size:12px;margin-bottom:4px}
+    .achievement-desc{color:#aab9d4;font-size:10px;line-height:1.4}
+    .achievement-progress{color:#8de3d9;font-size:10px;margin-top:6px;font-weight:800}
+    .achievement-points{color:#fbe09a;white-space:nowrap;font-size:12px;font-weight:950}
+    .achievement-pop{position:fixed;bottom:calc(var(--navh) + 35px + env(safe-area-inset-bottom));left:50%;transform:translate(-50%,20px);width:min(450px,calc(100% - 26px));z-index:32;padding:14px 15px;display:flex;gap:13px;align-items:center;background:linear-gradient(125deg,#47335b,#243d5a);border:1px solid #ffda85;box-shadow:0 10px 45px #000b;border-radius:14px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s,transform .25s,visibility .25s}
+    .achievement-pop.visible{opacity:1;visibility:visible;transform:translate(-50%,0)}
+    .achievement-pop .medal{font-size:34px}.achievement-pop strong{font-size:12px}.achievement-pop small{font-size:10px;color:#ffe4a6}
+    @media(max-width:350px){.nav-btn{font-size:7px}.nav-btn .nicon{font-size:17px}.weak-btn{min-height:75px}}
   </style>
 </head>
 <body>
@@ -102,7 +136,7 @@
       </section>
       <section id="view-prison" class="view" aria-label="Collection des super-méchants">
         <div class="kicker">DOSSIERS CONFIDENTIELS</div><h1 class="h1">LE <em>COFFRE.</em></h1>
-        <p class="section-blurb">Chaque super-méchant arrêté rejoint ton répertoire. Retrouve les 18 suspects uniques de Néo-City.</p>
+        <p class="section-blurb">Chaque super-méchant arrêté rejoint ton répertoire. Retrouve les 6 super-méchants uniques de Néo-City.</p>
         <div class="ticker" style="margin-bottom:16px"><span class="big-icon">🔒</span><div><b id="prison-counter">0 / 6 super-méchants identifiés</b><p id="prison-summary">Ta chasse ne fait que commencer.</p></div></div>
         <div id="codex-grid" class="codex-grid"></div>
       </section>
@@ -120,7 +154,7 @@
         </div>
         <div id="arena-message" class="arena-status" role="status" aria-live="polite">Initialisation de l'arène…</div>
         <div id="arena-setup" class="arena-box" hidden>
-          <h3>🛠️ Serveur à configurer</h3><p class="arena-muted">Le mode solo reste jouable. Pour ouvrir l'arène partagée, déploie la base SQL et complète <b>config.js</b> avec l'URL Supabase et la clé publique. Le guide est dans le fichier GUIDE_MISE_EN_LIGNE.md du dépôt.</p>
+          <h3>🛠️ Serveur à configurer</h3><p class="arena-muted">Le mode solo reste jouable. Pour ouvrir l'arène partagée, déploie la base SQL et complète <b>config.js</b> avec l'URL Supabase et la clé publique. Le guide est fourni dans le ZIP.</p>
         </div>
         <div id="arena-auth" class="arena-box" hidden>
           <h3>📨 Rejoins les agents</h3><p class="arena-muted">Connecte-toi par e-mail, sans mot de passe. Tu recevras un lien de connexion à ouvrir sur ton téléphone.</p>
@@ -167,6 +201,17 @@
           <div class="arena-box"><h3>📡 Dernières captures de la ville</h3><div id="arena-feed" class="arena-muted">Aucune capture en ligne pour le moment.</div></div>
         </div>
       </section>
+      <section id="view-achievements" class="view" aria-label="Succès et Gamerscore">
+        <div class="kicker">TABLEAU DES EXPLOITS</div><h1 class="h1">TES <em>SUCCÈS.</em></h1>
+        <p class="section-blurb">30 succès, 1 000 G à débloquer. Inspirés des trophées de jeux vidéo : ces G sont propres à SUPERVILAINS, pas liés à un compte Xbox.</p>
+        <div class="achievement-banner">
+          <div class="achievement-top"><div><div class="achievement-small">🏆 GAMERSCORE</div><div id="achievement-score" class="achievement-score">0 / 1000 G</div></div><div style="text-align:right"><div id="achievement-count" style="font-weight:950;font-size:22px">0 / 30</div><div class="achievement-small">succès débloqués</div></div></div>
+          <div class="progress" style="margin-top:14px;height:10px"><i id="achievement-bar" style="width:0%"></i></div>
+        </div>
+        <div class="achievement-controls" role="group" aria-label="Filtrer les succès"><button class="achievement-filter active" data-ach-filter="all" aria-pressed="true" type="button">TOUS</button><button class="achievement-filter" data-ach-filter="unlocked" aria-pressed="false" type="button">DÉBLOQUÉS</button><button class="achievement-filter" data-ach-filter="locked" aria-pressed="false" type="button">À GAGNER</button></div>
+        <div id="achievement-list"></div>
+        <p class="footer-note">La progression est enregistrée sur ton téléphone. Les G locaux ne modifient pas le classement multijoueur.</p>
+      </section>
       <section id="view-agent" class="view" aria-label="Profil et équipement">
         <div class="profile-head"><div class="profile-avatar">🦸</div><div class="kicker">DOSSIER DE L'AGENT</div><h2 id="profile-rank">AGENT RECRUE</h2><p id="profile-level">Niveau 1 • Protecteur de Néo-City</p><div class="xp-row"><span>EXPÉRIENCE</span><span id="xp-text">0/200 XP</span></div><div class="progress"><i id="xp-bar" style="width:0%"></i></div></div>
         <div class="profile-grid"><div class="stat-tile"><div class="count" id="prof-total">0</div><small>Criminels capturés</small></div><div class="stat-tile"><div class="count" id="prof-perfect">0</div><small>Captures parfaites</small></div><div class="stat-tile"><div class="count" id="prof-patrol">0</div><small>Patrouilles</small></div><div class="stat-tile"><div class="count" id="prof-missions">0</div><small>Missions terminées</small></div></div>
@@ -176,7 +221,7 @@
         <div class="shop-card"><div class="shop-icon">🔋</div><div class="shop-desc"><strong>Surcapacité du réacteur</strong><p>+5 d'énergie maximale, bonus permanent.</p></div><div><div class="shop-price" id="upgrade-price">🪙 190</div><button class="tiny-btn" id="buy-upgrade" type="button">AMÉLIORER</button></div></div>
         <div class="privacy">💾 Ta partie est sauvegardée automatiquement sur ce navigateur. La campagne est sauvegardée sur ce navigateur. L’ARÈNE en ligne possède sa progression compétitive séparée, associée à ton compte.</div>
         <button id="sound-toggle" class="button outline" style="width:100%;margin-top:12px" type="button">🔇 Activer les sons</button>
-        <p class="footer-note">SUPERVILAINS — Meme Hunt · V3.5</p>
+        <p class="footer-note">SUPERVILAINS — Meme Hunt · V3.7</p>
       </section>
     </main>
     <nav class="nav" aria-label="Navigation principale">
@@ -184,23 +229,25 @@
       <button type="button" class="nav-btn" data-view="prison"><span class="nicon">🔒</span>COFFRE</button>
       <button type="button" class="nav-btn" data-view="missions"><span class="nicon">🎯</span>MISSIONS</button>
       <button type="button" class="nav-btn" data-view="arena"><span class="nicon">🏆</span>ARÈNE</button>
+      <button type="button" class="nav-btn" data-view="achievements"><span class="nicon">🏅</span>SUCCÈS</button>
       <button type="button" class="nav-btn" data-view="agent"><span class="nicon">🦸</span>AGENT</button>
     </nav>
   </div>
+  <div id="achievement-pop" class="achievement-pop" aria-live="polite" aria-atomic="true"></div>
   <div id="overlay-battle" class="overlay" role="dialog" aria-modal="true" aria-label="Affrontement d'un super-méchant">
     <div class="dialog">
       <div class="encounter-header"><div class="overlay-top"><span class="eyebrow" id="battle-district">⚠️ MENACE DÉTECTÉE</span><button class="xbtn" type="button" id="close-battle" aria-label="Fuir">×</button></div></div>
       <div class="encounter-scene" id="encounter-scene"><div class="target-rings"></div><div class="scanline"></div><span class="scene-tag">CIBLE VERROUILLÉE</span><div class="villain-figure" id="villain-figure">👾</div><span class="scene-bottom">RADAR // NÉO-CITY // EN DIRECT</span></div>
       <div class="villain-info"><h2 id="battle-name">LE BARON NÉON</h2><p id="battle-description">Suspect dangereux.</p><div class="hp-caption"><span>❤️ RÉSISTANCE</span><strong id="hp-number">100 / 100</strong></div><div class="progress pink"><i id="hp-bar" style="width:100%"></i></div></div>
       <div class="battle-message" id="battle-message" aria-live="polite">Neutralise le suspect pour augmenter tes chances.</div>
-      <div class="battle-actions"><div class="battle-actions-grid"><button id="attack-btn" type="button" class="button primary">⚡ TROLLER <small>(-3 ⚡)</small></button><button id="capture-btn" type="button" class="button capture">🕸️ CAPTURER</button></div><div class="battle-help"><span id="capture-odds">Probabilité : 35 %</span><span id="shield-info">🛡️ Bouclier : 100</span></div><div class="battle-weakness"><div class="weakness-title">💥 FAILLE ULTIME</div><div id="weakness-grid" class="weakness-grid"></div><div class="weakness-help" id="weakness-help">Choisis le bon objet pour briser mentalement le méchant.</div></div></div>
+      <div class="battle-actions"><div class="battle-actions-grid"><button id="attack-btn" type="button" class="button primary">⚡ TROLLER <small>(-3 ⚡)</small></button><button id="capture-btn" type="button" class="button capture">🕸️ CAPTURER</button></div><div class="battle-help"><span id="capture-odds">Probabilité : 35 %</span><span id="shield-info">🛡️ Bouclier : 100</span></div><div class="battle-weakness"><div class="weakness-title">🎴 FAILLE ULTIME • 1 CHANCE SUR 6</div><div id="weakness-grid" class="weakness-grid"></div><div class="weakness-help" id="weakness-help">Les cartes sont face cachée. Un seul choix : trouve la bonne du premier coup !</div></div></div>
     </div>
   </div>
   <div id="overlay-meter" class="overlay" role="dialog" aria-modal="true" aria-label="Précision de capture">
     <div class="dialog mini-dialog"><div class="overline">🕸️ FILET IONIQUE ARMÉ</div><h2>VISE LE <span style="color:var(--cyan)">CENTRE !</span></h2><p>Arrête le curseur dans la zone turquoise pour améliorer tes chances d'emprisonner le suspect.</p><div class="meter-wrap"><div class="meter" id="meter"><div class="meter-zone" id="meter-zone"></div><div class="meter-pointer" id="meter-pointer"></div></div><div class="meter-indicators"><span>IMPRÉCIS</span><span>PARFAIT</span><span>IMPRÉCIS</span></div></div><p style="font-size:10px;margin-bottom:15px">La difficulté dépend de la puissance du méchant.</p><button class="button capture" id="stop-meter" style="width:100%;font-size:17px;min-height:62px" type="button">🎯 LANCER LE FILET !</button></div>
   </div>
-  <div id="overlay-result" class="overlay" role="dialog" aria-modal="true" aria-label="Résultat de l'affrontement"><div class="dialog mini-dialog"><span class="result-icon" id="result-icon">🏆</span><div class="overline" id="result-kicker">CIBLE IMMOBILISÉE</div><h2 id="result-title">CAPTURE RÉUSSIE !</h2><p id="result-text">Félicitations agent.</p><div id="result-gif-frame" class="result-gif-frame" hidden><img id="result-gif" alt="Super-méchant vaincu en pleurs" /></div><div class="result-stats" id="result-stats"></div><button id="result-button" type="button" class="button primary" style="width:100%">RETOURNER À LA CARTE</button></div></div>
-  <div id="overlay-tutorial" class="overlay" role="dialog" aria-modal="true" aria-label="Bienvenue dans Supervilains"><div class="dialog mini-dialog tutorial-page"><div class="tutorial-logo">🦹</div><div class="overline">BIENVENUE AGENT</div><h2>LA CHASSE <span style="color:var(--pink)">COMMENCE !</span></h2><p>6 super-méchants mème sèment le chaos sur les réseaux. Repère-les, découvre leur faille ultime et capture-les avant tout le monde.</p><div class="tutorial-features"><div class="tutorial-feature"><span>🗺️</span><div><strong>EXPLORE LES QUARTIERS</strong><small>Repère les criminels dans la ville.</small></div></div><div class="tutorial-feature"><span>⚡</span><div><strong>TROUVE LEUR FAILLE</strong><small>Chaque super-méchant possède un objet fatal qui le fait craquer.</small></div></div><div class="tutorial-feature"><span>🕸️</span><div><strong>CAPTURE AU BON MOMENT</strong><small>Vise juste, collecte les récompenses et progresse.</small></div></div></div><button class="button primary" id="start-game" type="button" style="width:100%;font-size:14px">🚀 DÉMARRER LA MISSION</button></div></div>
+  <div id="overlay-result" class="overlay" role="dialog" aria-modal="true" aria-label="Résultat de l'affrontement"><div class="dialog mini-dialog"><span class="result-icon" id="result-icon">🏆</span><div class="overline" id="result-kicker">CIBLE IMMOBILISÉE</div><h2 id="result-title">CAPTURE RÉUSSIE !</h2><p id="result-text">Félicitations agent.</p><div class="result-gif-frame" id="result-gif-frame" hidden><img id="result-gif" alt="Animation du méchant capturé en train de pleurer" /></div><div class="result-stats" id="result-stats"></div><button id="result-button" type="button" class="button primary" style="width:100%">RETOURNER À LA CARTE</button></div></div>
+  <div id="overlay-tutorial" class="overlay" role="dialog" aria-modal="true" aria-label="Bienvenue dans Supervilains"><div class="dialog mini-dialog tutorial-page"><div class="tutorial-logo">🦹</div><div class="overline">BIENVENUE AGENT</div><h2>LA CHASSE <span style="color:var(--pink)">COMMENCE !</span></h2><p>6 super-méchants mème sèment le chaos sur les réseaux. Repère-les, découvre leur faille ultime et capture-les avant tout le monde.</p><div class="tutorial-features"><div class="tutorial-feature"><span>🗺️</span><div><strong>EXPLORE LES QUARTIERS</strong><small>Repère les criminels dans la ville.</small></div></div><div class="tutorial-feature"><span>🎴</span><div><strong>UNE CARTE, UNE CHANCE</strong><small>Six cartes cachées et mélangées. Le bon choix capture immédiatement et donne un bonus !</small></div></div><div class="tutorial-feature"><span>🕸️</span><div><strong>CAPTURE AU BON MOMENT</strong><small>Vise juste, collecte les récompenses et progresse.</small></div></div></div><button class="button primary" id="start-game" type="button" style="width:100%;font-size:14px">🚀 DÉMARRER LA MISSION</button></div></div>
   <div id="toast" role="status" aria-live="polite"></div>
   <script>
   (()=>{'use strict';
@@ -229,10 +276,10 @@ const villains=[
   {name:'LUDO',icon:'📘',line:'Maître des fautes et des légendes bancales. Le Bescherelle est sa kryptonite.',danger:4,type:'Texte toxique',color:'#ffc861',boss:true,portrait:'assets/ludo.png',weakness:'bescherelle',weaknessName:'Bescherelle',weaknessIcon:'📘'},
   {name:'ERIC',icon:'🧴',line:'Le boss final aromatique. Un simple déodorant suffit à briser son aura pestilentielle.',danger:5,type:'Boss',color:'#ff8a5b',boss:true,portrait:'assets/eric.png',weakness:'deodorant',weaknessName:'Déodorant',weaknessIcon:'🧴'}
 ];
-const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Date.now(),coins:160,nets:5,owned:{},captured:0,perfect:0,patrols:0,robot:0,visited:{},claimed:[],upgrade:0,sound:false,started:false});
+const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Date.now(),coins:160,nets:5,owned:{},captured:0,perfect:0,patrols:0,robot:0,visited:{},claimed:[],upgrade:0,sound:false,started:false,ultimate:0,ultimateByVillain:{},weaknessAttempts:0,achievements:{}});
     const storageKey='supervilains_operation_minuit_v3_meme';
     let state=initial();
-    try{let saved=JSON.parse(localStorage.getItem(storageKey)||'null');if(saved&&[1,3].includes(saved.version)){state={...initial(),...saved};state.owned=saved.owned||{};state.visited=saved.visited||{};state.claimed=Array.isArray(saved.claimed)?saved.claimed:[]}}catch(e){}
+    try{let saved=JSON.parse(localStorage.getItem(storageKey)||'null');if(saved&&[1,3].includes(saved.version)){state={...initial(),...saved};state.owned=saved.owned||{};state.visited=saved.visited||{};state.claimed=Array.isArray(saved.claimed)?saved.claimed:[];state.ultimateByVillain=saved.ultimateByVillain&&typeof saved.ultimateByVillain==='object'?saved.ultimateByVillain:{};state.achievements=saved.achievements&&typeof saved.achievements==='object'?saved.achievements:{}}}catch(e){}
     let enemy=null, meterAnimation=0, meterStart=0, meterPos=.5, meterDirection=1, meterActive=false, busy=false, audioCtx=null, toastTimer=0;
     const $=id=>document.getElementById(id);
     const save=()=>{try{localStorage.setItem(storageKey,JSON.stringify(state))}catch(e){}};
@@ -243,44 +290,122 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     const unlocked=()=>districts.filter(d=>state.level>=d.min).length;
     const rank=()=>state.level>=10?'SEIGNEUR DES MÈMES':state.level>=6?'CHASSEUR VIRAL':state.level>=3?'AGENT CRINGE CONFIRMÉ':'AGENT RECRUE';
     const missionData=[{id:'c2',name:'Première humiliation',desc:'Capture 2 super-méchants.',key:'captured',total:2,coins:120,xp:90,nets:1},{id:'d4',name:'Scroll infini',desc:'Effectue 4 patrouilles.',key:'patrols',total:4,coins:110,xp:90,nets:1},{id:'p2',name:'Clip parfait',desc:'Réussis 2 captures parfaites.',key:'perfect',total:2,coins:160,xp:150,nets:2},{id:'c6',name:'Top 6 du cringe',desc:'Capture les 6 super-méchants.',key:'captured',total:6,coins:360,xp:320,nets:3},{id:'v6',name:'Tour complet du feed',desc:'Patrouille dans les 6 zones.',key:'visited',total:6,coins:400,xp:350,nets:3}];
+    // Les 30 succès représentent exactement 1000 G (score interne au jeu).
+    const achievements=[
+      ...villains.map((v,i)=>({id:'first_'+i,name:'Premier dossier : '+v.name,description:'Capturer '+v.name+' une fois.',icon:'🕸️',points:10,target:1,progress:()=>Number(state.owned[i]||0)})),
+      ...villains.map((v,i)=>({id:'weak_'+i,name:'Faille révélée : '+v.name,description:'Trouver la carte fatale de '+v.name+' du premier coup.',icon:'🎴',points:20,target:1,progress:()=>Number(state.ultimateByVillain[i]||0)})),
+      ...villains.map((v,i)=>({id:'five_'+i,name:'Chasse à '+v.name,description:'Capturer '+v.name+' cinq fois.',icon:'⚡',points:30,target:5,progress:()=>Number(state.owned[i]||0)})),
+      ...villains.map((v,i)=>({id:'ten_'+i,name:'Némésis de '+v.name,description:'Capturer '+v.name+' dix fois.',icon:'👑',points:40,target:10,progress:()=>Number(state.owned[i]||0)})),
+      {id:'patrol25',name:'Radar sans repos',description:'Effectuer 25 patrouilles.',icon:'📡',points:50,target:25,progress:()=>state.patrols},
+      {id:'catch30',name:'Collectionneur redoutable',description:'Réussir 30 captures.',icon:'🏆',points:50,target:30,progress:()=>state.captured},
+      {id:'perfect10',name:'Visée légendaire',description:'Réussir 10 captures parfaites au filet.',icon:'🎯',points:50,target:10,progress:()=>state.perfect},
+      {id:'missions5',name:'Agent irréprochable',description:'Récupérer les 5 récompenses de missions.',icon:'📜',points:50,target:5,progress:()=>state.claimed.length},
+      {id:'fullroster',name:'La prison est pleine',description:'Capturer chacun des 6 super-méchants.',icon:'🏰',points:100,target:6,progress:()=>seen()},
+      {id:'sixsecrets',name:'Maître des failles',description:'Trouver la carte fatale des 6 super-méchants.',icon:'💎',points:100,target:6,progress:()=>villains.filter((v,i)=>Number(state.ultimateByVillain[i]||0)>0).length}
+    ];
+    if(achievements.length!==30||achievements.reduce((n,a)=>n+a.points,0)!==1000)throw Error('Succès mal configurés');
+    let achievementFilter='all',popQueue=[],popShowing=false;
+    const achievementUnlocked=a=>Boolean(state.achievements[a.id]);
+    function enqueueAchievement(a){popQueue.push(a);showAchievementPopup()}
+    function showAchievementPopup(){if(popShowing||!popQueue.length)return;popShowing=true;const a=popQueue.shift(),el=$('achievement-pop');
+      el.innerHTML=`<span class="medal">🏅</span><span><strong>SUCCÈS DÉBLOQUÉ : ${a.name}</strong><br><small>+${a.points} G · SUPERVILAINS</small></span>`;
+      el.classList.add('visible');tone(1040,.19);setTimeout(()=>{el.classList.remove('visible');setTimeout(()=>{popShowing=false;showAchievementPopup()},300)},2900);
+    }
+    function checkAchievements(silent=false){const unlocked=[];for(const a of achievements){if(!achievementUnlocked(a)&&Number(a.progress())>=a.target){state.achievements[a.id]=Date.now();unlocked.push(a)}}if(!silent)unlocked.forEach(enqueueAchievement);return unlocked.length}
+    function renderAchievements(){
+      const count=achievements.filter(achievementUnlocked).length,score=achievements.reduce((n,a)=>n+(achievementUnlocked(a)?a.points:0),0);
+      $('achievement-score').textContent=`${score} / 1000 G`;$('achievement-count').textContent=`${count} / 30`;$('achievement-bar').style.width=(score/10)+'%';
+      document.querySelectorAll('[data-ach-filter]').forEach(btn=>{const on=btn.dataset.achFilter===achievementFilter;btn.classList.toggle('active',on);btn.setAttribute('aria-pressed',String(on))});
+      const selected=achievements.filter(a=>achievementFilter==='all'||(achievementFilter==='unlocked'?achievementUnlocked(a):!achievementUnlocked(a)));
+      $('achievement-list').innerHTML=selected.length?selected.map(a=>{const done=achievementUnlocked(a),progress=Math.min(a.target,Math.max(0,Number(a.progress())||0));return `<div class="achievement-card ${done?'unlocked':''}"><div class="achievement-medal">${done?a.icon:'🔒'}</div><div class="achievement-details"><div class="achievement-name">${a.name}</div><div class="achievement-desc">${a.description}</div><div class="achievement-progress">${done?'✅ Débloqué':`${progress} / ${a.target}`}</div></div><span class="achievement-points">${a.points} G</span></div>`}).join(''):'<div class="empty">Aucun succès dans ce filtre.</div>';
+    }
     const missionValue=m=>m.key==='visited'?Object.keys(state.visited).length:(state[m.key]||0);
     function regen(){let now=Date.now();if(!Number.isFinite(state.lastEnergy)||state.lastEnergy>now)state.lastEnergy=now;if(state.energy>=state.maxEnergy){state.lastEnergy=now;return}let ticks=Math.floor((now-state.lastEnergy)/45000);if(ticks>0){state.energy=Math.min(state.maxEnergy,state.energy+ticks);state.lastEnergy+=ticks*45000;save()}}
     function addXP(n){state.xp+=n;let leveled=0;while(state.xp>=xpGoal(state.level)){state.xp-=xpGoal(state.level);state.level++;leveled++;state.coins+=50;state.nets+=1}if(leveled){tone(700,.14);setTimeout(()=>toast(`🎉 NIVEAU ${state.level} ! Quartiers et récompenses débloqués.`),160)}return leveled}
     function renderStats(){regen();$('top-level').textContent=`AGENT · NIV. ${state.level}`;$('top-energy').textContent=`${state.energy}/${state.maxEnergy}`;$('top-coins').textContent=state.coins;$('top-nets').textContent=state.nets;$('stat-captured').textContent=state.captured;$('stat-unique').textContent=`${seen()}/${villains.length}`;$('stat-districts').textContent=`${unlocked()}/${districts.length}`}
     function renderMap(){let html='';districts.forEach(d=>{let lock=state.level<d.min;html+=`<button class="district ${lock?'locked':''}" data-district="${d.id}" style="--glow:${d.color};--haze:${d.glow};--stroke:${d.stroke}" type="button" aria-label="${d.name}, ${lock?'verrouillé jusqu’au niveau '+d.min:'patrouiller'}"><span class="district-lvl">NIV. ${d.min}+</span><span class="district-icon">${d.icon}</span><strong>${d.name}</strong><span class="district-sub">${lock?`🔒 DÉBLOQUER NIV. ${d.min}`:'<i class="live-dot"></i> SIGNAL DÉTECTÉ'}</span></button>`});$('district-grid').innerHTML=html}
-    function renderCodex(){let html='';villains.forEach((v,id)=>{let count=state.owned[id]||0;html+=`<div class="codex-tile ${count?'':'unknown'}" title="${count?v.line:'Identité inconnue'}"><span class="codex-icon">${count?`<img class="codex-face" loading="lazy" src="${v.portrait}" alt="${v.name}" onerror="this.onerror=null;this.src='assets/'+['manu','lea','natsu','amelie','ludo','eric'][${id}]+'.svg'">`:'❔'}</span><span class="codex-name">${count?v.name:'DOSSIER ???'}</span><div class="codex-rarity">${count?`×${count} ARRÊTÉ${count>1?'S':''}`:v.boss?'🔒 BOSS':'NON CAPTURÉ'}</div></div>`});$('codex-grid').innerHTML=html;$('prison-counter').textContent=`${seen()} / 6 super-méchants identifiés`;$('prison-summary').textContent=seen()===6?'Les 6 super-méchants sont identifiés ! 🏆':`Encore ${6-seen()} suspects à découvrir.`}
+    function renderCodex(){let html='';villains.forEach((v,id)=>{let count=state.owned[id]||0;html+=`<div class="codex-tile ${count?'':'unknown'}" title="${count?v.line:'Identité inconnue'}"><span class="codex-icon">${count?`<img class="codex-face" loading="lazy" src="${v.portrait}" alt="${v.name}">`:'❔'}</span><span class="codex-name">${count?v.name:'DOSSIER ???'}</span><div class="codex-rarity">${count?`×${count} ARRÊTÉ${count>1?'S':''}`:v.boss?'🔒 BOSS':'NON CAPTURÉ'}</div></div>`});$('codex-grid').innerHTML=html;$('prison-counter').textContent=`${seen()} / 6 super-méchants identifiés`;$('prison-summary').textContent=seen()===6?'Les 6 super-méchants ont été capturés ! 🏆':`Encore ${6-seen()} suspects à découvrir.`}
     function renderMissions(){let html='';missionData.forEach(m=>{let p=missionValue(m),done=state.claimed.includes(m.id),ready=p>=m.total;html+=`<div class="mission"><div class="row-between"><div class="mission-title">${done?'✅ ':'🎯 '}${m.name}</div><div style="font-size:10px;color:var(--cyan);font-weight:900">${Math.min(p,m.total)}/${m.total}</div></div><div class="mission-desc">${m.desc}</div><div class="progress"><i style="width:${Math.min(100,p/m.total*100)}%"></i></div><div class="mission-footer"><div class="mission-reward">🪙 ${m.coins} · ⭐ ${m.xp} XP · 🕸️ ${m.nets}</div><button type="button" class="tiny-btn" data-claim="${m.id}" ${done||!ready?'disabled':''}>${done?'RÉCUPÉRÉ':ready?'RÉCUPÉRER':'EN COURS'}</button></div></div>`});$('mission-list').innerHTML=html}
     function renderAgent(){$('profile-rank').textContent=rank();$('profile-level').textContent=`Niveau ${state.level} • Chasseur viral de SUPERVILAINS`;$('xp-text').textContent=`${state.xp}/${xpGoal(state.level)} XP`;$('xp-bar').style.width=`${100*state.xp/xpGoal(state.level)}%`;$('prof-total').textContent=state.captured;$('prof-perfect').textContent=state.perfect;$('prof-patrol').textContent=state.patrols;$('prof-missions').textContent=state.claimed.length;$('upgrade-price').textContent=`🪙 ${190+state.upgrade*100}`;$('buy-nets').disabled=state.coins<90;$('buy-energy').disabled=state.coins<55||state.energy===state.maxEnergy;$('buy-upgrade').disabled=state.coins<190+state.upgrade*100||state.upgrade>=8;$('sound-toggle').textContent=state.sound?'🔊 Désactiver les sons':'🔇 Activer les sons'}
-    function renderAll(){renderStats();renderMap();renderCodex();renderMissions();renderAgent()}
-    function notifySave(){save();renderAll()}
-    function switchView(view){document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active',el.id==='view-'+view));document.querySelectorAll('.nav-btn').forEach(el=>el.classList.toggle('active',el.dataset.view===view));window.scrollTo({top:0,behavior:'instant'});if(view==='agent')renderAgent();if(view==='missions')renderMissions()}
+    function renderAll(){renderStats();renderMap();renderCodex();renderMissions();renderAgent();renderAchievements()}
+    function notifySave(){checkAchievements();save();renderAll()}
+    function switchView(view){document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active',el.id==='view-'+view));document.querySelectorAll('.nav-btn').forEach(el=>el.classList.toggle('active',el.dataset.view===view));window.scrollTo({top:0,behavior:'instant'});if(view==='agent')renderAgent();if(view==='missions')renderMissions();if(view==='achievements')renderAchievements()}
     function toast(s){let el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2500)}
     function tone(f=430,sec=.12){if(!state.sound)return;try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();let osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type='triangle';osc.frequency.setValueAtTime(f,audioCtx.currentTime);gain.gain.setValueAtTime(.08,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+sec);osc.connect(gain);gain.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+sec)}catch(e){}}
     const vibrate=n=>{try{navigator.vibrate?.(n)}catch(e){}};
     function show(id){$(id).classList.add('visible')};function hide(id){$(id).classList.remove('visible')}
-    const bossKeys=['manu','lea','natsu','amelie','ludo','eric'];let reactionTimeout=null;
-    function normalPortrait(id){const v=villains[id];$('villain-figure').innerHTML=v.portrait?`<img src="${v.portrait}" alt="${v.name}">`:v.icon;const im=$('villain-figure').querySelector('img');if(im)im.onerror=()=>{if(!im.dataset.fallback){im.dataset.fallback='1';im.src='assets/'+bossKeys[id]+'.svg';}else $('villain-figure').textContent=v.icon;};}
-    function reactionPortrait(id,type){clearTimeout(reactionTimeout);const v=villains[id];const key=bossKeys[id],base='assets/reactions/'+key+'_'+type;
-      $('villain-figure').innerHTML=`<img src="${base}.gif?t=${Date.now()}" alt="Réaction ${type} de ${v.name}">`;
-      const img=$('villain-figure').querySelector('img');img.onerror=()=>{img.onerror=null;img.src=base+'.svg';};
-      if(type==='troller')reactionTimeout=setTimeout(()=>{if(enemy&&enemy.id===id)normalPortrait(id)},1350);
+    const bossKeys=['manu','lea','natsu','amelie','ludo','eric'];
+    const shuffleCards=()=>{const deck=weaknessItems.map(w=>w.id);for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]]}return deck};
+    let reactionTimeout=null;
+    function normalPortrait(id){const v=villains[id];$('villain-figure').innerHTML=v.portrait?`<img src="${v.portrait}" alt="${v.name}">`:v.icon;}
+    function reactionPortrait(id,type){
+      const v=villains[id];clearTimeout(reactionTimeout);
+      const src=`assets/reactions/${bossKeys[id]}_${type}.gif?t=${Date.now()}`;
+      $('villain-figure').innerHTML=`<img alt="${v.name} en réaction ${type}" src="${src}">`;
+      const img=$('villain-figure').querySelector('img');img.onerror=()=>normalPortrait(id);
+      if(type==='troller')reactionTimeout=setTimeout(()=>{if(enemy&&enemy.id===id)normalPortrait(id)},1380);
     }
-    function openDistrict(id){regen();let d=districts[id];if(!d)return;if(state.level<d.min){toast(`🔒 Quartier accessible au niveau ${d.min}.`);return}if(enemy)return;const pool=d.villains;const missing=pool.filter(i=>!state.owned[i]);const villainId=missing.length&&Math.random()<.68?missing[rand(0,missing.length-1)]:pool[rand(0,pool.length-1)];const villain=villains[villainId];const maxhp=68+villain.danger*19+(villain.boss?20:0);enemy={id:villainId,district:id,hp:maxhp,maxhp,shield:100,attacks:0,exposed:false,weaknessUsed:null};state.patrols++;state.visited[id]=true;notifySave();$('battle-district').textContent=`⚠️ ${d.name} · ${villain.boss?'BOSS VIRAL':'SUSPECT VIRAL'}`;$('encounter-scene').style.setProperty('--scenecolor',villain.color+'aa');normalPortrait(villainId);$('battle-name').textContent=villain.name;$('battle-description').textContent=villain.line+` • Danger ${villain.danger}/6 ${villain.boss?'• BOSS':''} • Faille ultime : ${villain.weaknessIcon} ${villain.weaknessName}`;$('battle-message').className='battle-message';$('battle-message').textContent='Trolle la cible, découvre sa faille ultime puis tente la capture.';renderBattle();show('overlay-battle');tone(390,.16)}
+    function openDistrict(id){regen();let d=districts[id];if(!d)return;if(state.level<d.min){toast(`🔒 Quartier accessible au niveau ${d.min}.`);return}if(enemy)return;const pool=d.villains;const missing=pool.filter(i=>!state.owned[i]);const villainId=missing.length&&Math.random()<.68?missing[rand(0,missing.length-1)]:pool[rand(0,pool.length-1)];const villain=villains[villainId];const maxhp=68+villain.danger*19+(villain.boss?20:0);enemy={id:villainId,district:id,hp:maxhp,maxhp,shield:100,attacks:0,exposed:false,weaknessUsed:null,guessUsed:false,selectedSlot:-1,cards:shuffleCards()};state.patrols++;state.visited[id]=true;notifySave();$('battle-district').textContent=`⚠️ ${d.name} · ${villain.boss?'BOSS VIRAL':'SUSPECT VIRAL'}`;$('encounter-scene').style.setProperty('--scenecolor',villain.color+'aa');normalPortrait(villainId);$('battle-name').textContent=villain.name;$('battle-description').textContent=villain.line+` • Danger ${villain.danger}/6 ${villain.boss?'• BOSS':''} • 🎴 6 cartes mystère`;$('battle-message').className='battle-message';$('battle-message').textContent='Choisis UNE carte mystère. Bonne carte = capture instantanée + bonus !';renderBattle();show('overlay-battle');tone(390,.16)}
     function odds(){if(!enemy)return 0;let v=villains[enemy.id],wounded=(1-enemy.hp/enemy.maxhp),boost=enemy.exposed?26:0;return clamp(Math.round(44+wounded*55-v.danger*5-(v.boss?7:0)+boost),14,97)}
-    function renderBattle(){if(!enemy)return;const v=villains[enemy.id];$('hp-number').textContent=`${enemy.hp} / ${enemy.maxhp}`;$('hp-bar').style.width=`${100*enemy.hp/enemy.maxhp}%`;$('shield-info').textContent=`🛡️ Bouclier : ${enemy.shield}`;$('capture-odds').textContent=`Chance de capture : ${odds()} %${enemy.exposed?' · FAILLE EXPOSÉE':''}`;$('attack-btn').disabled=state.energy<3||busy;$('capture-btn').disabled=state.nets<1||busy;$('capture-btn').innerHTML=`🕸️ CAPTURER <small>(${state.nets})</small>`;$('weakness-help').textContent=enemy.exposed?`✅ ${v.name} est vulnérable à ${v.weaknessIcon} ${v.weaknessName}. La capture est grandement facilitée.`:'Choisis le bon objet pour révéler la faille ultime du méchant.';$('weakness-grid').innerHTML=weaknessItems.map(item=>`<button type="button" class="weak-btn ${(enemy.exposed&&item.id===v.weakness)?'active':''}" data-weakness="${item.id}" ${busy?'disabled':''}><span class="wicon">${item.icon}</span><span class="wlabel">${item.label}</span></button>`).join('')}
+    function renderBattle(){
+      if(!enemy)return;
+      const v=villains[enemy.id];$('hp-number').textContent=`${enemy.hp} / ${enemy.maxhp}`;
+      $('hp-bar').style.width=`${100*enemy.hp/enemy.maxhp}%`;
+      $('shield-info').textContent=`🛡️ Bouclier : ${enemy.shield}`;
+      $('capture-odds').textContent=`Chance du filet : ${odds()} %`;
+      $('attack-btn').disabled=state.energy<3||busy;
+      $('capture-btn').disabled=state.nets<1||busy;
+      $('capture-btn').innerHTML=`🕸️ CAPTURER <small>(${state.nets})</small>`;
+      $('weakness-help').textContent=enemy.guessUsed?'❌ Tentative utilisée. Continue avec TROLLER et CAPTURER.':'🎲 Six cartes face cachée, mélangées à chaque rencontre. Une seule tentative ! Bonne carte = capture automatique + bonus.';
+      $('weakness-grid').innerHTML=enemy.cards.map((itemId,i)=>{
+        const reveal=enemy.selectedSlot===i;
+        const item=weaknessItems.find(w=>w.id===itemId);
+        const chosenCorrect=reveal&&itemId===v.weakness;
+        return `<button type="button" class="weak-btn ${reveal?(chosenCorrect?'active revealed-card':'missed-card revealed-card'):'mystery-card'}" data-slot="${i}" aria-label="Carte mystère ${i+1}${reveal?' retournée':''}" ${enemy.guessUsed||busy?'disabled':''}><span class="wicon">${reveal?item.icon:'❔'}</span><span class="wlabel">${reveal?item.label:`CARTE ${i+1}`}</span></button>`;
+      }).join('');
+    }
     function message(txt,warn=false){$('battle-message').textContent=txt;$('battle-message').className='battle-message'+(warn?' warn':'')}
     function hitByVillain(){if(!enemy)return false;let d=villains[enemy.id].danger;enemy.shield=Math.max(0,enemy.shield-rand(5,10)+(-d*2));vibrate(40);if(enemy.shield<=0){endBattle('escape');return true}return false}
     function attack(){regen();if(!enemy||busy)return;if(state.energy<3){toast('⚡ Énergie insuffisante ! Recharge dans AGENT.');return}state.energy-=3;enemy.attacks++;let dmg=rand(16,24)+Math.floor(state.level/3)*2;enemy.hp=Math.max(1,enemy.hp-dmg);$('villain-figure').classList.remove('hit');void $('villain-figure').offsetWidth;$('villain-figure').classList.add('hit');tone(220,.08);vibrate(25);reactionPortrait(enemy.id,'troller');if(!hitByVillain()){message(`⚡ Troll critique : -${dmg} résistance ! La cible perd ses moyens.`);renderBattle()}notifySave()}
-    function useWeakness(id){if(!enemy||busy)return;const v=villains[enemy.id];const item=weaknessItems.find(w=>w.id===id);if(!item)return;if(enemy.exposed){message(`✅ Faille déjà trouvée : ${v.weaknessIcon} ${v.weaknessName}.`,false);return}if(id===v.weakness){enemy.exposed=true;enemy.weaknessUsed=id;enemy.hp=Math.max(1,enemy.hp-rand(18,28));enemy.shield=Math.max(0,enemy.shield-18);tone(920,.16);vibrate([25,40,80]);message(`💥 FAILLE ULTIME TROUVÉE ! ${v.name} craque face à ${item.icon} ${item.label}. Capture boostée !`);renderBattle();}else{tone(120,.12);vibrate(70);state.energy=Math.max(0,state.energy-1);message(`❌ ${item.icon} ${item.label} n'est pas la faille de ${v.name}. Mauvais choix, la cible contre-attaque !`,true);if(!hitByVillain())renderBattle();notifySave();}}
+    function useWeakness(slot){
+      if(!enemy||busy||enemy.guessUsed||!Number.isInteger(slot)||slot<0||slot>=enemy.cards.length)return;
+      enemy.guessUsed=true;enemy.selectedSlot=slot;state.weaknessAttempts++;
+      const v=villains[enemy.id],item=weaknessItems.find(w=>w.id===enemy.cards[slot]);
+      if(item.id===v.weakness){
+        enemy.exposed=true;enemy.weaknessUsed=item.id;
+        state.ultimate++;state.ultimateByVillain[enemy.id]=Number(state.ultimateByVillain[enemy.id]||0)+1;
+        tone(1050,.22);vibrate([45,50,85]);
+        completeCapture({perfect:false,ultimate:true,chance:100});
+      }else{
+        state.energy=Math.max(0,state.energy-2);tone(150,.13);vibrate(95);
+        if(!hitByVillain()){
+          message(`❌ Carte ${slot+1} : ${item.icon} ${item.label}. Ce n'est pas la faille ! Ta seule chance est passée.`,true);
+          renderBattle();notifySave();
+        }
+      }
+    }
+    // Chemin partagé : les deux méthodes de capture utilisent le même compteur et la même sauvegarde.
+    function completeCapture({perfect=false,ultimate=false,chance=null}={}){
+      if(!enemy)return;
+      const v=villains[enemy.id],old=Number(state.owned[enemy.id]||0);
+      const bonusXp=ultimate?130:0,bonusCoins=ultimate?160:0,bonusNets=ultimate?1:0;
+      const xp=45+v.danger*14+(v.boss?42:0)+(perfect?30:0)+bonusXp;
+      const coins=58+v.danger*14+(v.boss?58:0)+bonusCoins;
+      state.owned[enemy.id]=old+1;state.captured++;
+      if(perfect)state.perfect++;
+      if(v.type==='Robot')state.robot++;
+      addXP(xp);state.coins+=coins;state.nets+=bonusNets;
+      endBattle('win',{xp,coins,perfect,newEntry:!old,chance,exposed:ultimate,ultimate,bonusXp,bonusCoins,bonusNets});
+    }
     function startMeter(){if(!enemy||busy)return;if(state.nets<1){toast('🕸️ Plus de filets ! Achètes-en dans AGENT.');return}busy=true;renderBattle();const difficulty=villains[enemy.id].danger;let zoneWidth=Math.max(17,34-difficulty*2.7);$('meter-zone').style.width=`${zoneWidth}%`;$('meter-zone').style.left=`${50-zoneWidth/2}%`;meterPos=.05;meterDirection=1;meterActive=true;meterStart=performance.now();$('meter-pointer').style.left='5%';show('overlay-meter');cancelAnimationFrame(meterAnimation);const speed=.65+.12*difficulty;function tick(t){if(!meterActive)return;let x=.05+(1-Math.abs(((t-meterStart)/1000*speed)%1.8-.9)/.9)*.9;meterPos=clamp(x,.04,.96);$('meter-pointer').style.left=`${meterPos*100}%`;meterAnimation=requestAnimationFrame(tick)}meterAnimation=requestAnimationFrame(tick);tone(660,.11)}
     function stopMeter(){if(!meterActive||!enemy)return;meterActive=false;cancelAnimationFrame(meterAnimation);hide('overlay-meter');let score=clamp(1-Math.abs(meterPos-.5)/.5,0,1);let bonus=Math.round((score-.5)*34);let perfect=score>.89;let chance=clamp(odds()+bonus,6,97);state.nets--;const success=Math.random()*100<chance;tone(success?800:150,.24);vibrate(success?[45,45,110]:100);busy=false;
-      if(success){let v=villains[enemy.id],xp=45+v.danger*14+(v.boss?42:0)+(perfect?30:0),coins=58+v.danger*14+(v.boss?58:0),old=state.owned[enemy.id]||0;state.owned[enemy.id]=old+1;state.captured++;if(perfect)state.perfect++;if(v.type==='Robot')state.robot++;addXP(xp);state.coins+=coins;notifySave();endBattle('win',{xp,coins,perfect,newEntry:!old,chance,exposed:enemy.exposed});}
+      if(success){completeCapture({perfect,chance});}
       else{notifySave();if(!hitByVillain()){message(`❌ Filet évité (précision ${Math.round(score*100)} %). Réessaie !`,true);renderBattle()}else{ /* escape handled */ }}
     }
-    function endBattle(kind,reward={}){if(!enemy)return;const v=villains[enemy.id];hide('overlay-meter');hide('overlay-battle');meterActive=false;cancelAnimationFrame(meterAnimation);busy=false;let escaped=kind==='escape';$('result-icon').textContent=escaped?'💨':'🏆';clearTimeout(reactionTimeout);
-      const gf=$('result-gif-frame');gf.hidden=escaped;
-      if(!escaped){const key=bossKeys[enemy.id],base='assets/reactions/'+key+'_capture';const img=$('result-gif');img.onerror=()=>{img.onerror=null;img.src=base+'.svg';};img.src=base+'.gif?t='+Date.now();}
-      else $('result-gif').removeAttribute('src');$('result-kicker').textContent=escaped?'LE SUSPECT S’EST ÉCHAPPÉ':'CIBLE IMMOBILISÉE';$('result-title').textContent=escaped?'POURSUITE TERMINÉE':'CAPTURE RÉUSSIE !';$('result-text').textContent=escaped?`${v.name} s'est échappé. Son cringe l'a sauvé pour cette fois.`:`${v.name} rejoint ton coffre des criminels ! ${reward.newEntry?'NOUVEAU DOSSIER DÉBLOQUÉ ! ':''}${reward.exposed?'Tu as exploité sa faille ultime.':''}`;$('result-stats').innerHTML=escaped?'<span>🛡️ Bouclier épuisé</span><span>📡 Suspect localisé</span>':`<span>🪙 <b>+${reward.coins}</b></span><span>⭐ <b>+${reward.xp} XP</b></span>${reward.perfect?'<span>🎯 CAPTURE PARFAITE</span>':''}${reward.exposed?'<span>💥 FAILLE EXPLOITÉE</span>':''}`;$('result-button').textContent=escaped?'RECOMMENCER UNE PATROUILLE':'CONTINUER LA CHASSE';enemy=null;show('overlay-result');save();renderAll()}
+    function endBattle(kind,reward={}){if(!enemy)return;const v=villains[enemy.id];hide('overlay-meter');hide('overlay-battle');meterActive=false;cancelAnimationFrame(meterAnimation);busy=false;let escaped=kind==='escape';$('result-icon').textContent=escaped?'💨':'🏆';
+      const gifFrame=$('result-gif-frame');gifFrame.hidden=escaped;
+      if(!escaped){$('result-gif').src=`assets/reactions/${bossKeys[enemy.id]}_capture.gif?t=${Date.now()}`;}else{$('result-gif').removeAttribute('src');}
+      clearTimeout(reactionTimeout);$('result-kicker').textContent=escaped?'LE SUSPECT S’EST ÉCHAPPÉ':'CIBLE IMMOBILISÉE';$('result-title').textContent=escaped?'POURSUITE TERMINÉE':'CAPTURE RÉUSSIE !';$('result-text').textContent=escaped?`${v.name} s'est échappé. Son cringe l'a sauvé pour cette fois.`:`${v.name} rejoint ton coffre des criminels ! ${reward.newEntry?'NOUVEAU DOSSIER DÉBLOQUÉ ! ':''}${reward.ultimate?'🎴 CARTE FATALE AU PREMIER ESSAI ! Capture automatique et bonus spécial.':''}`;$('result-stats').innerHTML=escaped?'<span>🛡️ Bouclier épuisé</span><span>📡 Suspect localisé</span>':`<span>🪙 <b>+${reward.coins}</b></span><span>⭐ <b>+${reward.xp} XP</b></span>${reward.perfect?'<span>🎯 CAPTURE PARFAITE</span>':''}${reward.ultimate?'<span>🎴 FAILLE ULTIME : +160 🪙 · +130 XP · +1 🕸️</span>':''}`;$('result-button').textContent=escaped?'RECOMMENCER UNE PATROUILLE':'CONTINUER LA CHASSE';enemy=null;show('overlay-result');checkAchievements();save();renderAll()}
     function flee(){if(!enemy)return;endBattle('escape');$('result-text').textContent='Tu as quitté l’affrontement. Le criminel pourra être retrouvé dans son quartier.'}
     function claim(id){let m=missionData.find(m=>m.id===id);if(!m||state.claimed.includes(id)||missionValue(m)<m.total)return;state.claimed.push(id);state.coins+=m.coins;state.nets+=m.nets;addXP(m.xp);notifySave();tone(840,.2);vibrate(65);toast(`🎁 Mission accomplie : +${m.coins} 🪙 +${m.nets} 🕸️`)}
     function buy(which){if(which==='nets'){if(state.coins<90)return toast('Crédits insuffisants');state.coins-=90;state.nets+=3;toast('🕸️ +3 filets ioniques !')}
@@ -290,15 +415,16 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
     $('district-grid').addEventListener('click',e=>{let b=e.target.closest('[data-district]');if(b)openDistrict(Number(b.dataset.district))});
     $('mission-list').addEventListener('click',e=>{let b=e.target.closest('[data-claim]');if(b)claim(b.dataset.claim)});
-    $('close-battle').addEventListener('click',flee);$('attack-btn').addEventListener('click',attack);$('weakness-grid').addEventListener('click',e=>{let b=e.target.closest('[data-weakness]');if(b)useWeakness(b.dataset.weakness)});$('capture-btn').addEventListener('click',startMeter);$('stop-meter').addEventListener('click',stopMeter);$('result-button').addEventListener('click',()=>{hide('overlay-result');switchView('map')});
+    $('close-battle').addEventListener('click',flee);$('attack-btn').addEventListener('click',attack);$('weakness-grid').addEventListener('click',e=>{let b=e.target.closest('[data-slot]');if(b)useWeakness(Number(b.dataset.slot))});$('capture-btn').addEventListener('click',startMeter);$('stop-meter').addEventListener('click',stopMeter);$('result-button').addEventListener('click',()=>{hide('overlay-result');switchView('map')});
     $('buy-nets').addEventListener('click',()=>buy('nets'));$('buy-energy').addEventListener('click',()=>buy('energy'));$('buy-upgrade').addEventListener('click',()=>buy('upgrade'));
+    document.querySelectorAll('[data-ach-filter]').forEach(btn=>btn.addEventListener('click',()=>{achievementFilter=btn.dataset.achFilter;renderAchievements()}));
     $('sound-toggle').addEventListener('click',()=>{state.sound=!state.sound;save();renderAgent();tone(700,.12)});
     $('start-game').addEventListener('click',()=>{state.started=true;save();hide('overlay-tutorial');toast('📡 Choisis un quartier pour commencer !')});
     document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('overlay-result').classList.contains('visible')){$('result-button').click()}else if($('overlay-meter').classList.contains('visible')){$('stop-meter').click()}else if(enemy)flee()}else if((e.key===' '||e.key==='Enter')&&$('overlay-meter').classList.contains('visible')&&document.activeElement.tagName!=='BUTTON'){e.preventDefault();stopMeter()}});
     setInterval(()=>{let before=state.energy;regen();if(before!==state.energy){renderStats();if(enemy)renderBattle();renderAgent()}},2000);
     try{if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./service-worker.js').catch(()=>{})}catch(e){}
-    renderAll();if(!state.started)show('overlay-tutorial');
-    window.__gameTest={getState:()=>({...state}),openDistrict,attack,stopMeter,claim,buy,switchView};
+    checkAchievements(true);save();renderAll();if(!state.started)show('overlay-tutorial');
+    window.__gameTest={getState:()=>JSON.parse(JSON.stringify(state)),getEnemy:()=>enemy&&JSON.parse(JSON.stringify(enemy)),getAchievements:()=>achievements.map(a=>({id:a.id,points:a.points,unlocked:achievementUnlocked(a),progress:a.progress(),target:a.target})),openDistrict,attack,useWeakness,stopMeter,claim,buy,switchView};
   })();
   </script>
   <script src="config.js"></script>
