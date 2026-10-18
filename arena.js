@@ -6,6 +6,8 @@ const escapeHtml=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;"
 const HEROES=[["MANU","🪥",1],["LÉA","👓",2],["NATSU","🍗",2],["AMÉLIE","🎤",3],["LUDO","📘",4],["ERIC","🧴",5]];
 let db=null,user=null,active=null,period="week",profile=null,loading=false,lastRefresh=0,refreshing=false;
 let createdDuelCode="",inviteDuelCode=null,shareDuelCode="";
+// Le créateur réutilise l'authentification existante au lieu de créer une seconde session.
+window.SUPERVILAINS_GET_ARENA_CLIENT=()=>db;
 const duelCodePattern=/^[A-F0-9]{10}$/;
 const gameLink=()=>new URL("./",location.href).href;
 const validDuelCode=v=>duelCodePattern.test(String(v||"").toUpperCase())?String(v).toUpperCase():null;
