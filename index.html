@@ -189,6 +189,18 @@
       <p id="sv-install-status" class="sv-note" role="status" aria-live="polite">Après installation, lance le jeu depuis son icône sur l'écran d'accueil.</p>
     </div>
   </div>
+  <div id="sv-backup-dialog" class="sv-backup-shade" role="dialog" aria-modal="true" aria-labelledby="sv-backup-title" hidden>
+    <div class="sv-backup-card">
+      <div class="sv-mobile-badge">💾 TRANSFERT DE PARTIE SOLO</div>
+      <h2 id="sv-backup-title">RESTAURER MA PARTIE</h2>
+      <p>Colle la sauvegarde copiée depuis Messenger ou choisis ton fichier de sauvegarde. Ton niveau, tes missions, tes captures et tes succès seront restaurés.</p>
+      <textarea id="sv-backup-json" placeholder="Colle ici le texte de sauvegarde…"></textarea>
+      <input id="sv-backup-file" type="file" accept=".json,application/json" aria-label="Choisir une sauvegarde SUPERVILAINS"/>
+      <p id="sv-backup-status" class="sv-status" role="status" aria-live="polite"></p>
+      <button id="sv-backup-confirm" type="button">✅ RESTAURER CETTE PARTIE</button>
+      <button id="sv-backup-cancel" type="button" class="sv-secondary">ANNULER</button>
+    </div>
+  </div>
   <div class="shell">
     <header class="topbar">
       <div class="topline">
