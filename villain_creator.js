@@ -251,8 +251,8 @@ async function checkImageEngine(){
     if(error)throw Error(await aiError(error,data));
     aiConfigured=!!data?.configured;
     aiNotice(aiConfigured
-      ?"✅ IA prête : portrait, Troller et Capturé ! · Images privées · 9 images maximum sur 24 h."
-      :"🔒 IA en attente d'activation : l'administrateur doit ajouter OPENAI_API_KEY dans les secrets Supabase. Aucune image ne sera facturée tant qu'elle n'est pas activée.");
+      ?"🔑 Moteur d'images connecté. Les crédits API et les limites de dépenses doivent aussi être actifs (distincts de ChatGPT Plus). Limite du jeu : 9 tentatives par 24 h."
+      :"🔒 IA en attente d'activation : clé OPENAI_API_KEY à configurer dans Supabase. Aucun appel d'image payant n'est possible tant qu'elle est absente.");
   }catch(e){
     aiConfigured=false;aiNotice("⚠️ Impossible de joindre le moteur IA : "+errorMessage(e));
   }finally{aiCheckComplete=true;}
