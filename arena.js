@@ -5,6 +5,57 @@ const vis=(id,yes)=>{const n=$(id);if(n)n.hidden=!yes;};
 const escapeHtml=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const HEROES=[["MANU","🪥",1],["LÉA","👓",2],["NATSU","🍗",2],["AMÉLIE","🎤",3],["LUDO","📘",4],["ERIC","🧴",5]];
 let db=null,user=null,active=null,period="week",profile=null,loading=false,lastRefresh=0,refreshing=false;
+let createdDuelCode="",inviteDuelCode=null,shareDuelCode="";
+const duelCodePattern=/^[A-F0-9]{10}$/;
+const gameLink=()=>new URL("./",location.href).href;
+const validDuelCode=v=>duelCodePattern.test(String(v||"").toUpperCase())?String(v).toUpperCase():null;
+try{
+  const urlCode=new URL(location.href).searchParams.get("duel");
+  inviteDuelCode=validDuelCode(urlCode)||validDuelCode(sessionStorage.getItem("supervilains_pending_duel"));
+  if(inviteDuelCode)sessionStorage.setItem("supervilains_pending_duel",inviteDuelCode);
+}catch(e){}
+function inviteUrl(code=null){const u=new URL(gameLink());if(code)u.searchParams.set("duel",code);return u.href;}
+function inviteText(code=null){
+  const who=profile?.handle?"Mon pseudo d’agent : "+profile.handle+". ":"";
+  return code?"⚔️ Je te défie sur SUPERVILAINS ! "+who+"Rejoins notre duel privé de 24 h avec le code "+code+". 🎮\n"+inviteUrl(code):
+    "🦹 Viens chasser les super-méchants avec moi sur SUPERVILAINS ! 🎮 Jeu gratuit, missions, captures et arène en ligne.\n"+inviteUrl();
+}
+function inviteFeedback(msg){const n=$("arena-share-feedback");if(n)n.textContent=msg;}
+function openInvitation(code=null){
+  shareDuelCode=validDuelCode(code)||"";
+  vis("arena-invite-options",true);
+  $("arena-invite-context").textContent=shareDuelCode?
+    "⚔️ Invitation à ton duel privé : code "+shareDuelCode+". Ton ami pourra rejoindre l'ARÈNE grâce à ce lien.":
+    "🎮 Invitation pour rejoindre SUPERVILAINS : ton ami pourra ouvrir le jeu gratuitement.";
+  $("arena-invite-link").value=inviteUrl(shareDuelCode);
+  inviteFeedback("Choisis WhatsApp, Messenger, SMS ou copie l’invitation.");
+  $("arena-invite-options").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+async function copyInvitation(){
+  const message=inviteText(shareDuelCode);
+  try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(message);return true}}catch(e){}
+  const area=document.createElement("textarea");area.value=message;area.setAttribute("readonly","");
+  area.style.cssText="position:fixed;left:-9999px;top:0";document.body.appendChild(area);
+  area.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}area.remove();return ok;
+}
+async function shareNativeInvitation(){
+  if(!navigator.share){inviteFeedback("Le menu de partage n’est pas disponible ici. Choisis WhatsApp, SMS, Messenger ou Copier.");return;}
+  try{await navigator.share({title:"SUPERVILAINS — OPÉRATION MINUIT",text:inviteText(shareDuelCode)});inviteFeedback("Menu de partage ouvert. Choisis un destinataire.");}
+  catch(e){if(e?.name!=="AbortError")inviteFeedback("Partage indisponible : utilise les boutons WhatsApp, SMS ou Copier.");}
+}
+function setupIncomingDuel(){
+  if(!inviteDuelCode)return;
+  $("arena-code").value=inviteDuelCode;
+  vis("arena-incoming-invite",true);
+  $("arena-incoming-invite").textContent="⚔️ Un ami t'a invité à un duel ! Code : "+inviteDuelCode+". Connecte-toi puis appuie sur REJOINDRE pour accepter le défi.";
+  document.querySelector('[data-view="arena"]')?.click();
+}
+function clearIncomingDuel(){
+  inviteDuelCode=null;
+  vis("arena-incoming-invite",false);
+  try{sessionStorage.removeItem("supervilains_pending_duel");const u=new URL(location.href);u.searchParams.delete("duel");history.replaceState(history.state,"",u.pathname+u.search+u.hash)}catch(e){}
+}
+
 const showMessage=(s,t="")=>{const n=$("arena-message");n.className="arena-status"+(t?" "+t:"");n.textContent=s;};
 const messageError=e=>String(e&&e.message||"Erreur du serveur. Réessaie.");
 const RPC=async(fn,args={})=>{if(!db)throw Error("Arène non configurée");const {data,error}=await db.rpc(fn,args);if(error)throw error;return data;};
@@ -31,7 +82,8 @@ function duelsRender(rows){const el=$("arena-duels");if(!rows||!rows.length){el.
 el.innerHTML=rows.map(r=>{const state=({waiting:"📩 En attente",active:"⚔️ En cours",finished:"🏁 Terminé",expired:"⌛ Expiré"})[r.state]||r.state;
 const details=r.state==="waiting"?"En attente d'un adversaire":escapeHtml(r.challenger)+" vs "+escapeHtml(r.opponent||"Agent");
 const scores=r.state==="waiting"||r.state==="expired"?"":'<small>Toi : <b>'+Number(r.my_score)+'</b> pts · Rival : <b>'+Number(r.rival_score)+'</b> pts</small>';
-return '<div class="arena-vs"><div class="row-between"><b>'+escapeHtml(state)+'</b><b style="color:var(--cyan)">'+escapeHtml(r.code)+'</b></div><small>'+details+'</small>'+scores+'</div>';}).join("");
+const canInvite=r.state==="waiting"&&validDuelCode(r.code);
+return '<div class="arena-vs"><div class="row-between"><b>'+escapeHtml(state)+'</b><b style="color:var(--cyan)">'+escapeHtml(r.code)+'</b></div><small>'+details+'</small>'+scores+(canInvite?'<button class="arena-mini" type="button" data-share-duel="'+escapeHtml(r.code)+'" style="margin-top:10px;width:100%">📨 INVITER UN AMI À CE DÉFI</button>':"")+'</div>';}).join("");
 }
 async function refresh(){if(!db||!user||refreshing||document.hidden)return;refreshing=true;try{
 profile=await RPC("arena_my_stats");vis("arena-register",!profile.registered);vis("arena-home",!!profile.registered);
@@ -54,7 +106,8 @@ const {data,error}=await db.auth.getSession();if(error)throw error;user=data.ses
 }catch(e){showMessage("⚠️ "+messageError(e),"warn");}}
 function on(id,fn){const x=$(id);if(x)x.addEventListener("click",fn);}
 on("arena-send-link",()=>action(async()=>{const email=$("arena-email").value.trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw Error("Adresse e-mail invalide.");
-const {error}=await db.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname,shouldCreateUser:true}});if(error)throw error;showMessage("📩 Lien envoyé. Consulte ta boîte mail !","good");}));
+const callbackUrl=new URL(location.origin+location.pathname);if(inviteDuelCode)callbackUrl.searchParams.set("duel",inviteDuelCode);
+const {error}=await db.auth.signInWithOtp({email,options:{emailRedirectTo:callbackUrl.href,shouldCreateUser:true}});if(error)throw error;showMessage("📩 Lien envoyé. Consulte ta boîte mail !","good");}));
 on("arena-register-btn",()=>action(async()=>{const handle=$("arena-handle").value.trim();if(!/^[A-Za-z0-9_]{3,18}$/.test(handle))throw Error("Pseudo : 3 à 18 caractères, lettres, chiffres et _.");await RPC("arena_register",{p_handle:handle});await refresh();}));
 on("arena-logout",()=>action(async()=>{const {error}=await db.auth.signOut();if(error)throw error;user=null;active=null;await authView();}));
 on("arena-hunt",()=>action(async()=>{active=await RPC("arena_start");renderEncounter();vis("arena-last-result",false);showMessage("📡 Signal détecté. Capture le super-méchant !","good");}));
@@ -65,9 +118,30 @@ $("arena-last-result").textContent=text;$("arena-last-result").className="arena-
 $("arena-hunt").textContent="📡 LANCER UNE PATROUILLE EN LIGNE";await refresh();}));
 on("arena-flee",()=>action(async()=>{if(!active)return;await RPC("arena_flee",{p_encounter:active.id});active=null;$("arena-hunt").textContent="📡 LANCER UNE PATROUILLE EN LIGNE";await refresh();}));
 on("arena-refresh",()=>action(async()=>{await refresh();}));
-on("arena-create-duel",()=>action(async()=>{const code=await RPC("arena_create_duel");$("arena-code").value=code;await refresh();showMessage("📨 Code du défi : "+code+" · Partage-le avec un ami !","good");if(navigator.clipboard?.writeText)navigator.clipboard.writeText(code).catch(()=>{});}));
-on("arena-join-duel",()=>action(async()=>{const code=$("arena-code").value.trim().toUpperCase();if(!/^[A-F0-9]{10}$/.test(code))throw Error("Code de défi invalide.");await RPC("arena_join_duel",{p_code:code});await refresh();showMessage("⚔️ Défi accepté : 24 h pour battre ton adversaire !","good");}));
+on("arena-create-duel",()=>action(async()=>{
+  const code=validDuelCode(await RPC("arena_create_duel"));if(!code)throw Error("Code reçu invalide.");
+  createdDuelCode=code;$("arena-code").value=code;vis("arena-share-duel",true);
+  await refresh();showMessage("⚔️ Défi créé ! Appuie sur PARTAGER MON DÉFI pour inviter un ami.","good");
+  openInvitation(code);
+}));
+on("arena-join-duel",()=>action(async()=>{const code=$("arena-code").value.trim().toUpperCase();if(!duelCodePattern.test(code))throw Error("Code de défi invalide.");await RPC("arena_join_duel",{p_code:code});if(code===inviteDuelCode)clearIncomingDuel();await refresh();showMessage("⚔️ Défi accepté : 24 h pour battre ton adversaire !","good");}));
 document.querySelectorAll("[data-period]").forEach(btn=>btn.addEventListener("click",()=>{period=btn.dataset.period;document.querySelectorAll("[data-period]").forEach(b=>b.classList.toggle("active",b.dataset.period===period));$("arena-period-label").textContent=period==="week"?"Classement hebdomadaire (UTC)":period==="month"?"Classement mensuel (UTC)":"Classement général";refresh();}));
+on("arena-invite-open",()=>{
+  if(!$("arena-invite-options").hidden){vis("arena-invite-options",false);return;}
+  openInvitation();
+});
+on("arena-share-duel",()=>{if(createdDuelCode)openInvitation(createdDuelCode);});
+$("arena-duels")?.addEventListener("click",e=>{const btn=e.target.closest("[data-share-duel]");if(btn)openInvitation(btn.dataset.shareDuel)});
+on("arena-share-copy",async()=>{const ok=await copyInvitation();inviteFeedback(ok?"✅ Invitation complète copiée ! Colle-la dans ta conversation.":"Sélectionne le lien ci-dessus pour le copier manuellement.");});
+on("arena-share-native",shareNativeInvitation);
+on("arena-share-whatsapp",()=>{window.open("https://wa.me/?text="+encodeURIComponent(inviteText(shareDuelCode)),"_blank","noopener,noreferrer");inviteFeedback("WhatsApp ouvert : choisis ton ami et envoie l'invitation.");});
+on("arena-share-sms",()=>{location.href="sms:?body="+encodeURIComponent(inviteText(shareDuelCode));inviteFeedback("Choisis un contact dans ton application SMS.");});
+on("arena-share-messenger",()=>{
+  window.open("https://www.messenger.com/","_blank","noopener,noreferrer");
+  copyInvitation().then(ok=>inviteFeedback(ok?"✅ Invitation copiée ! Ouvre la conversation Messenger et colle le texte.":"Ouvre Messenger et copie le lien dans le champ au-dessus."));
+});
+$("arena-invite-link")?.addEventListener("focus",e=>e.target.select());
+setupIncomingDuel();
 on("arena-username",()=>{});
 document.querySelector('[data-view="arena"]')?.addEventListener("click",()=>{if(db&&user)refresh();});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&user)refresh();});
