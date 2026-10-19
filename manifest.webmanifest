@@ -1,7 +1,7 @@
 {
-  "name": "SUPERVILAINS V4.7.2 — Opération Minuit",
+  "name": "SUPERVILAINS V4.9 — Opération Minuit",
   "short_name": "SUPERVILAINS",
-  "description": "Crée tes super-vilains avec fiches personnalisées et images IA : portrait, troller langue tirée, capturé en prisonnier. Arène et mode solo inclus.",
+  "description": "Tes super-vilains personnalisés et leurs portraits ChatGPT rejoignent le mode SOLO et l'ARÈNE, avec sauvegardes et compétitions sécurisées.",
   "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
