@@ -2,7 +2,7 @@
    Un compte ne peut voir que ses propres personnages VALIDÉS.
    Aucune photo ni donnée personnelle n'est mise en cache public. */
 (()=>{"use strict";
-let previousUser=null,run=0,loading=false,lastFetch=0;
+let previousUser=null,run=0,loading=false,lastFetch=0,queued=false;
 const validUUID=id=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id||""));
 const sendToGames=roster=>{
   window.SUPERVILAINS_SET_SOLO_CUSTOMS?.(roster);
@@ -15,7 +15,8 @@ async function urlFor(db,path){
 }
 async function refresh(force=false){
   const db=window.SUPERVILAINS_GET_ARENA_CLIENT?.();
-  if(!db||loading)return;
+  if(!db)return;
+  if(loading){queued=true;return;}
   const current=++run;loading=true;
   try{
     const {data:auth,error:authError}=await db.auth.getUser();
@@ -59,11 +60,19 @@ async function refresh(force=false){
   }catch(err){
     // Une panne réseau ne doit pas effacer les captures SOLO ni forcer un logout.
     console.warn("SUPERVILAINS : personnages privés non synchronisés",err?.code||err?.message||"réseau");
-  }finally{loading=false}
+  }finally{
+    loading=false;
+    if(queued){queued=false;setTimeout(()=>refresh(true),0)}
+  }
 }
 function start(){
   window.SUPERVILAINS_REFRESH_CUSTOMS=()=>refresh(true);
-  window.addEventListener("supervilains:identity",()=>refresh(true));
+  window.addEventListener("supervilains:identity",event=>{
+    if(!event.detail?.id){
+      ++run;previousUser=null;lastFetch=0;sendToGames([]);
+    }
+    refresh(true);
+  });
   window.addEventListener("supervilains:custom-ready",()=>refresh(true));
   document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh(true)});
   // Arena.js est chargé avant ce module, mais son auth peut être encore en cours.
