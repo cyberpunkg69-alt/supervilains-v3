@@ -1551,10 +1551,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
           },
           escaped:reason=>{
             if(!pursuitActive||enemy!==encountered)return;
-            pursuitActive=false;busy=false;endBattle('escape');
-            $('result-text').textContent=reason==='abandon'
-              ?'Tu as abandonné la poursuite de '+v.name+'. Le fugitif reste recherché.'
-              :'Le fugitif '+v.name+' a semé la police pendant la course !';
+            pursuitActive=false;busy=false;endBattle('escape',{escapeReason:reason==='abandon'?'abandon':'runner-collision'});
           }
         });
       }catch(err){console.warn('Poursuite indisponible :',err)}
@@ -1602,8 +1599,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       tone(success?800:150,.24);vibrate(success?[45,45,110]:100);busy=false;
       if(success)completeCapture({perfect,chance,pursuit:finalShot});
       else if(finalShot){
-        endBattle('escape');
-        $('result-text').textContent='Le policier a rattrapé le suspect, mais le dernier filet a manqué ! Le fugitif reste en liberté.';
+        endBattle('escape',{escapeReason:'final-net'});
       }else{
         notifySave();
         if(!launchPursuit()&&!hitByVillain()){
@@ -1612,13 +1608,29 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
         }
       }
     }
-    function endBattle(kind,reward={}){if(!enemy)return;pursuitActive=false;pursuitFinalShot=false;const v=villains[enemy.id];hide('overlay-meter');hide('overlay-battle');meterActive=false;cancelAnimationFrame(meterAnimation);busy=false;let escaped=kind==='escape';$('result-icon').textContent=escaped?'💨':'🏆';
+    function endBattle(kind,reward={}){if(!enemy)return;pursuitActive=false;pursuitFinalShot=false;const v=villains[enemy.id];hide('overlay-meter');hide('overlay-battle');meterActive=false;cancelAnimationFrame(meterAnimation);busy=false;let escaped=kind==='escape';
+      const why=reward.escapeReason||'shield';
+      const escapeMessages={
+        'final-net':'Le policier a rattrapé le suspect, mais le dernier filet a manqué ! Le fugitif reste en liberté.',
+        'runner-collision':v.name+' a réussi à semer la police pendant la course. Tes trois boucliers de poursuite ont été perdus.',
+        'abandon':'Tu as abandonné la poursuite de '+v.name+'. Le fugitif reste recherché.',
+        'combat-exit':'Tu as quitté l’affrontement. Le criminel pourra être retrouvé dans son quartier.',
+        'shield':v.name+' s’est échappé après avoir épuisé ton bouclier de combat.'
+      };
+      const escapeBadges={
+        'final-net':'<span>🕸️ Filet final manqué</span><span>🏃 Suspect en liberté</span>',
+        'runner-collision':'<span>🛡️ 3 boucliers de poursuite perdus</span><span>💨 Suspect échappé</span>',
+        'abandon':'<span>⏹️ Poursuite abandonnée</span><span>📡 Suspect localisé</span>',
+        'combat-exit':'<span>🚪 Combat quitté</span><span>📡 Suspect localisé</span>',
+        'shield':'<span>🛡️ Bouclier de combat épuisé</span><span>📡 Suspect localisé</span>'
+      };
+      $('result-icon').textContent=escaped?'💨':'🏆';
       const gifFrame=$('result-gif-frame');gifFrame.hidden=escaped;
       if(!escaped){$('result-gif').src=v.custom?v.capture:`assets/reactions/${bossKeys[enemy.id]}_capture.gif?t=${Date.now()}`;}else{$('result-gif').removeAttribute('src');}
-      clearTimeout(reactionTimeout);$('result-kicker').textContent=escaped?'LE SUSPECT S’EST ÉCHAPPÉ':'CIBLE IMMOBILISÉE';$('result-title').textContent=escaped?'POURSUITE TERMINÉE':'CAPTURE RÉUSSIE !';$('result-text').textContent=escaped?`${v.name} s'est échappé. Son cringe l'a sauvé pour cette fois.`:`${v.name} rejoint ton coffre des criminels ! ${reward.newEntry?'NOUVEAU DOSSIER DÉBLOQUÉ ! ':''}${reward.ultimate?'🎴 '+v.weaknessIcon+' '+v.weaknessName+' : FAILLE ULTIME ! Capture automatique et bonus spécial.':''}`;$('result-stats').innerHTML=escaped?'<span>🛡️ Bouclier épuisé</span><span>📡 Suspect localisé</span>':`<span>🪙 <b>+${reward.coins}</b></span><span>⭐ <b>+${reward.xp} XP</b></span>${reward.perfect?'<span>🎯 CAPTURE PARFAITE</span>':''}${reward.ultimate?'<span>🎴 FAILLE ULTIME : +160 🪙 · +130 XP · +1 🕸️</span>':''}`;$('result-button').textContent=escaped?'RECOMMENCER UNE PATROUILLE':'CONTINUER LA CHASSE';const spokenId=enemy.id;enemy=null;show('overlay-result');lastResultVoiceKeys=escaped?[commissaireClip('escape'),villainClip(spokenId,'escape')]:[commissaireClip('capture'),villainClip(spokenId,'capture')];playVoiceSeries(lastResultVoiceKeys);
+      clearTimeout(reactionTimeout);$('result-kicker').textContent=escaped?'LE SUSPECT S’EST ÉCHAPPÉ':'CIBLE IMMOBILISÉE';$('result-title').textContent=escaped?'POURSUITE TERMINÉE':'CAPTURE RÉUSSIE !';$('result-text').textContent=escaped?(escapeMessages[why]||escapeMessages.shield):`${v.name} rejoint ton coffre des criminels ! ${reward.newEntry?'NOUVEAU DOSSIER DÉBLOQUÉ ! ':''}${reward.ultimate?'🎴 '+v.weaknessIcon+' '+v.weaknessName+' : FAILLE ULTIME ! Capture automatique et bonus spécial.':''}`;$('result-stats').innerHTML=escaped?(escapeBadges[why]||escapeBadges.shield):`<span>🪙 <b>+${reward.coins}</b></span><span>⭐ <b>+${reward.xp} XP</b></span>${reward.perfect?'<span>🎯 CAPTURE PARFAITE</span>':''}${reward.ultimate?'<span>🎴 FAILLE ULTIME : +160 🪙 · +130 XP · +1 🕸️</span>':''}`;$('result-button').textContent=escaped?'RECOMMENCER UNE PATROUILLE':'CONTINUER LA CHASSE';const spokenId=enemy.id;enemy=null;show('overlay-result');lastResultVoiceKeys=escaped?[commissaireClip('escape'),villainClip(spokenId,'escape')]:[commissaireClip('capture'),villainClip(spokenId,'capture')];playVoiceSeries(lastResultVoiceKeys);
       if(v.custom)setTimeout(()=>{if($('overlay-result').classList.contains('visible'))speakCustomScene(v,escaped?'taunt':'capture')},1100);
       flushPendingCustomSolo();checkAchievements();save();renderAll()}
-    function flee(){if(!enemy)return;endBattle('escape');$('result-text').textContent='Tu as quitté l’affrontement. Le criminel pourra être retrouvé dans son quartier.'}
+    function flee(){if(!enemy)return;endBattle('escape',{escapeReason:'combat-exit'})}
     function claim(id){let m=missionData.find(m=>m.id===id);if(!m||state.claimed.includes(id)||missionValue(m)<m.total)return;state.claimed.push(id);state.coins+=m.coins;state.nets+=m.nets;addXP(m.xp);notifySave();tone(840,.2);vibrate(65);toast(`🎁 Mission accomplie : +${m.coins} 🪙 +${m.nets} 🕸️`)}
     function buy(which){if(which==='nets'){if(state.coins<90)return toast('Crédits insuffisants');state.coins-=90;state.nets+=3;toast('🕸️ +3 filets ioniques !')}
       if(which==='energy'){if(state.coins<55||state.energy>=state.maxEnergy)return toast('Recharge indisponible');state.coins-=55;state.energy=Math.min(state.maxEnergy,state.energy+20);toast('⚡ Énergie rechargée !')}
