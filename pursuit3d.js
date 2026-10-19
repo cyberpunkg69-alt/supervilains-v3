@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.20 — moteur WebGL 3D pour La Grande Evasion.
+/* SUPERVILAINS V4.21 — moteur WebGL 3D pour La Grande Evasion.
  * Sans CDN, sans API, avec retour transparent au Canvas 2D si WebGL est absent.
  * Les portraits des joueurs restent dans leur stockage prive, non telecharges par WebGL.
  */
@@ -252,7 +252,7 @@
    const frame=document.createElement('div'),photo=document.createElement('img');
    frame.className='sv-runner-3d-portrait';
    frame.style.cssText='display:none;position:absolute;z-index:3;pointer-events:none;'+
-     'border-radius:50%;overflow:hidden;border:3px solid #f6c27c;'+
+     'border-radius:50%;overflow:hidden;border:2px solid #f6c27c;'+
      'box-shadow:0 0 0 2px #5f3155,0 0 15px #f6a76a80;transform:translate(-50%,-50%);';
    photo.style.cssText='width:100%;height:100%;display:block;object-fit:cover;';
    photo.alt='Portrait du super-vilain';frame.append(photo);parent.append(frame);
@@ -306,15 +306,27 @@
        const fugitiveTargetX=lane>.25?-1.25:1.25;
        villainLaneX+=(fugitiveTargetX-villainLaneX)*.065;
        const vx=villainLaneX+.24*Math.sin(g.elapsed*1.3);
-       const vz=-11.8+11.0*Math.pow(progress,1.24);
+       const vz=-11.8+12.95*Math.pow(progress,1.40);
        const faceAt=character(vx,vz,false,g,villain.color);
+       // Visuel de rattrapage pendant le gel de 0,85 s, sans toucher a la jauge.
+       if(g.winning>0){
+         const pulse=1+(0.85-g.winning)*.5;
+         for(let ring=0;ring<3;ring++){
+           const y=.48+ring*.82,side=pulse*(.80+ring*.025),depth=pulse*.67;
+           box(vx-side,y,vz,.085,.10,depth*2,'#62e9ed');
+           box(vx+side,y,vz,.085,.10,depth*2,'#62e9ed');
+           box(vx,y,vz-depth,side*2,.10,.085,'#a6fcde');
+           box(vx,y,vz+depth,side*2,.10,.085,'#a6fcde');
+         }
+         box(vx,3.32,vz,2.0,.13,.12,'#f6d877');
+       }
        character(lane*2.72,3.18,true,g);
        const jump=g.jump>0?Math.sin((.88-g.jump)/.88*PI)*1.48:0;
        const copBack=project([lane*2.72,1.83+jump,3.62],w,h);
        if(copBack){
          agentTag.style.display='block';agentTag.style.left=copBack.x+'px';agentTag.style.top=copBack.y+'px';
        }else agentTag.style.display='none';
-       const labelAt=project([faceAt[0],faceAt[1]+1.09,faceAt[2]],w,h);
+       const labelAt=project([faceAt[0],faceAt[1]+1.78,faceAt[2]],w,h);
        if(labelAt){wantedTag.style.display='block';wantedTag.style.left=labelAt.x+'px';wantedTag.style.top=labelAt.y+'px'}
        else wantedTag.style.display='none';
        const data=new Float32Array(points);
@@ -329,10 +341,13 @@
        gl.uniformMatrix4fv(camera,false,new Float32Array(vp));
        gl.drawArrays(gl.TRIANGLES,0,data.length/9);
        if(photo.complete&&photo.naturalWidth){
-         const center=project(faceAt,w,h),
-           right=project([faceAt[0]+.43,faceAt[1],faceAt[2]],w,h);
+         // Le portrait est une vignette d'identite AU-DESSUS de la tete,
+         // pas un visage rond colle dans le dos du personnage.
+         const portraitWorld=[faceAt[0],faceAt[1]+.83,faceAt[2]+.08];
+         const center=project(portraitWorld,w,h),
+           right=project([portraitWorld[0]+.43,portraitWorld[1],portraitWorld[2]],w,h);
          if(center&&right&&center.y>0&&center.y<h){
-           const size=clamp(Math.abs(right.x-center.x)*2.55,40,94);
+           const size=clamp(Math.abs(right.x-center.x)*2.50,32,76);
            frame.style.display='block';frame.style.left=center.x+'px';frame.style.top=center.y+'px';
            frame.style.width=size+'px';frame.style.height=size+'px';
          }else frame.style.display='none';
