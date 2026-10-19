@@ -224,6 +224,13 @@
      return {x:(q[0]/q[3]*.5+.5)*width,y:(.5-q[1]/q[3]*.5)*height};
    }
    parent.append(canvas);
+   const indicator=document.createElement('div');
+   indicator.textContent='● MODE 3D';
+   indicator.style.cssText='display:none;position:absolute;z-index:4;top:10px;left:10px;'+
+     'font:900 10px Arial,sans-serif;letter-spacing:1px;color:#d9fff5;'+
+     'background:#10283bd9;border:1px solid #5bdcc1;padding:7px 10px;'+
+     'border-radius:9px;pointer-events:none;box-shadow:0 2px 12px #0006';
+   parent.append(indicator);
    const frame=document.createElement('div'),photo=document.createElement('img');
    frame.className='sv-runner-3d-portrait';
    frame.style.cssText='display:none;position:absolute;z-index:3;pointer-events:none;'+
@@ -233,7 +240,7 @@
    photo.alt='Portrait du super-vilain';frame.append(photo);parent.append(frame);
    photo.addEventListener('error',()=>frame.style.display='none');
    canvas.addEventListener('webglcontextlost',e=>{
-     e.preventDefault();ok=false;canvas.style.display='none';frame.style.display='none';
+     e.preventDefault();ok=false;canvas.style.display='none';frame.style.display='none';indicator.style.display='none';
    });
    canvas.addEventListener('webglcontextrestored',()=>{ok=false});
    function resize(){
@@ -249,7 +256,7 @@
    function begin(v){
      if(!ok)return;
      active=true;villain=v||{};
-     canvas.style.display='block';frame.style.display='none';
+     canvas.style.display='block';frame.style.display='none';indicator.style.display='block';
      photo.onload=null;photo.removeAttribute('src');
      if(villain.portrait){
        photo.onload=()=>{if(active)frame.style.display='block'};
@@ -258,7 +265,7 @@
      resize();
    }
    function end(){
-     active=false;canvas.style.display='none';frame.style.display='none';
+     active=false;canvas.style.display='none';frame.style.display='none';indicator.style.display='none';
      photo.onload=null;photo.removeAttribute('src');lastFrame=0;
    }
    function draw(g){
@@ -302,7 +309,7 @@
        return true;
      }catch(e){
        console.warn('Poursuite 3D desactivee :',e);
-       ok=false;canvas.style.display='none';frame.style.display='none';
+       ok=false;canvas.style.display='none';frame.style.display='none';indicator.style.display='none';
        return false;
      }
    }
