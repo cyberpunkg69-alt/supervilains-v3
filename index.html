@@ -1541,7 +1541,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       let started=false;
       try{
         started=window.SUPERVILAINS_PURSUIT.start({
-          name:v.name,portrait:v.portrait,icon:v.icon,danger:v.danger
+          name:v.name,portrait:v.portrait,icon:v.icon,danger:v.danger,color:v.color
         },{
           caught:()=>{
             if(!pursuitActive||enemy!==encountered)return;
@@ -1674,6 +1674,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
   <script src="villain_random.js" defer></script>
   <script src="custom_play.js" defer></script>
   <script src="install.js" defer></script>
+  <script src="pursuit3d.js" defer></script>
   <script src="pursuit.js" defer></script>
 </body>
 </html>
