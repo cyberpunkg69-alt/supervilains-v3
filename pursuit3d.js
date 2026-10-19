@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.21 — moteur WebGL 3D pour La Grande Evasion.
+/* SUPERVILAINS V4.22 — moteur WebGL 3D pour La Grande Evasion.
  * Sans CDN, sans API, avec retour transparent au Canvas 2D si WebGL est absent.
  * Les portraits des joueurs restent dans leur stockage prive, non telecharges par WebGL.
  */
@@ -297,26 +297,42 @@
        points=[];
        const lane=clamp(g.smoothLane||0,-1,1),progress=clamp(g.distance/g.goal,0,1);
        const shake=g.invincible>0?Math.sin(g.elapsed*36)*.10:0;
-       const eye=[lane*.19+shake,3.97+Math.sin(g.elapsed*17)*.045,10.5],
-         at=[lane*.10,1.54,-11];
-       vp=mul(perspective(62*PI/180,w/h,.1,150),look(eye,at));
-       world(g);hazards(g);
-       // Le fugitif cesse d'etre fixe au fond de la rue : il se rapproche vraiment
-       // et esquive la voie de l'agent. Ses changements restent progressifs.
+       // La camera accompagne toutes les voies : le policier ne doit plus
+       // disparaitre sur les bords de l'ecran lorsque l'on esquive.
+       const closing=clamp((progress-.78)/.22,0,1);
+       const blend=closing*closing*(3-2*closing);
+       const policeX=lane*2.72;
+       const side=lane>.25?-1:1;
+       const captureX=policeX+side*1.34;
        const fugitiveTargetX=lane>.25?-1.25:1.25;
        villainLaneX+=(fugitiveTargetX-villainLaneX)*.065;
-       const vx=villainLaneX+.24*Math.sin(g.elapsed*1.3);
-       const vz=-11.8+12.95*Math.pow(progress,1.40);
+       // La cible revient a portee du policier pendant les derniers metres.
+       const wanderingX=villainLaneX+.24*Math.sin(g.elapsed*1.3);
+       const vx=wanderingX*(1-blend)+captureX*blend;
+       const vz=-11.8+13.95*Math.pow(progress,1.42);
+       const camX=lane*1.40-side*.82*blend;
+       const aimX=lane*.86+side*.30*blend;
+       const eye=[camX+shake,3.97+Math.sin(g.elapsed*17)*.045,10.5+blend*.8],
+         at=[aimX,1.54,-11+blend*2.4];
+       vp=mul(perspective(62*PI/180,w/h,.1,150),look(eye,at));
+       world(g);
+       // Plus d'obstacle devant les personnages pendant le filet final.
+       if(!(g.winning>0))hazards(g);
        const faceAt=character(vx,vz,false,g,villain.color);
        // Visuel de rattrapage pendant le gel de 0,85 s, sans toucher a la jauge.
        if(g.winning>0){
-         const pulse=1+(0.85-g.winning)*.5;
+         const pulse=1+(1.3-g.winning)*.52;
          for(let ring=0;ring<3;ring++){
            const y=.48+ring*.82,side=pulse*(.80+ring*.025),depth=pulse*.67;
            box(vx-side,y,vz,.085,.10,depth*2,'#62e9ed');
            box(vx+side,y,vz,.085,.10,depth*2,'#62e9ed');
            box(vx,y,vz-depth,side*2,.10,.085,'#a6fcde');
            box(vx,y,vz+depth,side*2,.10,.085,'#a6fcde');
+         }
+         // Rayons horizontaux visibles au moment de l'interception.
+         for(let i=0;i<4;i++){
+           const yy=.66+i*.65;
+           box(vx,yy,vz+.69,pulse*1.82,.07,.11,i%2?'#f9e381':'#92fff0');
          }
          box(vx,3.32,vz,2.0,.13,.12,'#f6d877');
        }
