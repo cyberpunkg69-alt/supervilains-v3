@@ -1,7 +1,7 @@
 {
-  "name": "SUPERVILAINS V4.15 — Opération Minuit",
+  "name": "SUPERVILAINS V4.16 — Opération Minuit",
   "short_name": "SUPERVILAINS",
-  "description": "Chasse les super-vilains en solo et arène, avec une jauge progressive : cible dynamique et curseur accélérant, scores d’arène validés sur Supabase.",
+  "description": "Chasse les super-vilains avec des portraits officiels optimisés et des créations personnelles disponibles depuis le cache privé de ton appareil.",
   "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
