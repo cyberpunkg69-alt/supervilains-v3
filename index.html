@@ -830,7 +830,80 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     const save=()=>{try{localStorage.setItem(storageKey,JSON.stringify(state))}catch(e){}};
     const rand=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-    const seen=()=>Object.keys(state.owned).filter(k=>state.owned[k]>0).length;
+    const originalVillains=6;
+    // Les trophées « 6 super-méchants » restent exclusivement réservés aux originaux.
+    const seen=()=>Array.from({length:originalVillains},(_,i)=>i).filter(i=>Number(state.owned[i])>0).length;
+    const ownedKey=id=>villains[id]?.customId?"custom:"+villains[id].customId:id;
+    let customSoloReady=[],pendingCustomSolo=null;
+    const customSoloIndex=new Map();
+    function applyCustomSolo(list){
+      const accepted=(Array.isArray(list)?list:[]).filter(row=>/^[0-9a-f-]{36}$/i.test(String(row.id))&&row.portrait&&row.troll&&row.capture).slice(0,10);
+      // Ne touche pas aux six méchants initiaux ni à leurs failles.
+      districts.forEach(d=>{d.villains=d.villains.filter(id=>id<originalVillains)});
+      villains.splice(originalVillains);
+      weaknessItems.splice(originalVillains);
+      customSoloIndex.clear();
+      customSoloReady=[];
+      for(const row of accepted){
+        const id=String(row.id),level=Math.max(1,Math.min(5,Number(row.danger_level)||2));
+        const zone=[0,0,1,3,4,5][level],index=villains.length;
+        const weakness="custom:"+id;
+        villains.push({
+          customId:id,custom:true,name:String(row.name||"SUPER-VILAIN").slice(0,60),
+          icon:"🦹",line:String(row.description||row.alias||"Cible personnelle").slice(0,1000),
+          danger:level,type:"Personnalisé",color:"#8ae8f0",boss:level>=4,
+          portrait:row.portrait,troll:row.troll,capture:row.capture,
+          weakness,weaknessName:String(row.weakness_object||row.weakness_label||"Faille ultime").slice(0,120),
+          weaknessIcon:"🎴",voice_type:row.voice_type,
+          intro_line:row.intro_line,taunt_line:row.taunt_line,capture_line:row.capture_line
+        });
+        weaknessItems.push({id:weakness,label:String(row.weakness_object||row.weakness_label||"Faille ultime").slice(0,120),icon:"🎴"});
+        districts[zone].villains.push(index);
+        customSoloIndex.set(id,{index,zone});
+        customSoloReady.push({id,index,zone,portrait:row.portrait,name:String(row.name||"SUPER-VILAIN").slice(0,60),danger:level});
+      }
+      pendingCustomSolo=null;renderAll();
+    }
+    window.SUPERVILAINS_SET_SOLO_CUSTOMS=(list)=>{
+      if(enemy||radar){pendingCustomSolo=list;return;}
+      applyCustomSolo(list);
+    };
+    function flushPendingCustomSolo(){
+      if(pendingCustomSolo!==null&&!enemy&&!radar)applyCustomSolo(pendingCustomSolo);
+    }
+    function launchCustomSolo(id){
+      if(enemy||radar||$('overlay-result').classList.contains('visible'))return toast("Termine la rencontre actuelle avant d'en lancer une nouvelle.");
+      const entry=customSoloIndex.get(String(id));
+      if(!entry)return toast("Cible personnelle indisponible. Actualise le COFFRE.");
+      if(state.level<districts[entry.zone].min)return toast("Quartier débloqué au niveau "+districts[entry.zone].min+".");
+      regen();state.patrols++;state.visited[entry.zone]=true;
+      notifySave();startRadar(entry.index,entry.zone);
+    }
+    window.SUPERVILAINS_SOLO_PLAY_CUSTOM=launchCustomSolo;
+    function renderCustomSolo(){
+      const holder=$('custom-solo-list');if(!holder)return;
+      $('custom-solo-count').textContent=customSoloReady.length+" prêt"+(customSoloReady.length>1?"s":"");
+      holder.replaceChildren();
+      if(!customSoloReady.length){
+        const p=document.createElement('p');p.className='custom-solo-note';
+        p.textContent="Aucun méchant personnel jouable : valide tes trois images et connecte-toi à l'ARÈNE.";
+        holder.appendChild(p);return;
+      }
+      for(const item of customSoloReady){
+        const card=document.createElement('div');card.className='custom-solo-card';
+        const img=document.createElement('img');img.src=item.portrait;img.alt="Portrait de "+item.name;img.loading="lazy";
+        const info=document.createElement('div');info.className='custom-solo-info';
+        const title=document.createElement('strong');title.textContent=item.name;
+        const count=Number(state.owned["custom:"+item.id]||0),desc=document.createElement('small');
+        desc.textContent="Danger "+item.danger+"/5 · "+count+" capture"+(count>1?"s":"")+" solo";
+        info.append(title,desc);
+        const btn=document.createElement('button');btn.type='button';btn.className='custom-solo-hunt';
+        btn.textContent="📡 TRAQUER";
+        btn.disabled=state.level<districts[item.zone].min;
+        btn.addEventListener('click',()=>launchCustomSolo(item.id));
+        card.append(img,info,btn);holder.appendChild(card);
+      }
+    }
     const xpGoal=level=>150+level*70;
     const unlocked=()=>districts.filter(d=>state.level>=d.min).length;
     const rank=()=>state.level>=10?'SEIGNEUR DES MÈMES':state.level>=6?'CHASSEUR VIRAL':state.level>=3?'AGENT CRINGE CONFIRMÉ':'AGENT RECRUE';
@@ -897,9 +970,9 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     const nextReactorStage=()=>state.maxEnergy<100?100:state.maxEnergy<150?150:state.maxEnergy<200?200:null;
     function regen(){let now=Date.now();if(!Number.isFinite(state.lastEnergy)||state.lastEnergy>now)state.lastEnergy=now;if(state.energy>=state.maxEnergy){state.lastEnergy=now;return}const every=energyInterval();let ticks=Math.floor((now-state.lastEnergy)/every);if(ticks>0){state.energy=Math.min(state.maxEnergy,state.energy+ticks);state.lastEnergy+=ticks*every;save()}}
     function addXP(n){state.xp+=n;let leveled=0;while(state.xp>=xpGoal(state.level)){state.xp-=xpGoal(state.level);state.level++;leveled++;state.coins+=50;state.nets+=1}if(leveled){tone(700,.14);setTimeout(()=>toast(`🎉 NIVEAU ${state.level} ! Quartiers et récompenses débloqués.`),160)}return leveled}
-    function renderStats(){regen();$('top-level').textContent=`AGENT · NIV. ${state.level}`;$('top-energy').textContent=`${state.energy}/${state.maxEnergy}`;$('top-coins').textContent=state.coins;$('top-nets').textContent=state.nets;$('stat-captured').textContent=state.captured;$('stat-unique').textContent=`${seen()}/${villains.length}`;$('stat-districts').textContent=`${unlocked()}/${districts.length}`}
+    function renderStats(){regen();$('top-level').textContent=`AGENT · NIV. ${state.level}`;$('top-energy').textContent=`${state.energy}/${state.maxEnergy}`;$('top-coins').textContent=state.coins;$('top-nets').textContent=state.nets;$('stat-captured').textContent=state.captured;$('stat-unique').textContent=`${seen()}/${originalVillains}`;$('stat-districts').textContent=`${unlocked()}/${districts.length}`}
     function renderMap(){let html='';districts.forEach(d=>{let lock=state.level<d.min;html+=`<div class="district-card"><button class="district ${lock?'locked':''}" data-district="${d.id}" style="--glow:${d.color};--haze:${d.glow};--stroke:${d.stroke}" type="button" aria-label="${d.name}, ${lock?'verrouillé jusqu’au niveau '+d.min:'patrouiller'}"><span class="district-lvl">NIV. ${d.min}+</span><span class="district-icon">${d.icon}</span><strong>${d.name}</strong><span class="district-sub">${lock?`🔒 DÉBLOQUER NIV. ${d.min}`:'<i class="live-dot"></i> SIGNAL DÉTECTÉ'}</span></button><button class="district-info-btn" data-info="${d.id}" type="button" aria-label="En savoir plus sur le suspect de ${d.name}">!</button></div>`});$('district-grid').innerHTML=html}
-    function renderCodex(){let html='';villains.forEach((v,id)=>{let count=state.owned[id]||0;html+=`<div class="codex-tile ${count?'':'unknown'}" title="${count?v.line:'Identité inconnue'}"><span class="codex-icon">${count?`<img class="codex-face" loading="lazy" src="${v.portrait}" alt="${v.name}">`:'❔'}</span><span class="codex-name">${count?v.name:'DOSSIER ???'}</span><div class="codex-rarity">${count?`×${count} ARRÊTÉ${count>1?'S':''}`:v.boss?'🔒 BOSS':'NON CAPTURÉ'}</div></div>`});$('codex-grid').innerHTML=html;$('prison-counter').textContent=`${seen()} / 6 super-méchants identifiés`;$('prison-summary').textContent=seen()===6?'Les 6 super-méchants ont été capturés ! 🏆':`Encore ${6-seen()} suspects à découvrir.`}
+    function renderCodex(){let html='';villains.slice(0,originalVillains).forEach((v,id)=>{let count=state.owned[id]||0;html+=`<div class="codex-tile ${count?'':'unknown'}" title="${count?v.line:'Identité inconnue'}"><span class="codex-icon">${count?`<img class="codex-face" loading="lazy" src="${v.portrait}" alt="${v.name}">`:'❔'}</span><span class="codex-name">${count?v.name:'DOSSIER ???'}</span><div class="codex-rarity">${count?`×${count} ARRÊTÉ${count>1?'S':''}`:v.boss?'🔒 BOSS':'NON CAPTURÉ'}</div></div>`});$('codex-grid').innerHTML=html;$('prison-counter').textContent=`${seen()} / 6 super-méchants identifiés`;$('prison-summary').textContent=seen()===6?'Les 6 super-méchants ont été capturés ! 🏆':`Encore ${6-seen()} suspects à découvrir.`;renderCustomSolo();}
     let missionFilter='all',missionVisible=12;
     function renderMissions(){
       const completed=missionData.filter(m=>state.claimed.includes(m.id)).length;
@@ -1102,7 +1175,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       regen();let d=districts[id];if(!d)return;
       if(state.level<d.min){toast(`🔒 Quartier accessible au niveau ${d.min}.`);return}
       if(enemy||radar||$('overlay-result').classList.contains('visible'))return;
-      const pool=d.villains,missing=pool.filter(i=>!state.owned[i]);
+      const pool=d.villains,missing=pool.filter(i=>!state.owned[ownedKey(i)]);
       const villainId=missing.length&&Math.random()<.68?missing[rand(0,missing.length-1)]:pool[rand(0,pool.length-1)];
       state.patrols++;state.visited[id]=true;notifySave();startRadar(villainId,id);
     }
@@ -1142,7 +1215,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       const v=villains[enemy.id],item=weaknessItems.find(w=>w.id===enemy.cards[slot]);
       if(item.id===v.weakness){
         enemy.exposed=true;enemy.weaknessUsed=item.id;
-        state.ultimate++;state.ultimateByVillain[enemy.id]=Number(state.ultimateByVillain[enemy.id]||0)+1;
+        state.ultimate++;const k=ownedKey(enemy.id);state.ultimateByVillain[k]=Number(state.ultimateByVillain[k]||0)+1;
         tone(1050,.22);vibrate([45,50,85]);
         completeCapture({perfect:false,ultimate:true,chance:100});
       }else{
@@ -1156,11 +1229,11 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     // Chemin partagé : les deux méthodes de capture utilisent le même compteur et la même sauvegarde.
     function completeCapture({perfect=false,ultimate=false,chance=null}={}){
       if(!enemy)return;
-      const v=villains[enemy.id],old=Number(state.owned[enemy.id]||0);
+      const v=villains[enemy.id],entryKey=ownedKey(enemy.id),old=Number(state.owned[entryKey]||0);
       const bonusXp=ultimate?130:0,bonusCoins=ultimate?160:0,bonusNets=ultimate?1:0;
       const xp=45+v.danger*14+(v.boss?42:0)+(perfect?30:0)+bonusXp;
       const coins=58+v.danger*14+(v.boss?58:0)+bonusCoins;
-      state.owned[enemy.id]=old+1;state.captured++;
+      state.owned[entryKey]=old+1;state.captured++;
       if(perfect)state.perfect++;
       if(v.type==='Robot')state.robot++;
       addXP(xp);state.coins+=coins;state.nets+=bonusNets;
