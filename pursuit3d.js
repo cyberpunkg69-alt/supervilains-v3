@@ -177,7 +177,6 @@
      const u=normalize(cross(axis,guide)),v=normalize(cross(u,axis));
      const center=a.map((x,i)=>(x+b[i])*.5),col=rgb(shade);
      const point=q=>center.map((base,i)=>base+u[i]*q[0]*radius+axis[i]*q[1]*length*.5+v[i]*q[2]*radius);
-     const normalOf=n=>normalize(n.map((val,i)=>val*u[i]+n[1]*axis[i]+n[2]*v[i]-n[1]*u[i]));
      for(const face of quads){
        const n=[u[0]*face[0][0]+axis[0]*face[0][1]+v[0]*face[0][2],
                 u[1]*face[0][0]+axis[1]*face[0][1]+v[1]*face[0][2],
