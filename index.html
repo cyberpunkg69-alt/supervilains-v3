@@ -301,6 +301,27 @@
     .arena-custom-result[hidden]{display:none}.arena-custom-result img{width:82px;height:90px;object-fit:cover;border-radius:9px}
     .arena-custom-result span{font-size:11px;font-weight:850;line-height:1.55}
     @media(max-width:360px){.custom-solo-card{flex-wrap:wrap}.custom-solo-hunt{margin-left:auto}}
+
+    /* V4.10 — Portraits des méchants personnels directement sur la CARTE SOLO */
+    .custom-map-panel{border-radius:16px;border:1px solid #5b79a4;background:linear-gradient(132deg,#1a3257,#282040);padding:13px;margin:9px 0 17px}
+    .custom-map-panel[hidden]{display:none}
+    .custom-map-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#8cefe4;font-weight:950;font-size:12px;letter-spacing:.2px}
+    .custom-map-heading small{font-size:10px;color:#d2e6ff;font-weight:800}
+    .custom-map-panel p{font-size:10px;line-height:1.55;color:#b5cae7;margin:7px 0 11px}
+    .custom-map-list{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;overscroll-behavior-x:contain;padding-bottom:5px}
+    .custom-map-target{flex:0 0 min(80%,255px);scroll-snap-align:start;display:flex;align-items:center;gap:10px;border:1px solid #54719d;background:#101e39;border-radius:12px;padding:9px}
+    .custom-map-target img{width:70px;height:78px;flex:0 0 70px;object-fit:cover;border-radius:10px;background:#2a4368}
+    .custom-map-target-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+    .custom-map-target-info strong{font-size:11px;color:#f3ffff;overflow-wrap:anywhere}
+    .custom-map-target-info small{font-size:9px;color:#a9c5e5}
+    .custom-map-target button{width:100%;border:0;border-radius:9px;padding:8px 7px;background:linear-gradient(115deg,#5be3df,#8d9bff);color:#111a34;font-size:10px;font-weight:950;min-height:35px}
+    .custom-map-target button:disabled{background:#54627d;color:#cbd4e4;opacity:.6}
+    .district-custom-occupants{position:relative;margin:7px -2px 0;display:flex;align-items:center;flex-wrap:wrap;gap:5px;min-height:29px}
+    .district-custom-avatar{height:28px;width:28px;object-fit:cover;border-radius:8px;border:1px solid #85fff0;box-shadow:0 0 0 2px #061c35}
+    .district-custom-caption{font-size:9px;font-weight:900;color:#b8fff7;line-height:1.2;max-width:100px;white-space:normal}
+    .district-card.has-personals .district{min-height:183px}
+    .district-card.has-personals .district-info-btn{top:125px;bottom:auto}
+    @media(max-width:350px){.custom-map-target{flex-basis:90%}.district-custom-caption{font-size:8px}.district-custom-avatar{height:25px;width:25px}}
 </style>
 </head>
 <body>
@@ -356,6 +377,11 @@
           <div class="welcome-stats"><div><strong id="stat-captured">0</strong><span>Captures</span></div><div><strong id="stat-unique">0/6</strong><span>Répertoire</span></div><div><strong id="stat-districts">2/6</strong><span>Quartiers</span></div></div>
         </div>
         <div class="section-heading">🗺️ CARTE DES QUARTIERS <small>Appuie pour patrouiller</small></div>
+        <div id="custom-map-panel" class="custom-map-panel" hidden>
+          <div class="custom-map-heading"><strong>🦹 MES MÉCHANTS SUR LA CARTE</strong><small id="custom-map-count">0 cible</small></div>
+          <p>Tes personnages personnalisés validés sont ici. Appuie sur <b>TRAQUER</b> pour retrouver directement ton super-vilain dans le radar.</p>
+          <div id="custom-map-list" class="custom-map-list"></div>
+        </div>
         <div id="district-grid" class="district-grid"></div>
         <div class="ticker"><span class="big-icon">📡</span><div><b>10 inconnus sur le radar</b><p>Repère le vrai criminel en 5 tentatives. Après cinq mauvaises identifications, il reste en fuite !</p></div></div>
       </section>
@@ -973,7 +999,49 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     function regen(){let now=Date.now();if(!Number.isFinite(state.lastEnergy)||state.lastEnergy>now)state.lastEnergy=now;if(state.energy>=state.maxEnergy){state.lastEnergy=now;return}const every=energyInterval();let ticks=Math.floor((now-state.lastEnergy)/every);if(ticks>0){state.energy=Math.min(state.maxEnergy,state.energy+ticks);state.lastEnergy+=ticks*every;save()}}
     function addXP(n){state.xp+=n;let leveled=0;while(state.xp>=xpGoal(state.level)){state.xp-=xpGoal(state.level);state.level++;leveled++;state.coins+=50;state.nets+=1}if(leveled){tone(700,.14);setTimeout(()=>toast(`🎉 NIVEAU ${state.level} ! Quartiers et récompenses débloqués.`),160)}return leveled}
     function renderStats(){regen();$('top-level').textContent=`AGENT · NIV. ${state.level}`;$('top-energy').textContent=`${state.energy}/${state.maxEnergy}`;$('top-coins').textContent=state.coins;$('top-nets').textContent=state.nets;$('stat-captured').textContent=state.captured;$('stat-unique').textContent=`${seen()}/${originalVillains}`;$('stat-districts').textContent=`${unlocked()}/${districts.length}`}
-    function renderMap(){let html='';districts.forEach(d=>{let lock=state.level<d.min;html+=`<div class="district-card"><button class="district ${lock?'locked':''}" data-district="${d.id}" style="--glow:${d.color};--haze:${d.glow};--stroke:${d.stroke}" type="button" aria-label="${d.name}, ${lock?'verrouillé jusqu’au niveau '+d.min:'patrouiller'}"><span class="district-lvl">NIV. ${d.min}+</span><span class="district-icon">${d.icon}</span><strong>${d.name}</strong><span class="district-sub">${lock?`🔒 DÉBLOQUER NIV. ${d.min}`:'<i class="live-dot"></i> SIGNAL DÉTECTÉ'}</span></button><button class="district-info-btn" data-info="${d.id}" type="button" aria-label="En savoir plus sur le suspect de ${d.name}">!</button></div>`});$('district-grid').innerHTML=html}
+    function renderMap(){
+      let html='';
+      districts.forEach(d=>{
+        const lock=state.level<d.min;
+        const here=customSoloReady.filter(item=>item.zone===d.id);
+        const avatars=here.length?
+          '<span class="district-custom-occupants">'+here.slice(0,3).map(item=>
+            '<img class="district-custom-avatar" loading="lazy" src="'+escapeHtml(item.portrait)+'" alt="'+escapeHtml(item.name)+'" title="'+escapeHtml(item.name)+'">'
+          ).join('')+
+          '<span class="district-custom-caption">🦹 '+here.length+' perso'+(here.length>1?'s':'')+'</span></span>':'';
+        html+='<div class="district-card '+(here.length?'has-personals':'')+'">'+
+          '<button class="district '+(lock?'locked':'')+'" data-district="'+d.id+'" style="--glow:'+d.color+';--haze:'+d.glow+';--stroke:'+d.stroke+'" type="button" aria-label="'+escapeHtml(d.name)+(here.length?', '+here.length+' super-vilain personnalisé':'')+'">'+
+          '<span class="district-lvl">NIV. '+d.min+'+</span>'+
+          '<span class="district-icon">'+d.icon+'</span>'+
+          '<strong>'+escapeHtml(d.name)+'</strong>'+
+          '<span class="district-sub">'+(lock?'🔒 DÉBLOQUER NIV. '+d.min:'<i class="live-dot"></i> SIGNAL DÉTECTÉ')+'</span>'+
+          avatars+'</button>'+
+          '<button class="district-info-btn" data-info="'+d.id+'" type="button" aria-label="En savoir plus sur le suspect de '+escapeHtml(d.name)+'">!</button></div>';
+      });
+      $('district-grid').innerHTML=html;
+      renderCustomMapPanel();
+    }
+    function renderCustomMapPanel(){
+      const panel=$('custom-map-panel'),list=$('custom-map-list');
+      if(!panel||!list)return;
+      panel.hidden=!customSoloReady.length;
+      list.replaceChildren();
+      $('custom-map-count').textContent=customSoloReady.length+' cible'+(customSoloReady.length>1?'s':'');
+      for(const item of customSoloReady){
+        const card=document.createElement('div');card.className='custom-map-target';
+        const img=document.createElement('img');img.src=item.portrait;img.loading='lazy';img.alt='Portrait de '+item.name;
+        const info=document.createElement('div');info.className='custom-map-target-info';
+        const title=document.createElement('strong');title.textContent=item.name;
+        const zoneName=document.createElement('small');
+        const lock=state.level<districts[item.zone].min;
+        zoneName.textContent='📍 '+districts[item.zone].name+' · Danger '+item.danger+'/5';
+        const btn=document.createElement('button');btn.type='button';
+        btn.textContent=lock?'🔒 NIV. '+districts[item.zone].min:'📡 TRAQUER';
+        btn.disabled=lock;
+        btn.addEventListener('click',()=>launchCustomSolo(item.id));
+        info.append(title,zoneName,btn);card.append(img,info);list.appendChild(card);
+      }
+    }
     function renderCodex(){let html='';villains.slice(0,originalVillains).forEach((v,id)=>{let count=state.owned[id]||0;html+=`<div class="codex-tile ${count?'':'unknown'}" title="${count?v.line:'Identité inconnue'}"><span class="codex-icon">${count?`<img class="codex-face" loading="lazy" src="${v.portrait}" alt="${v.name}">`:'❔'}</span><span class="codex-name">${count?v.name:'DOSSIER ???'}</span><div class="codex-rarity">${count?`×${count} ARRÊTÉ${count>1?'S':''}`:v.boss?'🔒 BOSS':'NON CAPTURÉ'}</div></div>`});$('codex-grid').innerHTML=html;$('prison-counter').textContent=`${seen()} / 6 super-méchants identifiés`;$('prison-summary').textContent=seen()===6?'Les 6 super-méchants ont été capturés ! 🏆':`Encore ${6-seen()} suspects à découvrir.`;renderCustomSolo();}
     let missionFilter='all',missionVisible=12;
     function renderMissions(){
