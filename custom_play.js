@@ -77,6 +77,8 @@ function start(){
   document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh(true)});
   // Arena.js est chargé avant ce module, mais son auth peut être encore en cours.
   refresh(true);setTimeout(()=>refresh(true),1700);
+  // Renouvelle les URL d'images privées avant leur expiration (1 heure).
+  setInterval(()=>{if(!document.hidden)refresh(true)},25*60*1000);
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});
 else start();
