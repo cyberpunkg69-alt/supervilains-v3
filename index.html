@@ -1073,6 +1073,24 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     }
     const commissaireClip=scene=>`commissaire_${myVoiceIndex()}_${scene}`;
     const villainClip=(id,scene)=>bossKeys[id]?`${bossKeys[id]}_${scene}`:null;
+    let customSpeechAt=0;
+    function speakCustomScene(v,scene){
+      if(!v?.custom||!state.voicesEnabled||!('speechSynthesis' in window)||!window.SpeechSynthesisUtterance)return;
+      const now=Date.now();if(scene==='taunt'&&now-customSpeechAt<2800)return;customSpeechAt=now;
+      const text=String((scene==='intro'?v.intro_line:scene==='capture'?v.capture_line:v.taunt_line)
+        ||(scene==='capture'?'Vous m’avez attrapé !':scene==='intro'?'Personne ne m’arrêtera !':'Vous ne m’aurez jamais !')).slice(0,350);
+      try{
+        const u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';
+        const preset={
+          grave:[.86,.72],comique:[1.17,1.25],froid:[.88,1],
+          theatral:[.95,1.33],diabolique:[.82,.66],autoritaire:[1.03,.88]
+        }[v.voice_type]||[1,1];
+        u.rate=preset[0];u.pitch=preset[1];
+        const french=window.speechSynthesis.getVoices().find(x=>/^fr([-_]|$)/i.test(x.lang));
+        if(french)u.voice=french;
+        window.speechSynthesis.speak(u);
+      }catch(e){}
+    }
     function readSuspectReason(){
       if(suspectDistrictId===null||!('speechSynthesis' in window))return toast('Lecture vocale des motifs indisponible sur cet appareil.');
       const v=districtVillain(suspectDistrictId);if(!v)return;
@@ -1176,7 +1194,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       if(slot===radar.targetSlot){
         radar.found=true;state.radarFinds++;if(radar.misses.length===0)state.radarFirst++;
         radar.message=`🎯 IDENTITÉ CONFIRMÉE : ${villains[radar.id].name} ! Appuie sur AFFRONTER pour lancer le combat.`;
-        tone(900,.2);vibrate([30,50,65]);renderRadar();playVoiceSeries([villainClip(radar.id,'escape')]);notifySave();return;
+        tone(900,.2);vibrate([30,50,65]);renderRadar();playVoiceSeries([villainClip(radar.id,'escape')]);speakCustomScene(villains[radar.id],'intro');notifySave();return;
       }
       radar.misses.push(slot);state.radarMisses++;
       const phrase=radar.phraseOrder[radar.misses.length-1];
@@ -1234,7 +1252,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     }
     function message(txt,warn=false){$('battle-message').textContent=txt;$('battle-message').className='battle-message'+(warn?' warn':'')}
     function hitByVillain(){if(!enemy)return false;let d=villains[enemy.id].danger;const damage=Math.max(1,rand(5,10)+d*2-equipmentLevel('armor'));enemy.shield=Math.max(0,enemy.shield-damage);vibrate(40);if(enemy.shield<=0){endBattle('escape');return true}return false}
-    function attack(){regen();if(!enemy||busy)return;if(state.energy<3){toast('⚡ Énergie insuffisante ! Recharge dans AGENT.');return}state.energy-=3;enemy.attacks++;let dmg=rand(16,24)+Math.floor(state.level/3)*2;enemy.hp=Math.max(1,enemy.hp-dmg);$('villain-figure').classList.remove('hit');void $('villain-figure').offsetWidth;$('villain-figure').classList.add('hit');tone(220,.08);vibrate(25);reactionPortrait(enemy.id,'troller');if(!hitByVillain()){message(`⚡ Troll critique : -${dmg} résistance ! La cible perd ses moyens.`);renderBattle()}notifySave()}
+    function attack(){regen();if(!enemy||busy)return;if(state.energy<3){toast('⚡ Énergie insuffisante ! Recharge dans AGENT.');return}state.energy-=3;enemy.attacks++;let dmg=rand(16,24)+Math.floor(state.level/3)*2;enemy.hp=Math.max(1,enemy.hp-dmg);$('villain-figure').classList.remove('hit');void $('villain-figure').offsetWidth;$('villain-figure').classList.add('hit');tone(220,.08);vibrate(25);reactionPortrait(enemy.id,'troller');speakCustomScene(villains[enemy.id],'taunt');if(!hitByVillain()){message(`⚡ Troll critique : -${dmg} résistance ! La cible perd ses moyens.`);renderBattle()}notifySave()}
     function useWeakness(slot){
       if(!enemy||busy||enemy.guessUsed||!Number.isInteger(slot)||slot<0||slot>=enemy.cards.length)return;
       enemy.guessUsed=true;enemy.selectedSlot=slot;state.weaknessAttempts++;
@@ -1273,7 +1291,9 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     function endBattle(kind,reward={}){if(!enemy)return;const v=villains[enemy.id];hide('overlay-meter');hide('overlay-battle');meterActive=false;cancelAnimationFrame(meterAnimation);busy=false;let escaped=kind==='escape';$('result-icon').textContent=escaped?'💨':'🏆';
       const gifFrame=$('result-gif-frame');gifFrame.hidden=escaped;
       if(!escaped){$('result-gif').src=v.custom?v.capture:`assets/reactions/${bossKeys[enemy.id]}_capture.gif?t=${Date.now()}`;}else{$('result-gif').removeAttribute('src');}
-      clearTimeout(reactionTimeout);$('result-kicker').textContent=escaped?'LE SUSPECT S’EST ÉCHAPPÉ':'CIBLE IMMOBILISÉE';$('result-title').textContent=escaped?'POURSUITE TERMINÉE':'CAPTURE RÉUSSIE !';$('result-text').textContent=escaped?`${v.name} s'est échappé. Son cringe l'a sauvé pour cette fois.`:`${v.name} rejoint ton coffre des criminels ! ${reward.newEntry?'NOUVEAU DOSSIER DÉBLOQUÉ ! ':''}${reward.ultimate?'🎴 CARTE FATALE AU PREMIER ESSAI ! Capture automatique et bonus spécial.':''}`;$('result-stats').innerHTML=escaped?'<span>🛡️ Bouclier épuisé</span><span>📡 Suspect localisé</span>':`<span>🪙 <b>+${reward.coins}</b></span><span>⭐ <b>+${reward.xp} XP</b></span>${reward.perfect?'<span>🎯 CAPTURE PARFAITE</span>':''}${reward.ultimate?'<span>🎴 FAILLE ULTIME : +160 🪙 · +130 XP · +1 🕸️</span>':''}`;$('result-button').textContent=escaped?'RECOMMENCER UNE PATROUILLE':'CONTINUER LA CHASSE';const spokenId=enemy.id;enemy=null;show('overlay-result');lastResultVoiceKeys=escaped?[commissaireClip('escape'),villainClip(spokenId,'escape')]:[commissaireClip('capture'),villainClip(spokenId,'capture')];playVoiceSeries(lastResultVoiceKeys);checkAchievements();save();renderAll()}
+      clearTimeout(reactionTimeout);$('result-kicker').textContent=escaped?'LE SUSPECT S’EST ÉCHAPPÉ':'CIBLE IMMOBILISÉE';$('result-title').textContent=escaped?'POURSUITE TERMINÉE':'CAPTURE RÉUSSIE !';$('result-text').textContent=escaped?`${v.name} s'est échappé. Son cringe l'a sauvé pour cette fois.`:`${v.name} rejoint ton coffre des criminels ! ${reward.newEntry?'NOUVEAU DOSSIER DÉBLOQUÉ ! ':''}${reward.ultimate?'🎴 CARTE FATALE AU PREMIER ESSAI ! Capture automatique et bonus spécial.':''}`;$('result-stats').innerHTML=escaped?'<span>🛡️ Bouclier épuisé</span><span>📡 Suspect localisé</span>':`<span>🪙 <b>+${reward.coins}</b></span><span>⭐ <b>+${reward.xp} XP</b></span>${reward.perfect?'<span>🎯 CAPTURE PARFAITE</span>':''}${reward.ultimate?'<span>🎴 FAILLE ULTIME : +160 🪙 · +130 XP · +1 🕸️</span>':''}`;$('result-button').textContent=escaped?'RECOMMENCER UNE PATROUILLE':'CONTINUER LA CHASSE';const spokenId=enemy.id;enemy=null;show('overlay-result');lastResultVoiceKeys=escaped?[commissaireClip('escape'),villainClip(spokenId,'escape')]:[commissaireClip('capture'),villainClip(spokenId,'capture')];playVoiceSeries(lastResultVoiceKeys);
+      if(v.custom)setTimeout(()=>{if($('overlay-result').classList.contains('visible'))speakCustomScene(v,escaped?'taunt':'capture')},1100);
+      flushPendingCustomSolo();checkAchievements();save();renderAll()}
     function flee(){if(!enemy)return;endBattle('escape');$('result-text').textContent='Tu as quitté l’affrontement. Le criminel pourra être retrouvé dans son quartier.'}
     function claim(id){let m=missionData.find(m=>m.id===id);if(!m||state.claimed.includes(id)||missionValue(m)<m.total)return;state.claimed.push(id);state.coins+=m.coins;state.nets+=m.nets;addXP(m.xp);notifySave();tone(840,.2);vibrate(65);toast(`🎁 Mission accomplie : +${m.coins} 🪙 +${m.nets} 🕸️`)}
     function buy(which){if(which==='nets'){if(state.coins<90)return toast('Crédits insuffisants');state.coins-=90;state.nets+=3;toast('🕸️ +3 filets ioniques !')}
