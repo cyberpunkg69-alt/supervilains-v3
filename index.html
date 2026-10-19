@@ -533,6 +533,7 @@
           <div class="arena-box"><div class="row-between"><h3>🎯 Chasse classée</h3><span class="arena-badge">SERVEUR ACTIF</span></div>
             <p class="arena-muted">Chaque partie utilise un tirage sécurisé côté serveur. Tu disposes de 30 patrouilles par jour (UTC). Tes personnages personnels validés peuvent apparaître dans tes rencontres (45 % de chance si tu en possèdes). Ils restent privés et ne modifient ni les chances ni les points.</p>
             <button id="arena-hunt" class="arena-action pink" type="button">📡 LANCER UNE PATROUILLE EN LIGNE</button>
+            <p id="arena-custom-roster" class="arena-muted">Personnages personnels : connecte-toi pour synchroniser.</p>
             <div class="arena-encounter" id="arena-encounter" hidden>
               <div class="arena-badge">⚠️ CIBLE COMPÉTITIVE</div><div class="arena-enemy" id="arena-villain-icon">👾</div><div class="arena-enemyname" id="arena-villain-name">CIBLE</div>
               <p class="arena-muted" id="arena-villain-sub">Danger · 1/6</p>
@@ -939,7 +940,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       {id:'perfect10',name:'Visée légendaire',description:'Réussir 10 captures parfaites au filet.',icon:'🎯',points:50,target:10,progress:()=>state.perfect},
       {id:'missions5',name:'Agent irréprochable',description:'Récupérer les 5 récompenses de missions.',icon:'📜',points:50,target:5,progress:()=>baseMissionIds.filter(id=>state.claimed.includes(id)).length},
       {id:'fullroster',name:'La prison est pleine',description:'Capturer chacun des 6 super-méchants.',icon:'🏰',points:100,target:6,progress:()=>seen()},
-      {id:'sixsecrets',name:'Maître des failles',description:'Trouver la carte fatale des 6 super-méchants.',icon:'💎',points:100,target:6,progress:()=>villains.filter((v,i)=>Number(state.ultimateByVillain[i]||0)>0).length}
+      {id:'sixsecrets',name:'Maître des failles',description:'Trouver la carte fatale des 6 super-méchants.',icon:'💎',points:100,target:6,progress:()=>villains.slice(0,originalVillains).filter((v,i)=>Number(state.ultimateByVillain[i]||0)>0).length}
     ];
     if(achievements.length!==30||achievements.reduce((n,a)=>n+a.points,0)!==1000)throw Error('Succès mal configurés');
     let achievementFilter='all',popQueue=[],popShowing=false;
