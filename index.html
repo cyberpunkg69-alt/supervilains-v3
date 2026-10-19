@@ -867,31 +867,67 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     const ownedKey=id=>villains[id]?.customId?"custom:"+villains[id].customId:id;
     let customSoloReady=[],pendingCustomSolo=null;
     const customSoloIndex=new Map();
+    const weaknessIconFor=(name)=>{
+      const t=String(name||"").toLocaleLowerCase('fr');
+      if(/rouge.{0,8}l[eè]vres|lipstick|maquill/.test(t))return '💄';
+      if(/lunett/.test(t))return '👓';
+      if(/brosse.*dent|dentifrice/.test(t))return '🪥';
+      if(/canard|magret|gras|poulet/.test(t))return '🍗';
+      if(/micro|chanson|chant/.test(t))return '🎤';
+      if(/livre|bescherelle|orthograph|dictionnaire/.test(t))return '📘';
+      if(/d[eé]odorant|parfum/.test(t))return '🧴';
+      if(/caf[eé]|th[eé]/.test(t))return '☕';
+      if(/t[eé]l[eé]phone|portable/.test(t))return '📱';
+      return '🎴';
+    };
+    const personalZoneName=(row)=>{
+      const provided=String(row.district||'').trim().slice(0,80);
+      return provided||('REPAIRE DE '+String(row.name||'SUPER-VILAIN').trim().slice(0,60));
+    };
     function applyCustomSolo(list){
-      const accepted=(Array.isArray(list)?list:[]).filter(row=>/^[0-9a-f-]{36}$/i.test(String(row.id))&&row.portrait&&row.troll&&row.capture).slice(0,10);
-      // Ne touche pas aux six méchants initiaux ni à leurs failles.
+      const accepted=(Array.isArray(list)?list:[]).filter(row=>
+        /^[0-9a-f-]{36}$/i.test(String(row.id))&&row.portrait&&row.troll&&row.capture).slice(0,10);
+      // Les six secteurs historiques et les six méchants d'origine restent intacts.
+      districts.splice(originalVillains);
       districts.forEach(d=>{d.villains=d.villains.filter(id=>id<originalVillains)});
       villains.splice(originalVillains);
       weaknessItems.splice(originalVillains);
-      customSoloIndex.clear();
-      customSoloReady=[];
+      customSoloIndex.clear();customSoloReady=[];
+      const personalZones=new Map();
       for(const row of accepted){
         const id=String(row.id),level=Math.max(1,Math.min(5,Number(row.danger_level)||2));
-        const zone=[0,0,1,3,4,5][level],index=villains.length;
-        const weakness="custom:"+id;
+        const name=String(row.name||'SUPER-VILAIN').trim().slice(0,60);
+        const zoneName=personalZoneName(row);
+        const zoneKey=zoneName.toLocaleLowerCase('fr').replace(/\s+/g,' ').trim();
+        const weaknessName=String(row.weakness_object||row.weakness_label||'Faille ultime').trim().slice(0,120);
+        const icon=weaknessIconFor(weaknessName+' '+String(row.weakness_label||''));
+        let zone=personalZones.get(zoneKey);
+        if(zone===undefined){
+          zone=districts.length;
+          districts.push({
+            id:zone,name:zoneName.toLocaleUpperCase('fr'),icon,min:1,
+            color:'#513056',glow:'#ff6fbd55',stroke:'#b581bf',
+            desc:'Repaire personnel · '+name,villains:[],personal:true,
+            persistentKey:'custom-district:'+zoneKey
+          });
+          personalZones.set(zoneKey,zone);
+        }
+        const index=villains.length,weakness='custom:'+id;
         villains.push({
-          customId:id,custom:true,name:String(row.name||"SUPER-VILAIN").slice(0,60),
-          icon:"🦹",line:String(row.description||row.alias||"Cible personnelle").slice(0,1000),
-          danger:level,type:"Personnalisé",color:"#8ae8f0",boss:level>=4,
+          customId:id,custom:true,name,icon,line:String(row.description||row.alias||'Cible personnelle').slice(0,1000),
+          wantedReason:String(row.wanted_reason||'').slice(0,350),
+          danger:level,type:'Personnalisé',color:'#8ae8f0',boss:level>=4,
           portrait:row.portrait,troll:row.troll,capture:row.capture,
-          weakness,weaknessName:String(row.weakness_object||row.weakness_label||"Faille ultime").slice(0,120),
-          weaknessIcon:"🎴",voice_type:row.voice_type,
+          weakness,weaknessName,weaknessIcon:icon,voice_type:row.voice_type,
           intro_line:row.intro_line,taunt_line:row.taunt_line,capture_line:row.capture_line
         });
-        weaknessItems.push({id:weakness,label:String(row.weakness_object||row.weakness_label||"Faille ultime").slice(0,120),icon:"🎴"});
+        weaknessItems.push({id:weakness,label:weaknessName,icon});
         districts[zone].villains.push(index);
         customSoloIndex.set(id,{index,zone});
-        customSoloReady.push({id,index,zone,portrait:row.portrait,name:String(row.name||"SUPER-VILAIN").slice(0,60),danger:level});
+        customSoloReady.push({
+          id,index,zone,portrait:row.portrait,name,danger:level,
+          district:zoneName,weaknessName,weaknessIcon:icon
+        });
       }
       pendingCustomSolo=null;renderAll();
     }
@@ -907,7 +943,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       const entry=customSoloIndex.get(String(id));
       if(!entry)return toast("Cible personnelle indisponible. Actualise le COFFRE.");
       if(state.level<districts[entry.zone].min)return toast("Quartier débloqué au niveau "+districts[entry.zone].min+".");
-      regen();state.patrols++;state.visited[entry.zone]=true;
+      regen();state.patrols++;state.visited[districts[entry.zone].persistentKey||entry.zone]=true;
       notifySave();startRadar(entry.index,entry.zone);
     }
     window.SUPERVILAINS_SOLO_PLAY_CUSTOM=launchCustomSolo;
@@ -936,7 +972,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       }
     }
     const xpGoal=level=>150+level*70;
-    const unlocked=()=>districts.filter(d=>state.level>=d.min).length;
+    const unlocked=()=>districts.slice(0,originalVillains).filter(d=>state.level>=d.min).length;
     const rank=()=>state.level>=10?'SEIGNEUR DES MÈMES':state.level>=6?'CHASSEUR VIRAL':state.level>=3?'AGENT CRINGE CONFIRMÉ':'AGENT RECRUE';
     const missionData=[{id:'c2',name:'Première humiliation',desc:'Capture 2 super-méchants.',key:'captured',total:2,coins:120,xp:90,nets:1},{id:'d4',name:'Scroll infini',desc:'Effectue 4 patrouilles.',key:'patrols',total:4,coins:110,xp:90,nets:1},{id:'p2',name:'Clip parfait',desc:'Réussis 2 captures parfaites.',key:'perfect',total:2,coins:160,xp:150,nets:2},{id:'c6',name:'Top 6 du cringe',desc:'Capture les 6 super-méchants.',key:'captured',total:6,coins:360,xp:320,nets:3},{id:'v6',name:'Tour complet du feed',desc:'Patrouille dans les 6 zones.',key:'visited',total:6,coins:400,xp:350,nets:3}];
     // Les cinq missions historiques conservent leurs identifiants. +45 missions inédites.
@@ -987,7 +1023,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       const selected=achievements.filter(a=>achievementFilter==='all'||(achievementFilter==='unlocked'?achievementUnlocked(a):!achievementUnlocked(a)));
       $('achievement-list').innerHTML=selected.length?selected.map(a=>{const done=achievementUnlocked(a),progress=Math.min(a.target,Math.max(0,Number(a.progress())||0));return `<div class="achievement-card ${done?'unlocked':''}"><div class="achievement-medal">${done?a.icon:'🔒'}</div><div class="achievement-details"><div class="achievement-name">${a.name}</div><div class="achievement-desc">${a.description}</div><div class="achievement-progress">${done?'✅ Débloqué':`${progress} / ${a.target}`}</div></div><span class="achievement-points">${a.points} G</span></div>`}).join(''):'<div class="empty">Aucun succès dans ce filtre.</div>';
     }
-    const missionValue=m=>m.key==='visited'?Object.keys(state.visited).length:m.key==='netCaptures'?Math.max(0,state.captured-state.ultimate):m.key==='claimed'?state.claimed.length:(Number(state[m.key])||0);
+    const missionValue=m=>m.key==='visited'?Array.from({length:originalVillains},(_,i)=>i).filter(i=>state.visited[i]).length:m.key==='netCaptures'?Math.max(0,state.captured-state.ultimate):m.key==='claimed'?state.claimed.length:(Number(state[m.key])||0);
     // V4.4 — bonus réellement appliqués au moteur SOLO. Aucun effet sur l'ARÈNE serveur.
     const workshopConfig={
       scanner:{max:3,unlock:2,base:360,step:250},
@@ -1001,7 +1037,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     const nextReactorStage=()=>state.maxEnergy<100?100:state.maxEnergy<150?150:state.maxEnergy<200?200:null;
     function regen(){let now=Date.now();if(!Number.isFinite(state.lastEnergy)||state.lastEnergy>now)state.lastEnergy=now;if(state.energy>=state.maxEnergy){state.lastEnergy=now;return}const every=energyInterval();let ticks=Math.floor((now-state.lastEnergy)/every);if(ticks>0){state.energy=Math.min(state.maxEnergy,state.energy+ticks);state.lastEnergy+=ticks*every;save()}}
     function addXP(n){state.xp+=n;let leveled=0;while(state.xp>=xpGoal(state.level)){state.xp-=xpGoal(state.level);state.level++;leveled++;state.coins+=50;state.nets+=1}if(leveled){tone(700,.14);setTimeout(()=>toast(`🎉 NIVEAU ${state.level} ! Quartiers et récompenses débloqués.`),160)}return leveled}
-    function renderStats(){regen();$('top-level').textContent=`AGENT · NIV. ${state.level}`;$('top-energy').textContent=`${state.energy}/${state.maxEnergy}`;$('top-coins').textContent=state.coins;$('top-nets').textContent=state.nets;$('stat-captured').textContent=state.captured;$('stat-unique').textContent=`${seen()}/${originalVillains}`;$('stat-districts').textContent=`${unlocked()}/${districts.length}`}
+    function renderStats(){regen();$('top-level').textContent=`AGENT · NIV. ${state.level}`;$('top-energy').textContent=`${state.energy}/${state.maxEnergy}`;$('top-coins').textContent=state.coins;$('top-nets').textContent=state.nets;$('stat-captured').textContent=state.captured;$('stat-unique').textContent=`${seen()}/${originalVillains}`;$('stat-districts').textContent=`${unlocked()}/${originalVillains}`}
     function renderMap(){
       let html='';
       districts.forEach(d=>{
@@ -1304,7 +1340,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       if(enemy||radar||$('overlay-result').classList.contains('visible'))return;
       const pool=d.villains,missing=pool.filter(i=>!state.owned[ownedKey(i)]);
       const villainId=missing.length&&Math.random()<.68?missing[rand(0,missing.length-1)]:pool[rand(0,pool.length-1)];
-      state.patrols++;state.visited[id]=true;notifySave();startRadar(villainId,id);
+      state.patrols++;state.visited[d.persistentKey||id]=true;notifySave();startRadar(villainId,id);
     }
     function beginBattle(villainId,id){
       const d=districts[id],villain=villains[villainId];
