@@ -348,6 +348,19 @@
       border:1px solid #83d9f6;background:#19385d;
       box-shadow:0 3px 11px #0009;
     }
+
+    /* V4.14 — Jauge de précision de l'ARÈNE (validation côté serveur). */
+    .arena-meter-shade{position:fixed;inset:0;z-index:94;display:flex;align-items:center;justify-content:center;background:#030718ec;backdrop-filter:blur(10px);padding:18px}
+    .arena-meter-dialog{width:min(100%,430px);max-height:92dvh;overflow:auto;text-align:center;border:1px solid #6e83c3;border-radius:22px;background:radial-gradient(circle at top right,#2b345f,#141b39 70%);padding:23px 17px 19px;box-shadow:0 25px 75px #0009}
+    .arena-meter-dialog h2{font-size:24px;font-weight:1000;line-height:1.2;margin:12px 0 8px}.arena-meter-dialog p{color:#b9cfed;font-size:12px;line-height:1.5}
+    .arena-meter-eyebrow{font-size:10px;letter-spacing:1px;color:#80fff4;font-weight:950}
+    .arena-meter-track{height:49px;border:1px solid #7185b6;border-radius:12px;position:relative;overflow:hidden;background:linear-gradient(90deg,#9e354b44,#ffd36e44 35%,#ffd36e44 65%,#9e354b44);margin:28px 2px 9px}
+    .arena-meter-target{position:absolute;left:35%;width:30%;top:0;bottom:0;background:linear-gradient(90deg,#39d7c063,#aaffefc7,#39d7c063);border-left:2px solid #b9ffee;border-right:2px solid #b9ffee;box-shadow:0 0 20px #43e7d9a0}
+    .arena-meter-indicator{position:absolute;left:5%;top:-3px;height:55px;width:5px;border-radius:5px;background:#fff;transform:translateX(-50%);box-shadow:0 0 13px #fff,0 0 25px #7deafe;will-change:left}
+    .arena-meter-labels{display:flex;justify-content:space-between;font-size:9px;font-weight:900;color:#b6cae7;letter-spacing:.5px}
+    .arena-meter-status{font-size:11px!important;min-height:32px;color:#dbeefa!important;margin:18px 0 8px}
+    .arena-meter-stop{width:100%;min-height:63px;border:0;border-radius:13px;background:linear-gradient(110deg,#ff609f,#ffc575);color:#19122d;font-size:17px;font-weight:1000;margin:8px 0}
+    .arena-meter-back{width:100%;min-height:43px;border:1px solid #52658f;border-radius:11px;background:#15254b;color:#d6e4fa;font-size:11px;font-weight:850;padding:9px}
     .suspect-avatar{overflow:hidden}
     .suspect-avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:13px}
 
@@ -713,7 +726,7 @@
           <div class="voice-note">Les voix des six méchants sont des enregistrements officiels identiques pour tous. La lecture parlée des motifs utilise la voix disponible sur ton téléphone.</div>
         </div>
 
-        <p class="footer-note">SUPERVILAINS — Meme Hunt · V4.12</p>
+        <p class="footer-note">SUPERVILAINS — Meme Hunt · V4.14</p>
       </section>
     </main>
     <nav class="nav" aria-label="Navigation principale">
@@ -746,6 +759,21 @@
       <div class="villain-info"><h2 id="battle-name">LE BARON NÉON</h2><p id="battle-description">Suspect dangereux.</p><div class="hp-caption"><span>❤️ RÉSISTANCE</span><strong id="hp-number">100 / 100</strong></div><div class="progress pink"><i id="hp-bar" style="width:100%"></i></div></div>
       <div class="battle-message" id="battle-message" aria-live="polite">Neutralise le suspect pour augmenter tes chances.</div>
       <div class="battle-actions"><div class="battle-actions-grid"><button id="attack-btn" type="button" class="button primary">⚡ TROLLER <small>(-3 ⚡)</small></button><button id="capture-btn" type="button" class="button capture">🕸️ CAPTURER</button></div><div class="battle-help"><span id="capture-odds">Probabilité : 35 %</span><span id="shield-info">🛡️ Bouclier : 100</span></div><div class="battle-weakness"><div class="weakness-title">🎴 FAILLE ULTIME • 1 CHANCE SUR 6</div><p id="weakness-target" class="weakness-target" hidden></p><div id="weakness-grid" class="weakness-grid"></div><div class="weakness-help" id="weakness-help">Les cartes sont face cachée. Un seul choix : trouve la bonne du premier coup !</div></div></div>
+    </div>
+  </div>
+  <div id="arena-meter-overlay" class="arena-meter-shade" role="dialog" aria-modal="true" aria-label="Jauge de précision de l'arène" hidden>
+    <div class="arena-meter-dialog">
+      <div class="arena-meter-eyebrow">🏆 ARÈNE · FILET COMPÉTITIF</div>
+      <h2>VISE LE <span style="color:var(--cyan)">CENTRE !</span></h2>
+      <p>Arrête le curseur dans la zone turquoise. Le serveur vérifie ton timing et calcule les chances de capture.</p>
+      <div class="arena-meter-track" aria-label="Jauge de capture">
+        <div class="arena-meter-target"></div>
+        <div id="arena-meter-indicator" class="arena-meter-indicator"></div>
+      </div>
+      <div class="arena-meter-labels"><span>IMPRÉCIS</span><span>PARFAIT</span><span>IMPRÉCIS</span></div>
+      <p id="arena-meter-status" class="arena-meter-status" role="status" aria-live="polite">🎯 Une seule tentative. Synchronisation serveur active.</p>
+      <button id="arena-meter-stop" class="arena-meter-stop" type="button">🎯 LANCER LE FILET !</button>
+      <button id="arena-meter-back" class="arena-meter-back" type="button">← RETOUR AU COMBAT (LA JAUGE CONTINUE)</button>
     </div>
   </div>
   <div id="overlay-meter" class="overlay" role="dialog" aria-modal="true" aria-label="Précision de capture">
