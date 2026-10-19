@@ -1431,7 +1431,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       enemy={id:villainId,district:id,hp:maxhp,maxhp,shield:100,attacks:0,exposed:false,weaknessUsed:null,guessUsed:false,selectedSlot:-1,cards:shuffleCards(villainId)};
       $('battle-district').textContent=`⚠️ ${d.name} · ${villain.boss?'BOSS VIRAL':'SUSPECT VIRAL'}`;
       $('encounter-scene').style.setProperty('--scenecolor',villain.color+'aa');normalPortrait(villainId);
-      $('battle-name').textContent=villain.name;$('battle-description').textContent=villain.line+` • Danger ${villain.danger}/6 ${villain.boss?'• BOSS':''} • 🎴 6 cartes mystère`;
+      $('battle-name').textContent=villain.name;$('battle-description').textContent=villain.line+` • Danger ${villain.danger}/5 ${villain.boss?'• BOSS':''} • 🎴 6 cartes mystère`;
       // L'agent connaît l'objet recherché, mais son emplacement reste caché.
       const target=$('weakness-target');target.hidden=!villain.custom;
       if(villain.custom)target.textContent='🎴 Faille ultime de '+villain.name+' : '+villain.weaknessIcon+' '+villain.weaknessName+' · Retrouve cet objet parmi les six cartes face cachée.';
