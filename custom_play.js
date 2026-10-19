@@ -4,7 +4,7 @@
    Les originaux restent uniquement dans les buckets privés Supabase. */
 (()=>{"use strict";
 let previousUser=null,activeUser=null,run=0,loading=false,lastFetch=0,queued=false;
-let warming=false;
+let warming=false,cacheEnabled=("indexedDB" in window);
 const localUrls=new Map(),signedUrls=new Map();
 const DB_NAME="supervilains-private-portraits-v1",TABLE="pictures";
 const validUUID=id=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id||""));
@@ -29,7 +29,9 @@ function openCache(){
   });
 }
 async function cachedBlob(key){
-  const db=await openCache();
+  if(!cacheEnabled)return null;
+  let db;
+  try{db=await openCache();}catch(e){cacheEnabled=false;return null;}
   return new Promise(resolve=>{
     let result=null;
     try{
@@ -43,7 +45,9 @@ async function cachedBlob(key){
   });
 }
 async function saveBlob(key,owner,blob){
-  const db=await openCache();
+  if(!cacheEnabled)return false;
+  let db;
+  try{db=await openCache();}catch(e){cacheEnabled=false;return false;}
   return new Promise(resolve=>{
     try{
       const tx=db.transaction(TABLE,"readwrite");
@@ -53,6 +57,21 @@ async function saveBlob(key,owner,blob){
       tx.onabort=()=>{db.close();resolve(false);};
     }catch(e){db.close();resolve(false);}
   });
+}
+async function prunePrivateCache(owner,activeKeys){
+  if(!owner||!cacheEnabled)return;
+  try{
+    const db=await openCache();
+    await new Promise(resolve=>{
+      try{
+        const tx=db.transaction(TABLE,"readwrite"),store=tx.objectStore(TABLE);
+        const request=store.index("owner").getAllKeys(owner);
+        request.onsuccess=()=>{for(const key of request.result||[])if(!activeKeys.has(key))store.delete(key);};
+        tx.oncomplete=resolve;tx.onerror=resolve;tx.onabort=resolve;
+      }catch(e){resolve();}
+    });
+    db.close();
+  }catch(e){}
 }
 async function clearPrivateCache(owner){
   if(!owner)return;
@@ -203,6 +222,8 @@ async function refresh(force=false){
     const keys=new Set(entries.flatMap(row=>["portrait","troll","capture"].map(kind=>pictureKey(uid,row,kind))));
     for(const [key,url] of localUrls)if(!keys.has(key)){URL.revokeObjectURL(url);localUrls.delete(key);}
     for(const key of signedUrls.keys())if(!keys.has(key))signedUrls.delete(key);
+    // Les versions remplacées ou les personnages supprimés libèrent le stockage.
+    prunePrivateCache(uid,keys);
   }catch(err){
     // Réseau interrompu : ne pas effacer la progression ni les portraits visibles.
     console.warn("SUPERVILAINS : synchronisation des portraits",err?.code||err?.message||"réseau");
@@ -210,7 +231,7 @@ async function refresh(force=false){
     loading=false;
     if(queued){queued=false;setTimeout(()=>refresh(true),0);}
   }
-  if(activeUser&&warmJobs.length&&!warming)prewarm(db,activeUser,warmJobs);
+  if(cacheEnabled&&activeUser&&warmJobs.length&&!warming)prewarm(db,activeUser,warmJobs);
 }
 function start(){
   window.SUPERVILAINS_REFRESH_CUSTOMS=()=>refresh(true);
