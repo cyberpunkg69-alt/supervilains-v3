@@ -1,7 +1,7 @@
 {
-  "name": "SUPERVILAINS V4.9 — Opération Minuit",
+  "name": "SUPERVILAINS V4.10 — Opération Minuit",
   "short_name": "SUPERVILAINS",
-  "description": "Tes super-vilains personnalisés et leurs portraits ChatGPT rejoignent le mode SOLO et l'ARÈNE, avec sauvegardes et compétitions sécurisées.",
+  "description": "Chasse les six super-vilains officiels avec leurs portraits en arène, et traque tes propres super-vilains sur la carte solo.",
   "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
