@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.17 — LA GRANDE EVASION
+/* SUPERVILAINS V4.20 — LA GRANDE EVASION
    Course arcade en perspective 2.5D, autonome, sans API ni dependance externe.
    Le SOLO reste autoritaire sur l'attribution des recompenses et des captures.
 */
@@ -96,6 +96,14 @@
     if(!last)last=t;
     const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;
     if(!game.paused){
+      // Petit temps de celebration avant la jauge finale, sans collision ni progression.
+      if(game.winning>0){
+        game.winning-=dt;
+        game.notice=Math.max(0,game.notice-dt);
+        $('sv-runner-toast').classList.toggle('visible',game.notice>0);
+        if(game.winning<=0){finish(true,'rattrape');return}
+        draw();raf=requestAnimationFrame(tick);return;
+      }
       game.elapsed+=dt;
       game.jump=Math.max(0,game.jump-dt);game.slide=Math.max(0,game.slide-dt);
       game.invincible=Math.max(0,game.invincible-dt);
@@ -125,7 +133,11 @@
       const pct=Math.round(clamp(100*game.distance/game.goal,0,100));
       $('sv-runner-fill').style.width=pct+'%';
       $('sv-runner-progress').textContent=pct+' %';
-      if(game.distance>=game.goal){finish(true,'rattrape');return}
+      if(game.distance>=game.goal){
+        game.distance=game.goal;game.winning=.85;
+        notice('🚓 FUGITIF RATTRAPÉ !');
+        if(navigator.vibrate)navigator.vibrate([40,50,80]);
+      }
     }
     draw();
     raf=requestAnimationFrame(tick);
@@ -257,7 +269,7 @@
     if(game&&game.active)return false;
     const goal=330+Math.min(60,Math.max(0,(Number(v.danger)||1)-1)*10);
     game={active:true,paused:false,lane:0,smoothLane:0,jump:0,slide:0,invincible:0,notice:0,
-      life:3,elapsed:0,spawnClock:1.5,obstacles:[],distance:0,goal,
+      life:3,elapsed:0,spawnClock:1.5,obstacles:[],distance:0,goal,winning:0,
       danger:clamp(Number(v.danger)||1,1,5),icon:String(v.icon||'😈'),
       name:String(v.name||'SUSPECT').slice(0,42),handlers};
     portrait=null;
