@@ -1091,6 +1091,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
         window.speechSynthesis.speak(u);
       }catch(e){}
     }
+    window.SUPERVILAINS_SPEAK_CUSTOM=(row,scene)=>speakCustomScene({...row,custom:true},scene);
     function readSuspectReason(){
       if(suspectDistrictId===null||!('speechSynthesis' in window))return toast('Lecture vocale des motifs indisponible sur cet appareil.');
       const v=districtVillain(suspectDistrictId);if(!v)return;
