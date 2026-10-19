@@ -4,7 +4,7 @@
 */
 (() => {
   'use strict';
-  let ui=null,ctx=null,canvas=null,raf=0,game=null,portrait=null,last=0;
+  let ui=null,ctx=null,canvas=null,renderer3d=null,raf=0,game=null,portrait=null,last=0;
   const $=id=>document.getElementById(id);
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const random=(a,b)=>a+Math.random()*(b-a);
@@ -35,6 +35,7 @@
       '<button type="button" data-pursuit="slide" aria-label="Glisser sous un obstacle">⬇️</button>'+
       '<button type="button" data-pursuit="right" aria-label="Aller à droite">➡️</button></div></section>';
     document.body.append(ui);canvas=$('sv-runner-canvas');ctx=canvas.getContext('2d',{alpha:false});
+    try{renderer3d=window.SUPERVILAINS_PURSUIT_3D?.create(canvas)||null}catch(e){console.warn('Repli poursuite 2D :',e)}
     $('sv-runner-exit').addEventListener('click',()=>finish(false,'abandon'));
     ui.querySelectorAll('[data-pursuit]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.pursuit)));
     let touch=null;
@@ -68,6 +69,7 @@
       canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);
     }
     ctx.setTransform(dpr,0,0,dpr,0,0);
+    renderer3d?.resize();
   }
   function notice(s){
     if(!ui)return;
@@ -130,6 +132,7 @@
   }
   function draw(){
     if(!ctx||!canvas||!game)return;
+    if(renderer3d?.draw(game))return;
     const w=canvas.clientWidth,h=canvas.clientHeight,vanish=h*.30;
     if(w<=0||h<=0)return;
     // Horizon et ciel ne demandent aucun chargement externe.
@@ -239,6 +242,7 @@
   function finish(caught,reason){
     if(!game||!game.active)return;
     const current=game;game.active=false;
+    renderer3d?.end();
     cancelAnimationFrame(raf);raf=0;last=0;
     ui.hidden=true;document.documentElement.classList.remove('sv-runner-open');
     $('sv-runner-pause').hidden=true;
@@ -267,6 +271,7 @@
     $('sv-runner-fill').style.width='0%';$('sv-runner-progress').textContent='0 %';
     $('sv-runner-toast').classList.remove('visible');
     ui.hidden=false;document.documentElement.classList.add('sv-runner-open');
+    renderer3d?.begin({portrait:v.portrait,color:v.color,name:v.name});
     resize();draw();last=0;raf=requestAnimationFrame(tick);
     $('sv-runner-exit').focus({preventScroll:true});
     return true;
