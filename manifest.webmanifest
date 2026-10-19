@@ -1,7 +1,7 @@
 {
-  "name": "SUPERVILAINS V4.11 — Opération Minuit",
+  "name": "SUPERVILAINS V4.12 — Opération Minuit",
   "short_name": "SUPERVILAINS",
-  "description": "Traque les super-vilains officiels et personnels sur la carte, avec photos, quartiers propres, failles ultimes et combats ARÈNE privés.",
+  "description": "Chasse tes propres super-vilains en solo et arène, avec une faille ultime personnelle cachée parmi six cartes, portraits Troller et Capturé.",
   "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
