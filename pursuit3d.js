@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.22 — moteur WebGL 3D pour La Grande Evasion.
+/* SUPERVILAINS V4.23 — moteur WebGL 3D pour La Grande Evasion.
  * Sans CDN, sans API, avec retour transparent au Canvas 2D si WebGL est absent.
  * Les portraits des joueurs restent dans leur stockage prive, non telecharges par WebGL.
  */
@@ -167,6 +167,67 @@
        }
      }
    }
+   // Tiges minces 3D entre deux points (x,y,z) : un vrai maillage,
+   // pas des barres horizontales. Sans texture ni bibliotheque additionnelle.
+   function strand(a,b,radius,shade){
+     const diff=b.map((v,i)=>v-a[i]),length=Math.hypot(...diff);
+     if(length<.001)return;
+     const axis=diff.map(v=>v/length);
+     const guide=Math.abs(axis[2])>.90?[0,1,0]:[0,0,1];
+     const u=normalize(cross(axis,guide)),v=normalize(cross(u,axis));
+     const center=a.map((x,i)=>(x+b[i])*.5),col=rgb(shade);
+     const point=q=>center.map((base,i)=>base+u[i]*q[0]*radius+axis[i]*q[1]*length*.5+v[i]*q[2]*radius);
+     const normalOf=n=>normalize(n.map((val,i)=>val*u[i]+n[1]*axis[i]+n[2]*v[i]-n[1]*u[i]));
+     for(const face of quads){
+       const n=[u[0]*face[0][0]+axis[0]*face[0][1]+v[0]*face[0][2],
+                u[1]*face[0][0]+axis[1]*face[0][1]+v[1]*face[0][2],
+                u[2]*face[0][0]+axis[2]*face[0][1]+v[2]*face[0][2]];
+       const pts=face.slice(1).map(point);
+       for(const k of [0,1,2,0,2,3])vertex(pts[k],n,col);
+     }
+   }
+   function ionicMesh(x,z,winning){
+     // Le filet se deploie puis reste autour du fugitif le temps
+     // d'ouvrir la jauge de visee. Effet d'acquisition, pas capture validee.
+     const time=clamp((1.3-winning)/1.3,0,1);
+     const unfold=clamp(time/.34,.12,1),pulse=1+.035*Math.sin(time*19);
+     const width=.99*unfold*pulse,depth=.72*unfold*pulse;
+     const low=.12,high=.12+3.18*unfold,rows=7,columns=6;
+     for(const sign of [-1,1]){
+       const zz=z+sign*depth;
+       // Grille face avant et arriere.
+       for(let j=0;j<=rows;j++){
+         const yy=low+(high-low)*j/rows;
+         strand([x-width,yy,zz],[x+width,yy,zz],.031,j%2?'#83f9de':'#c4fff1');
+       }
+       for(let j=0;j<=columns;j++){
+         const xx=x-width+2*width*j/columns;
+         strand([xx,low,zz],[xx,high,zz],.028,j%2?'#73f0ef':'#f4d88c');
+       }
+       // Mailles diagonales sur les faces visibles : trame de filet.
+       for(let j=0;j<5;j++){
+         const a=x-width+(2*width*j/5);
+         strand([a,low,zz],[Math.min(x+width,a+.64*unfold),high,zz],.024,'#99dfff');
+       }
+     }
+     // Les faces laterales completent le volume autour du personnage.
+     for(const side of [-1,1]){
+       const xx=x+side*width;
+       for(let i=0;i<=rows;i++){
+         const yy=low+(high-low)*i/rows;
+         strand([xx,yy,z-depth],[xx,yy,z+depth],.029,i%2?'#77ebe7':'#f4dc94');
+       }
+       for(let k=0;k<=4;k++){
+         const zz=z-depth+2*depth*k/4;
+         strand([xx,low,zz],[xx,high,zz],.028,'#90f7d8');
+       }
+     }
+     // Bordure d'impulsion au sol, pour donner une profondeur lisible.
+     for(const xx of [-width,width]){
+       strand([x+xx,.11,z-depth],[x+xx,.11,z+depth],.08,'#fff4ad');
+     }
+     strand([x-width,.11,z+depth],[x+width,.11,z+depth],.075,'#7af4f1');
+   }
    function character(x,z,police,g,tint){
      const t=g.elapsed*18.5,step=Math.sin(t),bob=Math.abs(step)*.085;
      const jumping=police&&g.jump>0?Math.sin((.88-g.jump)/.88*PI)*1.48:0;
@@ -319,23 +380,9 @@
        // Plus d'obstacle devant les personnages pendant le filet final.
        if(!(g.winning>0))hazards(g);
        const faceAt=character(vx,vz,false,g,villain.color);
-       // Visuel de rattrapage pendant le gel de 0,85 s, sans toucher a la jauge.
-       if(g.winning>0){
-         const pulse=1+(1.3-g.winning)*.52;
-         for(let ring=0;ring<3;ring++){
-           const y=.48+ring*.82,side=pulse*(.80+ring*.025),depth=pulse*.67;
-           box(vx-side,y,vz,.085,.10,depth*2,'#62e9ed');
-           box(vx+side,y,vz,.085,.10,depth*2,'#62e9ed');
-           box(vx,y,vz-depth,side*2,.10,.085,'#a6fcde');
-           box(vx,y,vz+depth,side*2,.10,.085,'#a6fcde');
-         }
-         // Rayons horizontaux visibles au moment de l'interception.
-         for(let i=0;i<4;i++){
-           const yy=.66+i*.65;
-           box(vx,yy,vz+.69,pulse*1.82,.07,.11,i%2?'#f9e381':'#92fff0');
-         }
-         box(vx,3.32,vz,2.0,.13,.12,'#f6d877');
-       }
+       // Maillage volumetrique qui englobe visuellement la cible sans
+       // modifier le resultat du dernier tir dans la jauge Solo.
+       if(g.winning>0)ionicMesh(vx,vz,g.winning);
        character(lane*2.72,3.18,true,g);
        const jump=g.jump>0?Math.sin((.88-g.jump)/.88*PI)*1.48:0;
        const copBack=project([lane*2.72,1.83+jump,3.62],w,h);
