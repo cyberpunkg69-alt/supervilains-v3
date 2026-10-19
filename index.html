@@ -386,6 +386,7 @@
     .arena-weakness-card.wrong{background:#4d2639;color:#ffe4ec;border-color:#f58b9d;opacity:1}
     .arena-weakness-status{font-size:10px;line-height:1.5;color:#c9d8ed;margin:10px 0 0}
 </style>
+<link rel="stylesheet" href="./pursuit.css">
 </head>
 <body>
   <div id="sv-install-gate" class="sv-mobile-gate" role="dialog" aria-modal="true" aria-labelledby="sv-install-title" hidden>
@@ -927,7 +928,7 @@ const wantedReasons=[
   '{name} est recherché(e) pour avoir transformé une livraison de savon en saga criminelle.',
   '{name} aurait pris le contrôle d’un groupe de discussion pour y vendre des devinettes douteuses.',
 ];
-const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Date.now(),coins:160,nets:5,owned:{},captured:0,perfect:0,patrols:0,robot:0,visited:{},claimed:[],upgrade:0,equipment:{scanner:0,nets:0,armor:0},sound:false,started:false,ultimate:0,ultimateByVillain:{},weaknessAttempts:0,radarFinds:0,radarFirst:0,radarMisses:0,radarEscapes:0,achievements:{},voicesEnabled:false});
+const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Date.now(),coins:160,nets:5,owned:{},captured:0,perfect:0,patrols:0,robot:0,visited:{},claimed:[],upgrade:0,equipment:{scanner:0,nets:0,armor:0},sound:false,started:false,ultimate:0,ultimateByVillain:{},weaknessAttempts:0,radarFinds:0,radarFirst:0,radarMisses:0,radarEscapes:0,pursuits:0,pursuitWins:0,achievements:{},voicesEnabled:false});
     const storageKey='supervilains_operation_minuit_v3_meme';
     let state=initial();
     try{let saved=JSON.parse(localStorage.getItem(storageKey)||'null');if(saved&&[1,3].includes(saved.version)){state={...initial(),...saved};state.owned=saved.owned||{};state.visited=saved.visited||{};state.claimed=Array.isArray(saved.claimed)?saved.claimed:[];state.ultimateByVillain=saved.ultimateByVillain&&typeof saved.ultimateByVillain==='object'?saved.ultimateByVillain:{};state.achievements=saved.achievements&&typeof saved.achievements==='object'?saved.achievements:{}}}catch(e){}
@@ -940,7 +941,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     });
     state.maxEnergy=Math.max(35+state.upgrade*5,Number(state.maxEnergy)||35);
     state.energy=Math.max(0,Math.min(Number(state.energy)||0,state.maxEnergy));
-    let enemy=null, radar=null, meterAnimation=0, meterStart=0, meterPos=.5, meterDirection=1, meterActive=false, busy=false, audioCtx=null, toastTimer=0, suspectDistrictId=null, suspectReason='';
+    let enemy=null, radar=null, meterAnimation=0, meterStart=0, meterPos=.5, meterDirection=1, meterActive=false, busy=false, pursuitActive=false, pursuitFinalShot=false, audioCtx=null, toastTimer=0, suspectDistrictId=null, suspectReason='';
     const $=id=>document.getElementById(id);
     const save=()=>{try{localStorage.setItem(storageKey,JSON.stringify(state))}catch(e){}};
     const rand=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
@@ -1512,17 +1513,17 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       }
     }
     // Chemin partagé : les deux méthodes de capture utilisent le même compteur et la même sauvegarde.
-    function completeCapture({perfect=false,ultimate=false,chance=null}={}){
+    function completeCapture({perfect=false,ultimate=false,chance=null,pursuit=false}={}){
       if(!enemy)return;
       const v=villains[enemy.id],entryKey=ownedKey(enemy.id),old=Number(state.owned[entryKey]||0);
       const bonusXp=ultimate?130:0,bonusCoins=ultimate?160:0,bonusNets=ultimate?1:0;
-      const xp=45+v.danger*14+(v.boss?42:0)+(perfect?30:0)+bonusXp;
-      const coins=58+v.danger*14+(v.boss?58:0)+bonusCoins;
-      state.owned[entryKey]=old+1;state.captured++;
+      const xp=45+v.danger*14+(v.boss?42:0)+(perfect?30:0)+bonusXp+(pursuit?35:0);
+      const coins=58+v.danger*14+(v.boss?58:0)+bonusCoins+(pursuit?70:0);
+      state.owned[entryKey]=old+1;state.captured++;if(pursuit)state.pursuitWins++;
       if(perfect)state.perfect++;
       if(v.type==='Robot')state.robot++;
       addXP(xp);state.coins+=coins;state.nets+=bonusNets;
-      endBattle('win',{xp,coins,perfect,newEntry:!old,chance,exposed:ultimate,ultimate,bonusXp,bonusCoins,bonusNets});
+      endBattle('win',{xp,coins,perfect,newEntry:!old,chance,exposed:ultimate,ultimate,bonusXp,bonusCoins,bonusNets,pursuit});
     }
     // V4.15 : la cible respire tandis que le curseur accélère.
     function soloMeterFrame(ms,danger){
@@ -1531,9 +1532,41 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       const precision=Math.round(Math.max(0,100-5*Math.max(0,Math.abs(geom.positionPct-50)-width/2)));
       return {...geom,zoneWidthPct:width,precision};
     }
+    // V4.17 : seulement le SOLO ; aucun effet sur les captures de l'ARENE.
+    function launchPursuit(){
+      if(!enemy||pursuitActive||typeof window.SUPERVILAINS_PURSUIT?.start!=='function')return false;
+      const encountered=enemy,v=villains[enemy.id];
+      pursuitActive=true;busy=true;meterActive=false;
+      hide('overlay-battle');stopVoices();
+      let started=false;
+      try{
+        started=window.SUPERVILAINS_PURSUIT.start({
+          name:v.name,portrait:v.portrait,icon:v.icon,danger:v.danger
+        },{
+          caught:()=>{
+            if(!pursuitActive||enemy!==encountered)return;
+            pursuitActive=false;pursuitFinalShot=true;busy=false;
+            // Filet initial deja consomme : une seconde chance gratuite.
+            startMeter();
+          },
+          escaped:reason=>{
+            if(!pursuitActive||enemy!==encountered)return;
+            pursuitActive=false;busy=false;endBattle('escape');
+            $('result-text').textContent=reason==='abandon'
+              ?'Tu as abandonné la poursuite de '+v.name+'. Le fugitif reste recherché.'
+              :'Le fugitif '+v.name+' a semé la police pendant la course !';
+          }
+        });
+      }catch(err){console.warn('Poursuite indisponible :',err)}
+      if(!started){pursuitActive=false;busy=false;show('overlay-battle');return false}
+      state.pursuits++;notifySave();
+      playVoiceSeries([villainClip(encountered.id,'escape')]);
+      speakCustomScene(v,'taunt');
+      return true;
+    }
     function startMeter(){
       if(!enemy||busy)return;
-      if(state.nets<1)return toast('🕸️ Plus de filets ! Achètes-en dans AGENT.');
+      if(state.nets<1&&!pursuitFinalShot)return toast('🕸️ Plus de filets ! Achètes-en dans AGENT.');
       busy=true;renderBattle();
       const danger=villains[enemy.id].danger;
       meterActive=true;meterStart=performance.now();
@@ -1561,18 +1594,25 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       const score=geom.precision/100;
       const bonus=Math.round((score-.5)*34),perfect=score>=.90;
       const chance=clamp(odds()+bonus,6,97);
-      state.nets--;const success=Math.random()*100<chance;
+      const finalShot=pursuitFinalShot;pursuitFinalShot=false;
+      if(!finalShot)state.nets--;
+      const success=finalShot
+        ?(geom.precision>=80||Math.random()*100<Math.max(65,chance))
+        :Math.random()*100<chance;
       tone(success?800:150,.24);vibrate(success?[45,45,110]:100);busy=false;
-      if(success)completeCapture({perfect,chance});
-      else{
+      if(success)completeCapture({perfect,chance,pursuit:finalShot});
+      else if(finalShot){
+        endBattle('escape');
+        $('result-text').textContent='Le policier a rattrapé le suspect, mais le dernier filet a manqué ! Le fugitif reste en liberté.';
+      }else{
         notifySave();
-        if(!hitByVillain()){
+        if(!launchPursuit()&&!hitByVillain()){
           message('❌ Filet évité (précision '+geom.precision+' %). Réessaie !',true);
           renderBattle();
         }
       }
     }
-    function endBattle(kind,reward={}){if(!enemy)return;const v=villains[enemy.id];hide('overlay-meter');hide('overlay-battle');meterActive=false;cancelAnimationFrame(meterAnimation);busy=false;let escaped=kind==='escape';$('result-icon').textContent=escaped?'💨':'🏆';
+    function endBattle(kind,reward={}){if(!enemy)return;pursuitActive=false;pursuitFinalShot=false;const v=villains[enemy.id];hide('overlay-meter');hide('overlay-battle');meterActive=false;cancelAnimationFrame(meterAnimation);busy=false;let escaped=kind==='escape';$('result-icon').textContent=escaped?'💨':'🏆';
       const gifFrame=$('result-gif-frame');gifFrame.hidden=escaped;
       if(!escaped){$('result-gif').src=v.custom?v.capture:`assets/reactions/${bossKeys[enemy.id]}_capture.gif?t=${Date.now()}`;}else{$('result-gif').removeAttribute('src');}
       clearTimeout(reactionTimeout);$('result-kicker').textContent=escaped?'LE SUSPECT S’EST ÉCHAPPÉ':'CIBLE IMMOBILISÉE';$('result-title').textContent=escaped?'POURSUITE TERMINÉE':'CAPTURE RÉUSSIE !';$('result-text').textContent=escaped?`${v.name} s'est échappé. Son cringe l'a sauvé pour cette fois.`:`${v.name} rejoint ton coffre des criminels ! ${reward.newEntry?'NOUVEAU DOSSIER DÉBLOQUÉ ! ':''}${reward.ultimate?'🎴 '+v.weaknessIcon+' '+v.weaknessName+' : FAILLE ULTIME ! Capture automatique et bonus spécial.':''}`;$('result-stats').innerHTML=escaped?'<span>🛡️ Bouclier épuisé</span><span>📡 Suspect localisé</span>':`<span>🪙 <b>+${reward.coins}</b></span><span>⭐ <b>+${reward.xp} XP</b></span>${reward.perfect?'<span>🎯 CAPTURE PARFAITE</span>':''}${reward.ultimate?'<span>🎴 FAILLE ULTIME : +160 🪙 · +130 XP · +1 🕸️</span>':''}`;$('result-button').textContent=escaped?'RECOMMENCER UNE PATROUILLE':'CONTINUER LA CHASSE';const spokenId=enemy.id;enemy=null;show('overlay-result');lastResultVoiceKeys=escaped?[commissaireClip('escape'),villainClip(spokenId,'escape')]:[commissaireClip('capture'),villainClip(spokenId,'capture')];playVoiceSeries(lastResultVoiceKeys);
@@ -1634,5 +1674,6 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
   <script src="villain_random.js" defer></script>
   <script src="custom_play.js" defer></script>
   <script src="install.js" defer></script>
+  <script src="pursuit.js" defer></script>
 </body>
 </html>
