@@ -321,6 +321,7 @@ async function finalizeManual(row){
     if(ok!==true)throw Error("Validation impossible : vérifie les trois images.");
     status("✅ Personnage validé ! Les trois portraits restent privés tant que tu ne décides pas de les publier.","good");
     aiNotice("✅ Trois portraits validés et sauvegardés dans ton compte.");
+    try{window.dispatchEvent(new CustomEvent("supervilains:custom-ready"))}catch(e){}
   }catch(e){status("⚠️ "+errorMessage(e),"warn")}
   finally{manualBusyId=null;await refreshList().catch(()=>{})}
 }
@@ -331,6 +332,7 @@ async function reopenManual(row){
     const ok=await rpc("custom_villain_reopen_manual",{p_villain_id:row.id});
     if(ok!==true)throw Error("Ce personnage ne peut pas être rouvert.");
     status("✏️ Personnage rouvert : tu peux corriger sa fiche et remplacer les images.","good");
+    try{window.dispatchEvent(new CustomEvent("supervilains:custom-ready"))}catch(e){}
   }catch(e){status("⚠️ "+errorMessage(e),"warn")}
   finally{manualBusyId=null;await refreshList().catch(()=>{})}
 }
@@ -500,6 +502,7 @@ async function deleteRow(row){
     if(editingId===row.id)resetForm();
     await refreshList();
     status("🗑️ Le brouillon a été supprimé de ton espace privé.","good");
+    try{window.dispatchEvent(new CustomEvent("supervilains:custom-ready"))}catch(e){}
   }catch(err){status("⚠️ "+errorMessage(err),"warn")}
   finally{setBusy(false)}
 }
