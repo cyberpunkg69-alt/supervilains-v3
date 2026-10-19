@@ -1104,13 +1104,18 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     }
 
     const shuffleCards=targetId=>{
-      // Toujours 6 cartes exactement, avec UNE faille correcte, même si
-      // le joueur a créé 10 personnages personnalisés supplémentaires.
+      // Les six méchants originaux conservent leurs six cartes historiques.
+      // Pour un méchant personnel : sa propre faille + cinq cartes officielles.
       const correct=villains[targetId]?.weakness;
       if(!correct||!weaknessItems.some(w=>w.id===correct))throw Error("Faille du personnage introuvable");
-      const others=weaknessItems.filter(w=>w.id!==correct).map(w=>w.id);
-      for(let i=others.length-1;i>0;i--){const j=rand(0,i);[others[i],others[j]]=[others[j],others[i]]}
-      const deck=[correct,...others.slice(0,5)];
+      const base=weaknessItems.slice(0,originalVillains).map(w=>w.id);
+      let deck;
+      if(targetId<originalVillains)deck=[...base];
+      else {
+        const others=base.filter(id=>id!==correct);
+        for(let i=others.length-1;i>0;i--){const j=rand(0,i);[others[i],others[j]]=[others[j],others[i]]}
+        deck=[correct,...others.slice(0,5)];
+      }
       for(let i=deck.length-1;i>0;i--){const j=rand(0,i);[deck[i],deck[j]]=[deck[j],deck[i]]}
       return deck;
     };
