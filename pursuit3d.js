@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.25 — moteur WebGL 3D pour La Grande Evasion.
+/* SUPERVILAINS V4.25.1 — moteur WebGL 3D pour La Grande Evasion.
  * Sans CDN, sans API, avec retour transparent au Canvas 2D si WebGL est absent.
  * Les portraits des joueurs restent dans leur stockage prive, non telecharges par WebGL.
  */
@@ -247,33 +247,56 @@
      box(x,.035,z,1.00,.04,.63,'#15243a');
      const segment=(p,q,width,color)=>strand(p,q,width,color);
      if(slideActive){
-       // Glissade basse, pieds tendus vers le prochain obstacle.
+       // Glissade V4.25.1 : posture accroupie dynamique, tete vers l'avant
+       // (-Z). La V4.25 inclinait le corps vers la camera et donnait
+       // visuellement l'impression d'une roulade sur le dos.
        const slideProgress=clamp((.85-g.slide)/.85,0,1);
-       const tuck=.08*Math.sin(slideProgress*PI);
-       const hip=[x,.49+tuck,z+.05],chest=[torsoX,.63+tuck,z+.41];
-       box(x,.48+tuck,z+.05,.87,.40,.57,trousers);
-       box(chest[0],chest[1],chest[2],1.10,.89,.59,blue,.98);
-       box(torsoX,.70+tuck,z+.56,.96,.57,.12,vest,.98);
-       box(torsoX,.75+tuck,z+.72,.78,.085,.14,stripe,.98);
+       const glide=Math.sin(slideProgress*PI);
+       const sway=.025*Math.sin(phase*.62);
+       const hipY=.53+.055*glide;
+       const chestY=1.04+.075*(1-glide),headY=1.62+.10*(1-glide);
+       const chestZ=z-.24,headZ=z-.63;
+       const backZ=z+.13;
+       // Bassin pres du sol, buste penche vers le fugitif.
+       box(x,hipY,z+.08,.88,.41,.59,trousers);
+       box(torsoX,chestY,chestZ,1.12,.93,.63,blue,-.48);
+       box(torsoX,chestY+.08,z+.18,1.00,.57,.14,vest,-.48);
+       box(torsoX,chestY-.12,z+.30,.97,.10,.12,stripe,-.48);
+       box(torsoX,chestY-.31,z+.37,.94,.09,.13,stripe,-.48);
+       box(torsoX+.44,chestY+.27,z+.05,.19,.28,.18,'#173049',-.48);
+       box(torsoX+.45,chestY+.30,z+.16,.10,.11,.06,'#68e9e8',-.48);
        for(const side of [-1,1]){
-         const legX=x+side*.27;
-         const knee=[legX,.38+tuck,z-.50],ankle=[legX,.18,z-1.27];
-         segment([legX,.48+tuck,z+.05],knee,.19,trousers);
+         const legX=x+side*.26;
+         // Un pied devant et un appui replie donnent une glissade lisible.
+         const leading=side===-1;
+         const knee=leading
+           ?[legX,.34,z-.53]
+           :[legX,.39,z+.34];
+         const ankle=leading
+           ?[legX,.16,z-1.13]
+           :[legX,.16,z+.17];
+         segment([legX,hipY,z+.10],knee,.19,trousers);
+         ball(...knee,.19,.18,.19,'#2b3b5f');
          segment(knee,ankle,.16,trousers);
-         ball(...knee,.20,.19,.19,trousers);
-         box(legX,.17,z-1.39,.43,.22,.73,dark);
-         const sh=[torsoX+side*.62,.67+tuck,z+.26],
-           elbow=[torsoX+side*.67,.43+tuck,z-.19],
-           hand=[torsoX+side*.57,.24+tuck,z-.55];
-         segment(sh,elbow,.15,blue);segment(elbow,hand,.12,blue);
-         ball(...hand,.16,.16,.16,'#182c48');
+         box(legX,.145,ankle[2]-.16,.40,.22,.57,dark,leading?-.1:.1);
+         box(legX,.075,ankle[2]-.16,.40,.055,.55,'#69acc6');
+         const sh=[torsoX+side*.61,chestY+.36,chestZ-.03],
+           elbow=[torsoX+side*.72,.62,z-.37],
+           hand=[torsoX+side*.60,.28,z-.77+sway];
+         segment(sh,elbow,.16,blue);
+         ball(...elbow,.15,.16,.15,'#2b6da5');
+         segment(elbow,hand,.13,blue);
+         ball(...hand,.16,.16,.16,'#152c48');
        }
-       const neck=[torsoX,.84+tuck,z+.81];
-       ball(...neck,.22,.18,.22,skin);
-       ball(torsoX,.90+tuck,z+1.00,.46,.42,.44,skin);
-       box(torsoX,1.20+tuck,z+1.02,.98,.18,.82,'#1b3b68',.3);
-       box(torsoX,1.13+tuck,z+.73,1.02,.08,.40,'#102d4f',.3);
-       return [torsoX,.73+tuck,z+.70];
+       // Nuque/casquette restent EN AVANT du bassin ; aucune tete
+       // retournee contre la camera.
+       ball(torsoX,headY-.26,headZ+.09,.20,.19,.20,skin);
+       ball(torsoX,headY,headZ,.45,.43,.41,skin);
+       ball(torsoX,headY+.35,headZ-.05,.51,.11,.41,'#193e72');
+       box(torsoX,headY+.28,headZ-.37,1.09,.09,.44,'#102d50');
+       box(torsoX,headY+.36,headZ-.50,.14,.12,.08,'#f4d590');
+       // Point de reference du marquage POLICE sur le dos.
+       return [torsoX,chestY+.06,z+.27];
      }
      // Course avec alternance jambe/bras opposee et pliure des genoux.
      const hipY=1.06+yShift,shoulderY=2.19+yShift;
