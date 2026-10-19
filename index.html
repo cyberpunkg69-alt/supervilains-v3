@@ -284,6 +284,23 @@
     .creator-workflow{flex-wrap:wrap}
     #creator-ai-status{border-radius:10px;border:1px solid #435d80;background:#102342;padding:10px 11px;color:#c7e2fb!important;font-size:11px!important;margin:12px 0!important}
     @media(max-width:370px){.creator-ai-gallery{gap:5px}.creator-ai-placeholder{font-size:24px}.creator-ai-tile{padding:5px 3px}.creator-ai-label{font-size:8px}}
+
+    /* V4.9 — Méchants personnels jouables dans le solo et l'ARÈNE */
+    .custom-solo-section{border:1px solid #52618a;border-radius:15px;padding:14px;margin-top:17px;background:linear-gradient(140deg,#1b2b50,#20203d)}
+    .custom-solo-heading{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:12px;font-weight:950;color:#a2fff4;letter-spacing:.4px}
+    .custom-solo-heading small{font-size:10px;color:#c5d2ef}
+    .custom-solo-note{margin:8px 0;color:#b5c4de;font-size:11px;line-height:1.55}
+    .custom-solo-list{display:grid;gap:9px;margin-top:11px}
+    .custom-solo-card{display:flex;gap:11px;align-items:center;border:1px solid #475f83;background:#122744;border-radius:12px;padding:9px}
+    .custom-solo-card img{width:67px;height:76px;flex:0 0 67px;object-fit:cover;border-radius:9px;background:#314266}
+    .custom-solo-info{min-width:0;flex:1}.custom-solo-info strong{font-size:12px;display:block;overflow-wrap:anywhere}.custom-solo-info small{display:block;margin-top:4px;color:#bdcde9;font-size:10px;line-height:1.45}
+    .custom-solo-hunt{padding:9px;border:1px solid #68c8ba;border-radius:9px;background:#1e5b65;color:#eaffff;font-size:10px;font-weight:950;min-height:42px}
+    .custom-solo-hunt:disabled{opacity:.48}
+    .arena-enemy img.arena-custom-face{width:128px;height:128px;object-fit:cover;border:3px solid #8aece0;border-radius:16px;box-shadow:0 4px 24px #4fddf744;display:block;margin:auto}
+    .arena-custom-result{display:flex;gap:11px;align-items:center;margin-top:11px;padding:9px;background:#172843;border-radius:12px;border:1px solid #537ea0}
+    .arena-custom-result[hidden]{display:none}.arena-custom-result img{width:82px;height:90px;object-fit:cover;border-radius:9px}
+    .arena-custom-result span{font-size:11px;font-weight:850;line-height:1.55}
+    @media(max-width:360px){.custom-solo-card{flex-wrap:wrap}.custom-solo-hunt{margin-left:auto}}
 </style>
 </head>
 <body>
@@ -347,6 +364,11 @@
         <p class="section-blurb">Chaque super-méchant arrêté rejoint ton répertoire. Retrouve les 6 super-méchants uniques de Néo-City.</p>
         <div class="ticker" style="margin-bottom:16px"><span class="big-icon">🔒</span><div><b id="prison-counter">0 / 6 super-méchants identifiés</b><p id="prison-summary">Ta chasse ne fait que commencer.</p></div></div>
         <div id="codex-grid" class="codex-grid"></div>
+        <div class="custom-solo-section">
+          <div class="custom-solo-heading">🦹 MES MÉCHANTS PERSONNALISÉS <small id="custom-solo-count">0 prêt</small></div>
+          <p class="custom-solo-note">Les personnages validés apparaissent ici et peuvent être traqués sur la carte. Leurs captures sont conservées dans ton coffre.</p>
+          <div id="custom-solo-list" class="custom-solo-list"><p class="custom-solo-note">Connecte-toi à l’ARÈNE pour charger tes créations privées.</p></div>
+        </div>
         <div class="creator-coffre-cta">
           <div><span class="creator-kicker">🧬 LABORATOIRE DES MÉCHANTS</span>
             <h3>CRÉE TON PROPRE SUPER-VILAIN</h3>
@@ -509,7 +531,7 @@
             <p class="arena-muted" style="margin-bottom:0">Les captures du mode solo restent privées. Seules les captures de l'ARÈNE comptent pour les classements.</p>
           </div>
           <div class="arena-box"><div class="row-between"><h3>🎯 Chasse classée</h3><span class="arena-badge">SERVEUR ACTIF</span></div>
-            <p class="arena-muted">Chaque partie utilise un tirage sécurisé côté serveur. Tu disposes de 30 patrouilles par jour (UTC). Affaiblis la cible jusqu'à 3 fois pour augmenter tes chances de capture.</p>
+            <p class="arena-muted">Chaque partie utilise un tirage sécurisé côté serveur. Tu disposes de 30 patrouilles par jour (UTC). Tes personnages personnels validés peuvent apparaître dans tes rencontres (45 % de chance si tu en possèdes). Ils restent privés et ne modifient ni les chances ni les points.</p>
             <button id="arena-hunt" class="arena-action pink" type="button">📡 LANCER UNE PATROUILLE EN LIGNE</button>
             <div class="arena-encounter" id="arena-encounter" hidden>
               <div class="arena-badge">⚠️ CIBLE COMPÉTITIVE</div><div class="arena-enemy" id="arena-villain-icon">👾</div><div class="arena-enemyname" id="arena-villain-name">CIBLE</div>
@@ -521,6 +543,10 @@
               <button id="arena-flee" class="arena-mini" type="button" style="margin-top:13px">Abandonner la patrouille</button>
             </div>
             <div id="arena-last-result" class="arena-status" hidden></div>
+            <div id="arena-custom-result" class="arena-custom-result" hidden>
+              <img id="arena-custom-result-image" alt="Portrait du personnage capturé" loading="lazy"/>
+              <span id="arena-custom-result-label">Résultat du personnage personnalisé</span>
+            </div>
           </div>
           <div class="arena-box"><div class="row-between"><h3>🏆 Classement des agents</h3><button class="arena-mini" id="arena-refresh" type="button">↻ Actualiser</button></div>
             <div class="arena-ranktabs"><button class="active" type="button" data-period="week">SEMAINE</button><button type="button" data-period="month">MOIS</button><button type="button" data-period="all">GÉNÉRAL</button></div>
@@ -1202,6 +1228,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
   <script src="arena.js" defer></script>
   <script src="villain_creator.js" defer></script>
   <script src="villain_random.js" defer></script>
+  <script src="custom_play.js" defer></script>
   <script src="install.js" defer></script>
 </body>
 </html>
