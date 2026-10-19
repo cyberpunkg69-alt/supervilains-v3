@@ -1431,6 +1431,9 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       $('battle-district').textContent=`⚠️ ${d.name} · ${villain.boss?'BOSS VIRAL':'SUSPECT VIRAL'}`;
       $('encounter-scene').style.setProperty('--scenecolor',villain.color+'aa');normalPortrait(villainId);
       $('battle-name').textContent=villain.name;$('battle-description').textContent=villain.line+` • Danger ${villain.danger}/6 ${villain.boss?'• BOSS':''} • 🎴 6 cartes mystère`;
+      // L'agent connaît l'objet recherché, mais son emplacement reste caché.
+      const target=$('weakness-target');target.hidden=!villain.custom;
+      if(villain.custom)target.textContent='🎴 Faille ultime de '+villain.name+' : '+villain.weaknessIcon+' '+villain.weaknessName+' · Retrouve cet objet parmi les six cartes face cachée.';
       $('battle-message').className='battle-message';$('battle-message').textContent='Choisis UNE carte mystère. Bonne carte = capture instantanée + bonus !';renderBattle();show('overlay-battle');tone(390,.16);
     }
     function odds(){if(!enemy)return 0;let v=villains[enemy.id],wounded=(1-enemy.hp/enemy.maxhp),boost=enemy.exposed?26:0;return clamp(Math.round(44+wounded*55-v.danger*5-(v.boss?7:0)+boost+equipmentLevel('nets')*3),14,97)}
