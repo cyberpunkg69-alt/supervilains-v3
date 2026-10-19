@@ -1,7 +1,7 @@
 {
-  "name": "SUPERVILAINS V4.12 — Opération Minuit",
+  "name": "SUPERVILAINS V4.13 — Opération Minuit",
   "short_name": "SUPERVILAINS",
-  "description": "Chasse tes propres super-vilains en solo et arène, avec une faille ultime personnelle cachée parmi six cartes, portraits Troller et Capturé.",
+  "description": "Chasse les super-vilains en solo et en arène. Coffre unifié, captures par personnage, quartiers et répertoire dynamiques.",
   "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
