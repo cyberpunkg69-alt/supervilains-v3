@@ -163,9 +163,22 @@ function boardRender(rows){const el=$("arena-board");if(!rows||!rows.length){el.
 el.innerHTML=rows.map(r=>{const my=r.player_id===user?.id,rank=Number(r.pos);
 return '<div class="arena-rankrow '+(my?"me":"")+'"><span>'+(rank===1?"🥇":rank===2?"🥈":rank===3?"🥉":rank)+'</span><b>'+escapeHtml(r.handle)+(my?" ⭐":"")+'</b><span class="points">'+Number(r.score).toLocaleString("fr-FR")+'</span><span class="captures">'+Number(r.captures)+'</span></div>';}).join("");
 }
-function feedRender(rows){const el=$("arena-feed");if(!rows||!rows.length){el.textContent="Aucune capture en ligne pour le moment.";return;}
-el.innerHTML=rows.map(r=>{const x=HEROES[Number(r.villain_id)]||["CIBLE","👾"],date=new Date(r.captured_at).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
-return '<div class="arena-feedline">'+x[1]+' <b>'+escapeHtml(r.handle)+'</b> a capturé '+x[0]+' <span class="arena-positive">+'+Number(r.points)+' pts</span> · '+escapeHtml(date)+'</div>';}).join("");
+function feedRender(rows){
+  const el=$("arena-feed");
+  if(!rows||!rows.length){el.textContent="Aucune capture en ligne pour le moment.";return;}
+  el.innerHTML=rows.map(r=>{
+    const custom=Number(r.villain_id)===-1;
+    const hero=HEROES[Number(r.villain_id)]||["CIBLE","🦹",1,null];
+    const name=custom?"un super-vilain personnel":hero[0];
+    const date=new Date(r.captured_at).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+    // Aucune photo, aucun nom privé ne sort dans le fil public.
+    const photo=!custom&&hero[3]
+      ?'<img class="arena-feed-avatar" src="'+escapeHtml(hero[3])+'" loading="lazy" alt="'+escapeHtml(hero[0])+'">'
+      :'<span class="arena-feed-avatar arena-feed-privacy" aria-hidden="true">🦹</span>';
+    return '<div class="arena-feedline">'+photo+
+      ' <span><b>'+escapeHtml(r.handle)+'</b> a capturé '+escapeHtml(name)+
+      ' <span class="arena-positive">+'+Number(r.points)+' pts</span> · '+escapeHtml(date)+'</span></div>';
+  }).join("");
 }
 function duelsRender(rows){const el=$("arena-duels");if(!rows||!rows.length){el.textContent="Aucun défi pour le moment.";return;}
 el.innerHTML=rows.map(r=>{const state=({waiting:"📩 En attente",active:"⚔️ En cours",finished:"🏁 Terminé",expired:"⌛ Expiré"})[r.state]||r.state;
