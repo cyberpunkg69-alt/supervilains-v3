@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.20 — LA GRANDE EVASION
+/* SUPERVILAINS V4.22 — LA GRANDE EVASION
    Course arcade en perspective 2.5D, autonome, sans API ni dependance externe.
    Le SOLO reste autoritaire sur l'attribution des recompenses et des captures.
 */
@@ -134,7 +134,7 @@
       $('sv-runner-fill').style.width=pct+'%';
       $('sv-runner-progress').textContent=pct+' %';
       if(game.distance>=game.goal){
-        game.distance=game.goal;game.winning=.85;
+        game.distance=game.goal;game.winning=1.3;
         notice('🚓 FUGITIF RATTRAPÉ !');
         if(navigator.vibrate)navigator.vibrate([40,50,80]);
       }
