@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
   <meta name="theme-color" content="#090b1e">
-  <meta name="description" content="Supervilains : capture 6 super-méchants mème/TikTok, découvre leur faille ultime et grimpe dans le classement !">
+  <meta name="description" content="Supervilains : capture les super-méchants de Néo-City et tes personnages personnalisés, découvre leurs failles ultimes !">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="manifest.webmanifest">
@@ -415,27 +415,17 @@
           <div class="alert"><i class="pulse"></i> ALERTE À NÉO-CITY</div>
           <h1 class="h1">LA VILLE A BESOIN <em>DE TOI.</em></h1>
           <p class="subtitle" style="max-width:270px">Des super-méchants rôdent. Explore les quartiers et capture-les avant qu'ils ne sèment le chaos.</p>
-          <div class="welcome-stats"><div><strong id="stat-captured">0</strong><span>Captures</span></div><div><strong id="stat-unique">0/6</strong><span>Répertoire</span></div><div><strong id="stat-districts">2/6</strong><span>Quartiers</span></div></div>
+          <div class="welcome-stats"><div><strong id="stat-captured">0</strong><span>Captures</span></div><div><strong id="stat-unique">0/0</strong><span>Répertoire</span></div><div><strong id="stat-districts">0/0</strong><span>Quartiers</span></div></div>
         </div>
         <div class="section-heading">🗺️ CARTE DES QUARTIERS <small>Appuie pour patrouiller</small></div>
-        <div id="custom-map-panel" class="custom-map-panel" hidden>
-          <div class="custom-map-heading"><strong>🦹 MES MÉCHANTS SUR LA CARTE</strong><span><small id="custom-map-count">0 cible</small> <button id="custom-map-refresh" type="button" aria-label="Actualiser les personnages de ma carte">↻</button></span></div>
-          <p>Tes personnages personnalisés validés sont ici. Appuie sur <b>TRAQUER</b> pour retrouver directement ton super-vilain dans le radar.</p>
-          <div id="custom-map-list" class="custom-map-list"></div>
-        </div>
         <div id="district-grid" class="district-grid"></div>
         <div class="ticker"><span class="big-icon">📡</span><div><b>10 inconnus sur le radar</b><p>Repère le vrai criminel en 5 tentatives. Après cinq mauvaises identifications, il reste en fuite !</p></div></div>
       </section>
       <section id="view-prison" class="view" aria-label="Collection des super-méchants">
         <div class="kicker">DOSSIERS CONFIDENTIELS</div><h1 class="h1">LE <em>COFFRE.</em></h1>
-        <p class="section-blurb">Chaque super-méchant arrêté rejoint ton répertoire. Retrouve les 6 super-méchants uniques de Néo-City.</p>
-        <div class="ticker" style="margin-bottom:16px"><span class="big-icon">🔒</span><div><b id="prison-counter">0 / 6 super-méchants identifiés</b><p id="prison-summary">Ta chasse ne fait que commencer.</p></div></div>
+        <p class="section-blurb">Chaque super-méchant arrêté rejoint ton répertoire, y compris ceux que tu as créés. Le coffre réunit tous les criminels de Néo-City.</p>
+        <div class="ticker" style="margin-bottom:16px"><span class="big-icon">🔒</span><div><b id="prison-counter">0 / 0 super-méchants identifiés</b><p id="prison-summary">Ta chasse ne fait que commencer.</p></div></div>
         <div id="codex-grid" class="codex-grid"></div>
-        <div class="custom-solo-section">
-          <div class="custom-solo-heading">🦹 MES MÉCHANTS PERSONNALISÉS <small id="custom-solo-count">0 prêt</small></div>
-          <p class="custom-solo-note">Les personnages validés apparaissent ici et peuvent être traqués sur la carte. Leurs captures sont conservées dans ton coffre.</p>
-          <div id="custom-solo-list" class="custom-solo-list"><p class="custom-solo-note">Connecte-toi à l’ARÈNE pour charger tes créations privées.</p></div>
-        </div>
         <div class="creator-coffre-cta">
           <div><span class="creator-kicker">🧬 LABORATOIRE DES MÉCHANTS</span>
             <h3>CRÉE TON PROPRE SUPER-VILAIN</h3>
@@ -910,6 +900,8 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     // Les trophées « 6 super-méchants » restent exclusivement réservés aux originaux.
     const seen=()=>Array.from({length:originalVillains},(_,i)=>i).filter(i=>Number(state.owned[i])>0).length;
     const ownedKey=id=>villains[id]?.customId?"custom:"+villains[id].customId:id;
+    // Le répertoire global inclut les six originaux et toutes les créations chargées.
+    const catalogSeen=()=>villains.filter((villain,id)=>Number(state.owned[ownedKey(id)]||0)>0).length;
     let customSoloReady=[],pendingCustomSolo=null;
     const customSoloIndex=new Map();
     const weaknessIconFor=(name)=>{
@@ -992,32 +984,8 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       notifySave();startRadar(entry.index,entry.zone);
     }
     window.SUPERVILAINS_SOLO_PLAY_CUSTOM=launchCustomSolo;
-    function renderCustomSolo(){
-      const holder=$('custom-solo-list');if(!holder)return;
-      $('custom-solo-count').textContent=customSoloReady.length+" prêt"+(customSoloReady.length>1?"s":"");
-      holder.replaceChildren();
-      if(!customSoloReady.length){
-        const p=document.createElement('p');p.className='custom-solo-note';
-        p.textContent="Aucun méchant personnel jouable : valide tes trois images et connecte-toi à l'ARÈNE.";
-        holder.appendChild(p);return;
-      }
-      for(const item of customSoloReady){
-        const card=document.createElement('div');card.className='custom-solo-card';
-        const img=document.createElement('img');img.src=item.portrait;img.alt="Portrait de "+item.name;img.loading="lazy";
-        const info=document.createElement('div');info.className='custom-solo-info';
-        const title=document.createElement('strong');title.textContent=item.name;
-        const count=Number(state.owned["custom:"+item.id]||0),desc=document.createElement('small');
-        desc.textContent="Danger "+item.danger+"/5 · "+count+" capture"+(count>1?"s":"")+" solo";
-        info.append(title,desc);
-        const btn=document.createElement('button');btn.type='button';btn.className='custom-solo-hunt';
-        btn.textContent="📡 TRAQUER";
-        btn.disabled=state.level<districts[item.zone].min;
-        btn.addEventListener('click',()=>launchCustomSolo(item.id));
-        card.append(img,info,btn);holder.appendChild(card);
-      }
-    }
     const xpGoal=level=>150+level*70;
-    const unlocked=()=>districts.slice(0,originalVillains).filter(d=>state.level>=d.min).length;
+    const unlocked=()=>districts.filter(d=>state.level>=d.min).length;
     const rank=()=>state.level>=10?'SEIGNEUR DES MÈMES':state.level>=6?'CHASSEUR VIRAL':state.level>=3?'AGENT CRINGE CONFIRMÉ':'AGENT RECRUE';
     const missionData=[{id:'c2',name:'Première humiliation',desc:'Capture 2 super-méchants.',key:'captured',total:2,coins:120,xp:90,nets:1},{id:'d4',name:'Scroll infini',desc:'Effectue 4 patrouilles.',key:'patrols',total:4,coins:110,xp:90,nets:1},{id:'p2',name:'Clip parfait',desc:'Réussis 2 captures parfaites.',key:'perfect',total:2,coins:160,xp:150,nets:2},{id:'c6',name:'Top 6 du cringe',desc:'Capture les 6 super-méchants.',key:'captured',total:6,coins:360,xp:320,nets:3},{id:'v6',name:'Tour complet du feed',desc:'Patrouille dans les 6 zones.',key:'visited',total:6,coins:400,xp:350,nets:3}];
     // Les cinq missions historiques conservent leurs identifiants. +45 missions inédites.
@@ -1082,7 +1050,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     const nextReactorStage=()=>state.maxEnergy<100?100:state.maxEnergy<150?150:state.maxEnergy<200?200:null;
     function regen(){let now=Date.now();if(!Number.isFinite(state.lastEnergy)||state.lastEnergy>now)state.lastEnergy=now;if(state.energy>=state.maxEnergy){state.lastEnergy=now;return}const every=energyInterval();let ticks=Math.floor((now-state.lastEnergy)/every);if(ticks>0){state.energy=Math.min(state.maxEnergy,state.energy+ticks);state.lastEnergy+=ticks*every;save()}}
     function addXP(n){state.xp+=n;let leveled=0;while(state.xp>=xpGoal(state.level)){state.xp-=xpGoal(state.level);state.level++;leveled++;state.coins+=50;state.nets+=1}if(leveled){tone(700,.14);setTimeout(()=>toast(`🎉 NIVEAU ${state.level} ! Quartiers et récompenses débloqués.`),160)}return leveled}
-    function renderStats(){regen();$('top-level').textContent=`AGENT · NIV. ${state.level}`;$('top-energy').textContent=`${state.energy}/${state.maxEnergy}`;$('top-coins').textContent=state.coins;$('top-nets').textContent=state.nets;$('stat-captured').textContent=state.captured;$('stat-unique').textContent=`${seen()}/${originalVillains}`;$('stat-districts').textContent=`${unlocked()}/${originalVillains}`}
+    function renderStats(){regen();$('top-level').textContent=`AGENT · NIV. ${state.level}`;$('top-energy').textContent=`${state.energy}/${state.maxEnergy}`;$('top-coins').textContent=state.coins;$('top-nets').textContent=state.nets;$('stat-captured').textContent=state.captured;$('stat-unique').textContent=`${catalogSeen()}/${villains.length}`;$('stat-districts').textContent=`${unlocked()}/${districts.length}`}
     function renderMap(){
       let html='';
       // Les repaires personnels sont visibles tout en haut de la carte.
@@ -1117,35 +1085,38 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
           '" type="button" aria-label="Voir la fiche de recherche de '+escapeHtml(lead?.name||d.name)+'">!</button></div>';
       }
       $('district-grid').innerHTML=html;
-      renderCustomMapPanel();
     }
-    function renderCustomMapPanel(){
-      const panel=$('custom-map-panel'),list=$('custom-map-list');
-      if(!panel||!list)return;
-      panel.hidden=false;
-      list.replaceChildren();
-      if(!customSoloReady.length){
-        const note=document.createElement('p');note.className='custom-map-empty';
-        note.textContent='Pas encore de cible chargée : connecte-toi à l’ARÈNE, valide tes trois images puis appuie sur ↻.';
-        list.appendChild(note);
+    function renderCodex(){
+      // Coffre unifié : même portrait et même compteur pour les six originaux et chaque création privée.
+      const grid=$('codex-grid');
+      grid.replaceChildren();
+      for(let id=0;id<villains.length;id++){
+        const v=villains[id];
+        const count=Math.max(0,Math.trunc(Number(state.owned[ownedKey(id)]||0)));
+        const visible=Boolean(v.custom)||count>0;
+        const tile=document.createElement('div');
+        tile.className='codex-tile'+(visible?'':' unknown');
+        tile.title=visible?v.line:'Identité inconnue';
+        const face=document.createElement('span');face.className='codex-icon';
+        if(visible&&v.portrait){
+          const img=document.createElement('img');
+          img.className='codex-face';img.src=v.portrait;img.alt='Portrait de '+v.name;img.loading='lazy';
+          face.appendChild(img);
+        }else face.textContent='❔';
+        const name=document.createElement('span');name.className='codex-name';
+        name.textContent=visible?v.name:'DOSSIER ???';
+        const rarity=document.createElement('div');rarity.className='codex-rarity';
+        rarity.textContent=count>0
+          ?'×'+count+' ARRÊTÉ'+(count>1?'S':'')
+          :v.custom?'×0 CAPTURE':v.boss?'🔒 BOSS':'NON CAPTURÉ';
+        tile.append(face,name,rarity);grid.appendChild(tile);
       }
-      $('custom-map-count').textContent=customSoloReady.length+' cible'+(customSoloReady.length>1?'s':'');
-      for(const item of customSoloReady){
-        const card=document.createElement('div');card.className='custom-map-target';
-        const img=document.createElement('img');img.src=item.portrait;img.loading='lazy';img.alt='Portrait de '+item.name;
-        const info=document.createElement('div');info.className='custom-map-target-info';
-        const title=document.createElement('strong');title.textContent=item.name;
-        const zoneName=document.createElement('small');
-        const lock=state.level<districts[item.zone].min;
-        zoneName.textContent='📍 '+districts[item.zone].name+' · Danger '+item.danger+'/5';
-        const btn=document.createElement('button');btn.type='button';
-        btn.textContent=lock?'🔒 NIV. '+districts[item.zone].min:'📡 TRAQUER';
-        btn.disabled=lock;
-        btn.addEventListener('click',()=>launchCustomSolo(item.id));
-        info.append(title,zoneName,btn);card.append(img,info);list.appendChild(card);
-      }
+      const found=catalogSeen(),total=villains.length,remaining=total-found;
+      $('prison-counter').textContent=found+' / '+total+' super-méchants identifiés';
+      $('prison-summary').textContent=remaining===0
+        ?'Les '+total+' super-méchants ont été capturés ! 🏆'
+        :'Encore '+remaining+' suspect'+(remaining>1?'s':'')+' à découvrir.';
     }
-    function renderCodex(){let html='';villains.slice(0,originalVillains).forEach((v,id)=>{let count=state.owned[id]||0;html+=`<div class="codex-tile ${count?'':'unknown'}" title="${count?v.line:'Identité inconnue'}"><span class="codex-icon">${count?`<img class="codex-face" loading="lazy" src="${v.portrait}" alt="${v.name}">`:'❔'}</span><span class="codex-name">${count?v.name:'DOSSIER ???'}</span><div class="codex-rarity">${count?`×${count} ARRÊTÉ${count>1?'S':''}`:v.boss?'🔒 BOSS':'NON CAPTURÉ'}</div></div>`});$('codex-grid').innerHTML=html;$('prison-counter').textContent=`${seen()} / 6 super-méchants identifiés`;$('prison-summary').textContent=seen()===6?'Les 6 super-méchants ont été capturés ! 🏆':`Encore ${6-seen()} suspects à découvrir.`;renderCustomSolo();}
     let missionFilter='all',missionVisible=12;
     function renderMissions(){
       const completed=missionData.filter(m=>state.claimed.includes(m.id)).length;
@@ -1521,7 +1492,6 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     }
     document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
     $('district-grid').addEventListener('click',e=>{let info=e.target.closest('[data-info]');if(info){e.preventDefault();e.stopPropagation();openSuspectSheet(Number(info.dataset.info));return}let b=e.target.closest('[data-district]');if(b)openDistrict(Number(b.dataset.district))});
-    $('custom-map-refresh').addEventListener('click',()=>window.SUPERVILAINS_REFRESH_CUSTOMS?.());
 
     $('radar-targets').addEventListener('click',e=>{let b=e.target.closest('[data-radar-slot]');if(b)identifyRadar(Number(b.dataset.radarSlot))});$('radar-fight').addEventListener('click',confirmRadar);$('close-radar').addEventListener('click',()=>endRadarEscape('',false));$('suspect-close').addEventListener('click',()=>{stopVoices();hide('overlay-suspect')});$('suspect-reroll').addEventListener('click',rerollSuspectReason);
     $('mission-list').addEventListener('click',e=>{let b=e.target.closest('[data-claim]');if(b)claim(b.dataset.claim)});
