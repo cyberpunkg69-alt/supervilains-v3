@@ -42,6 +42,7 @@ async function refresh(force=false){
       return {
         id:row.id,name:String(row.name||"SUPER-VILAIN").slice(0,60),
         alias:String(row.alias||"").slice(0,80),
+        district:String(row.district||"").trim().slice(0,80),
         description:String(row.description||"").slice(0,900),
         weakness_label:String(row.weakness_label||"Faille ultime").slice(0,120),
         weakness_object:String(row.weakness_object||"").slice(0,120),
