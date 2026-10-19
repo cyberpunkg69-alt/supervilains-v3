@@ -8,6 +8,18 @@ let db=null,user=null,active=null,period="week",profile=null,loading=false,lastR
 let createdDuelCode="",inviteDuelCode=null,shareDuelCode="";
 // Le créateur réutilise l'authentification existante au lieu de créer une seconde session.
 window.SUPERVILAINS_GET_ARENA_CLIENT=()=>db;
+const personalTargets=new Map();
+window.SUPERVILAINS_SET_ARENA_CUSTOMS=roster=>{
+  personalTargets.clear();
+  for(const row of Array.isArray(roster)?roster:[]){
+    if(row?.id&&row.portrait&&row.troll&&row.capture)personalTargets.set(String(row.id),row);
+  }
+  renderEncounter();
+};
+const personalTarget=id=>id?personalTargets.get(String(id)):null;
+function arenaPersonalVoice(row,scene){
+  if(row)window.SUPERVILAINS_SPEAK_CUSTOM?.(row,scene);
+}
 const duelCodePattern=/^[A-F0-9]{10}$/;
 const gameLink=()=>new URL("./",location.href).href;
 const validDuelCode=v=>duelCodePattern.test(String(v||"").toUpperCase())?String(v).toUpperCase():null;
@@ -91,14 +103,29 @@ const messageError=e=>String(e&&e.message||"Erreur du serveur. Réessaie.");
 const RPC=async(fn,args={})=>{if(!db)throw Error("Arène non configurée");const {data,error}=await db.rpc(fn,args);if(error)throw error;return data;};
 function working(yes){loading=yes;["arena-send-link","arena-register-btn","arena-hunt","arena-attack","arena-capture","arena-flee","arena-create-duel","arena-join-duel","arena-accept-invite","arena-refresh"].forEach(id=>{if($(id))$(id).disabled=yes;});if(!yes)renderEncounter();}
 async function action(fn){if(loading)return;working(true);try{await fn();}catch(e){showMessage("⚠️ "+messageError(e),"warn");}finally{working(false);}}
-function renderEncounter(){vis("arena-encounter",!!active);if(!active)return;
-const [name,icon,danger]=HEROES[Number(active.villain_id)]||["CIBLE","👾",1],hits=Number(active.hits)||0;
-$("arena-villain-name").textContent=name;$("arena-villain-icon").textContent=icon;
-$("arena-villain-sub").textContent="Danger "+danger+"/6 · 5 minutes pour le capturer";
-$("arena-hits").textContent=hits+" / 3";$("arena-stunbar").style.width=(hits/3*100)+"%";
-$("arena-chance").textContent="Chance de capture : "+Math.max(22,Math.min(92,53-danger*5+hits*18))+" % (calcul serveur)";
-$("arena-attack").disabled=loading||hits>=3;$("arena-capture").disabled=loading;
-$("arena-hunt").textContent="🔁 REPRENDRE LA PATROUILLE";
+function renderEncounter(){
+  vis("arena-encounter",!!active);if(!active)return;
+  const base=HEROES[Number(active.villain_id)]||["CIBLE","👾",1];
+  const custom=personalTarget(active.custom_villain_id);
+  const hits=Number(active.hits)||0, danger=Number(active.danger)||base[2];
+  const name=custom?.name||base[0],icon=base[1];
+  $("arena-villain-name").textContent=name;
+  const art=$("arena-villain-icon");art.replaceChildren();
+  if(custom){
+    const img=document.createElement("img");
+    img.className="arena-custom-face";
+    img.alt=(hits?"Troller : ":"Portrait de ")+name;
+    img.src=hits?custom.troll:custom.portrait;
+    img.onerror=()=>{art.textContent=icon};
+    art.appendChild(img);
+  }else art.textContent=icon;
+  $("arena-villain-sub").textContent=custom
+    ?"🦹 CIBLE PERSONNELLE · Danger "+danger+"/6 · 5 minutes · mêmes points que les méchants officiels"
+    :"Danger "+danger+"/6 · 5 minutes pour le capturer";
+  $("arena-hits").textContent=hits+" / 3";$("arena-stunbar").style.width=(hits/3*100)+"%";
+  $("arena-chance").textContent="Chance de capture : "+Math.max(22,Math.min(92,53-danger*5+hits*18))+" % (calcul serveur)";
+  $("arena-attack").disabled=loading||hits>=3;$("arena-capture").disabled=loading;
+  $("arena-hunt").textContent="🔁 REPRENDRE LA PATROUILLE";
 }
 function boardRender(rows){const el=$("arena-board");if(!rows||!rows.length){el.textContent="Aucun classement pour le moment.";return;}
 el.innerHTML=rows.map(r=>{const my=r.player_id===user?.id,rank=Number(r.pos);
@@ -141,13 +168,45 @@ const callbackUrl=location.origin+location.pathname;
 const {error}=await db.auth.signInWithOtp({email,options:{emailRedirectTo:callbackUrl,shouldCreateUser:true}});if(error)throw error;showMessage("📩 Lien envoyé. Consulte ta boîte mail !","good");}));
 on("arena-register-btn",()=>action(async()=>{const handle=$("arena-handle").value.trim();if(!/^[A-Za-z0-9_]{3,18}$/.test(handle))throw Error("Pseudo : 3 à 18 caractères, lettres, chiffres et _.");await RPC("arena_register",{p_handle:handle});await refresh();}));
 on("arena-logout",()=>action(async()=>{const {error}=await db.auth.signOut();if(error)throw error;user=null;active=null;await authView();}));
-on("arena-hunt",()=>action(async()=>{active=await RPC("arena_start");renderEncounter();vis("arena-last-result",false);showMessage("📡 Signal détecté. Capture le super-méchant !","good");}));
-on("arena-attack",()=>action(async()=>{if(!active)return;const data=await RPC("arena_attack",{p_encounter:active.id});active={...active,...data};renderEncounter();showMessage("⚡ Neutralisation "+active.hits+"/3","good");}));
-on("arena-capture",()=>action(async()=>{if(!active)return;const result=await RPC("arena_capture",{p_encounter:active.id});active=null;const hero=HEROES[Number(result.villain_id)]||["CIBLE","👾"];
-const text=result.success?"🏆 "+hero[0]+" CAPTURÉ ! +"+result.points+" points":result.expired?"⌛ Patrouille expirée !":"💨 "+hero[0]+" s'est échappé !";
-$("arena-last-result").textContent=text;$("arena-last-result").className="arena-status "+(result.success?"good":"warn");vis("arena-last-result",true);
-$("arena-hunt").textContent="📡 LANCER UNE PATROUILLE EN LIGNE";await refresh();}));
-on("arena-flee",()=>action(async()=>{if(!active)return;await RPC("arena_flee",{p_encounter:active.id});active=null;$("arena-hunt").textContent="📡 LANCER UNE PATROUILLE EN LIGNE";await refresh();}));
+on("arena-hunt",()=>action(async()=>{
+  active=await RPC("arena_start");renderEncounter();
+  vis("arena-last-result",false);vis("arena-custom-result",false);
+  arenaPersonalVoice(personalTarget(active.custom_villain_id),"intro");
+  showMessage(active.custom_villain_id?"🦹 Méchant personnel détecté ! Capture-le pour gagner les mêmes points que les autres.":"📡 Signal détecté. Capture le super-méchant !","good");
+}));
+on("arena-attack",()=>action(async()=>{
+  if(!active)return;
+  const data=await RPC("arena_attack",{p_encounter:active.id});
+  active={...active,...data};renderEncounter();
+  arenaPersonalVoice(personalTarget(active.custom_villain_id),"taunt");
+  showMessage("⚡ Neutralisation "+active.hits+"/3","good");
+}));
+on("arena-capture",()=>action(async()=>{
+  if(!active)return;
+  const result=await RPC("arena_capture",{p_encounter:active.id});
+  const hero=HEROES[Number(result.villain_id)]||["CIBLE","👾"];
+  const custom=personalTarget(result.custom_villain_id||active.custom_villain_id);
+  const name=custom?.name||hero[0];
+  active=null;
+  const text=result.success?"🏆 "+name+" CAPTURÉ ! +"+result.points+" points":
+    result.expired?"⌛ Patrouille expirée !":"💨 "+name+" s'est échappé !";
+  $("arena-last-result").textContent=text;
+  $("arena-last-result").className="arena-status "+(result.success?"good":"warn");
+  vis("arena-last-result",true);
+  vis("arena-custom-result",!!custom);
+  if(custom){
+    const img=$("arena-custom-result-image");
+    img.src=result.success?custom.capture:custom.troll;
+    img.alt=(result.success?"Capturé : ":"En fuite : ")+name;
+    $("arena-custom-result-label").textContent=result.success
+      ?name+" arrêté ! Son image de prisonnier rejoint la victoire de l'ARÈNE."
+      :name+" a pris la fuite. On se retrouve à la prochaine patrouille !";
+    arenaPersonalVoice(custom,result.success?"capture":"taunt");
+  }
+  $("arena-hunt").textContent="📡 LANCER UNE PATROUILLE EN LIGNE";
+  await refresh();
+}));
+on("arena-flee",()=>action(async()=>{if(!active)return;await RPC("arena_flee",{p_encounter:active.id});active=null;vis("arena-custom-result",false);$("arena-hunt").textContent="📡 LANCER UNE PATROUILLE EN LIGNE";await refresh();}));
 on("arena-refresh",()=>action(async()=>{await refresh();}));
 on("arena-create-duel",()=>action(async()=>{
   const code=validDuelCode(await RPC("arena_create_duel"));if(!code)throw Error("Code reçu invalide.");
