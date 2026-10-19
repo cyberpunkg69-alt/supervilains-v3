@@ -179,8 +179,8 @@ function renderEncounter(){
     art.appendChild(img);
   }else art.textContent=fallbackIcon;
   $("arena-villain-sub").textContent=custom
-    ?"🦹 CIBLE PERSONNELLE · Danger "+danger+"/6 · 5 minutes · points équilibrés"
-    :"Danger "+danger+"/6 · 5 minutes pour le capturer";
+    ?"🦹 CIBLE PERSONNELLE · Danger "+danger+"/5 · 5 minutes · points équilibrés"
+    :"Danger "+danger+"/5 · 5 minutes pour le capturer";
   $("arena-hits").textContent=hits+" / 3";$("arena-stunbar").style.width=(hits/3*100)+"%";
   $("arena-chance").textContent="Chance de capture : "+Math.max(22,Math.min(92,53-danger*5+hits*18))+" % (calcul serveur)";
   $("arena-attack").disabled=loading||hits>=3;$("arena-capture").disabled=loading;
