@@ -237,7 +237,7 @@
      const jumpActive=g.jump>0,slideActive=g.slide>0,intercept=g.winning>0;
      const phase=g.elapsed*16.2,cycle=Math.sin(phase);
      const air=jumpActive?Math.sin(clamp((.88-g.jump)/.88,0,1)*PI)*1.32:0;
-     const bounce=!jumpActive&&!slideActive&&!intercept?.075*Math.abs(Math.sin(phase)):0;
+     const bounce=(!jumpActive&&!slideActive&&!intercept) ? .075*Math.abs(Math.sin(phase)) : 0;
      const yShift=air+bounce;
      const dodge=clamp((g.lane-g.smoothLane)*.14,-.18,.18);
      const torsoX=x+dodge;
@@ -310,7 +310,7 @@
        segment(knee,foot,.155,trousers);
        ball(...foot,.15,.15,.16,dark);
        box(foot[0],foot[1]-.04,foot[2]-.18,.42,.22,.64,'#101c35',
-          jumpActive?.12*side:legSwing*.15);
+          jumpActive ? .12*side : legSwing*.15);
        box(foot[0],foot[1]-.12,foot[2]-.17,.42,.06,.60,'#70c3e5');
        let shoulder=[torsoX+side*.62,shoulderY-.14,chestZ-.01],
          elbow=[torsoX+side*.73,shoulderY-.57,chestZ+.23*legSwing],
