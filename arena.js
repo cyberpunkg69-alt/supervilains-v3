@@ -3,7 +3,15 @@
 const $=id=>document.getElementById(id);
 const vis=(id,yes)=>{const n=$(id);if(n)n.hidden=!yes;};
 const escapeHtml=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const HEROES=[["MANU","🪥",1],["LÉA","👓",2],["NATSU","🍗",2],["AMÉLIE","🎤",3],["LUDO","📘",4],["ERIC","🧴",5]];
+// Portraits officiels réels : ne plus afficher seulement l'objet de capture.
+const HEROES=[
+ ["MANU","🪥",1,"assets/manu.png","assets/reactions/manu_troller.gif","assets/reactions/manu_capture.gif"],
+ ["LÉA","👓",2,"assets/lea.png","assets/reactions/lea_troller.gif","assets/reactions/lea_capture.gif"],
+ ["NATSU","🍗",2,"assets/natsu.png","assets/reactions/natsu_troller.gif","assets/reactions/natsu_capture.gif"],
+ ["AMÉLIE","🎤",3,"assets/amelie.png","assets/reactions/amelie_troller.gif","assets/reactions/amelie_capture.gif"],
+ ["LUDO","📘",4,"assets/ludo.png","assets/reactions/ludo_troller.gif","assets/reactions/ludo_capture.gif"],
+ ["ERIC","🧴",5,"assets/eric.png","assets/reactions/eric_troller.gif","assets/reactions/eric_capture.gif"]
+];
 let db=null,user=null,active=null,period="week",profile=null,loading=false,lastRefresh=0,refreshing=false;
 let createdDuelCode="",inviteDuelCode=null,shareDuelCode="";
 // Le créateur réutilise l'authentification existante au lieu de créer une seconde session.
@@ -113,27 +121,43 @@ function working(yes){loading=yes;["arena-send-link","arena-register-btn","arena
 async function action(fn){if(loading)return;working(true);try{await fn();}catch(e){showMessage("⚠️ "+messageError(e),"warn");}finally{working(false);}}
 function renderEncounter(){
   vis("arena-encounter",!!active);if(!active)return;
-  const base=HEROES[Number(active.villain_id)]||["CIBLE","👾",1];
+  const base=HEROES[Number(active.villain_id)]||["CIBLE","👾",1,null,null,null];
   const custom=personalTarget(active.custom_villain_id);
   const hits=Number(active.hits)||0, danger=Number(active.danger)||base[2];
-  const name=custom?.name||base[0],icon=base[1];
+  const name=custom?.name||base[0],fallbackIcon=base[1];
   $("arena-villain-name").textContent=name;
   const art=$("arena-villain-icon");art.replaceChildren();
-  if(custom){
+  // Une vraie image, officielle OU personnelle, dès le début du combat.
+  const portrait=custom?.portrait||base[3];
+  if(portrait){
     const img=document.createElement("img");
     img.className="arena-custom-face";
-    img.alt=(hits?"Troller : ":"Portrait de ")+name;
-    img.src=hits?custom.troll:custom.portrait;
-    img.onerror=()=>{art.textContent=icon};
+    img.alt="Portrait de "+name;
+    img.src=portrait;
+    img.onerror=()=>{if(art.contains(img))art.textContent=fallbackIcon;};
     art.appendChild(img);
-  }else art.textContent=icon;
+  }else art.textContent=fallbackIcon;
   $("arena-villain-sub").textContent=custom
-    ?"🦹 CIBLE PERSONNELLE · Danger "+danger+"/6 · 5 minutes · mêmes points que les méchants officiels"
+    ?"🦹 CIBLE PERSONNELLE · Danger "+danger+"/6 · 5 minutes · points équilibrés"
     :"Danger "+danger+"/6 · 5 minutes pour le capturer";
   $("arena-hits").textContent=hits+" / 3";$("arena-stunbar").style.width=(hits/3*100)+"%";
   $("arena-chance").textContent="Chance de capture : "+Math.max(22,Math.min(92,53-danger*5+hits*18))+" % (calcul serveur)";
   $("arena-attack").disabled=loading||hits>=3;$("arena-capture").disabled=loading;
   $("arena-hunt").textContent="🔁 REPRENDRE LA PATROUILLE";
+}
+function arenaTrollReaction(){
+  if(!active)return;
+  const id=active.id,base=HEROES[Number(active.villain_id)],custom=personalTarget(active.custom_villain_id);
+  const reaction=custom?.troll||base?.[4];
+  if(!reaction)return;
+  const box=$("arena-villain-icon"),img=box.querySelector("img");
+  if(!img)return;
+  img.src=reaction;img.alt="Grimace de "+(custom?.name||base?.[0]||"la cible");
+  setTimeout(()=>{
+    if(active?.id!==id||!box.contains(img))return;
+    img.src=custom?.portrait||base?.[3]||reaction;
+    img.alt="Portrait de "+(custom?.name||base?.[0]||"la cible");
+  },1500);
 }
 function boardRender(rows){const el=$("arena-board");if(!rows||!rows.length){el.textContent="Aucun classement pour le moment.";return;}
 el.innerHTML=rows.map(r=>{const my=r.player_id===user?.id,rank=Number(r.pos);
@@ -185,7 +209,7 @@ on("arena-hunt",()=>action(async()=>{
 on("arena-attack",()=>action(async()=>{
   if(!active)return;
   const data=await RPC("arena_attack",{p_encounter:active.id});
-  active={...active,...data};renderEncounter();
+  active={...active,...data};renderEncounter();arenaTrollReaction();
   arenaPersonalVoice(personalTarget(active.custom_villain_id),"taunt");
   showMessage("⚡ Neutralisation "+active.hits+"/3","good");
 }));
@@ -201,7 +225,17 @@ on("arena-capture",()=>action(async()=>{
   $("arena-last-result").textContent=text;
   $("arena-last-result").className="arena-status "+(result.success?"good":"warn");
   vis("arena-last-result",true);
-  vis("arena-custom-result",!!custom);
+  // Les six officiels possèdent également un visuel de capture / de fuite.
+  const finishImage=custom?(result.success?custom.capture:custom.troll):
+    (result.success?hero[5]:hero[3]);
+  vis("arena-custom-result",!!finishImage);
+  if(finishImage){
+    const img=$("arena-custom-result-image");
+    img.src=finishImage;img.alt=(result.success?"Capturé : ":"En fuite : ")+name;
+    $("arena-custom-result-label").textContent=result.success
+      ?name+" a été capturé !"
+      :name+" s'est échappé : réessaie une autre patrouille.";
+  }
   if(custom){
     const img=$("arena-custom-result-image");
     img.src=result.success?custom.capture:custom.troll;
