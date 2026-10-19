@@ -5,12 +5,12 @@ const vis=(id,yes)=>{const n=$(id);if(n)n.hidden=!yes;};
 const escapeHtml=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 // Portraits officiels réels : ne plus afficher seulement l'objet de capture.
 const HEROES=[
- ["MANU","🪥",1,"assets/manu.png","assets/reactions/manu_troller.gif","assets/reactions/manu_capture.gif"],
+ ["MANU","🪥",1,"assets/manu.jpg","assets/reactions/manu_troller.gif","assets/reactions/manu_capture.gif"],
  ["LÉA","👓",2,"assets/lea.png","assets/reactions/lea_troller.gif","assets/reactions/lea_capture.gif"],
- ["NATSU","🍗",2,"assets/natsu.png","assets/reactions/natsu_troller.gif","assets/reactions/natsu_capture.gif"],
- ["AMÉLIE","🎤",3,"assets/amelie.png","assets/reactions/amelie_troller.gif","assets/reactions/amelie_capture.gif"],
- ["LUDO","📘",4,"assets/ludo.png","assets/reactions/ludo_troller.gif","assets/reactions/ludo_capture.gif"],
- ["ERIC","🧴",5,"assets/eric.png","assets/reactions/eric_troller.gif","assets/reactions/eric_capture.gif"]
+ ["NATSU","🍗",2,"assets/natsu.jpg","assets/reactions/natsu_troller.gif","assets/reactions/natsu_capture.gif"],
+ ["AMÉLIE","🎤",3,"assets/amelie.jpg","assets/reactions/amelie_troller.gif","assets/reactions/amelie_capture.gif"],
+ ["LUDO","📘",4,"assets/ludo.jpg","assets/reactions/ludo_troller.gif","assets/reactions/ludo_capture.gif"],
+ ["ERIC","🧴",5,"assets/eric.jpg","assets/reactions/eric_troller.gif","assets/reactions/eric_capture.gif"]
 ];
 let db=null,user=null,active=null,period="week",profile=null,loading=false,lastRefresh=0,refreshing=false;
 let createdDuelCode="",inviteDuelCode=null,shareDuelCode="";
