@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.19 — moteur WebGL 3D pour La Grande Evasion.
+/* SUPERVILAINS V4.20 — moteur WebGL 3D pour La Grande Evasion.
  * Sans CDN, sans API, avec retour transparent au Canvas 2D si WebGL est absent.
  * Les portraits des joueurs restent dans leur stockage prive, non telecharges par WebGL.
  */
@@ -270,10 +270,10 @@
        canvas.width=bw;canvas.height=bh;gl.viewport(0,0,bw,bh);
      }
    }
-   let villain={};
+   let villain={},villainLaneX=1.35;
    function begin(v){
      if(!ok)return;
-     active=true;villain=v||{};wantedTag.textContent='😈 '+String(villain.name||'FUGITIF').slice(0,34);
+     active=true;villain=v||{};villainLaneX=1.35;wantedTag.textContent='😈 '+String(villain.name||'FUGITIF').slice(0,34);
      canvas.style.display='block';frame.style.display='none';indicator.style.display='block';agentTag.style.display='block';wantedTag.style.display='block';
      photo.onload=null;photo.removeAttribute('src');
      if(villain.portrait){
@@ -301,7 +301,12 @@
          at=[lane*.10,1.54,-11];
        vp=mul(perspective(62*PI/180,w/h,.1,150),look(eye,at));
        world(g);hazards(g);
-       const vx=.48*Math.sin(g.elapsed*1.55),vz=-12.5+progress*7.2;
+       // Le fugitif cesse d'etre fixe au fond de la rue : il se rapproche vraiment
+       // et esquive la voie de l'agent. Ses changements restent progressifs.
+       const fugitiveTargetX=lane>.25?-1.25:1.25;
+       villainLaneX+=(fugitiveTargetX-villainLaneX)*.065;
+       const vx=villainLaneX+.24*Math.sin(g.elapsed*1.3);
+       const vz=-11.8+11.0*Math.pow(progress,1.24);
        const faceAt=character(vx,vz,false,g,villain.color);
        character(lane*2.72,3.18,true,g);
        const jump=g.jump>0?Math.sin((.88-g.jump)/.88*PI)*1.48:0;
@@ -327,7 +332,7 @@
          const center=project(faceAt,w,h),
            right=project([faceAt[0]+.43,faceAt[1],faceAt[2]],w,h);
          if(center&&right&&center.y>0&&center.y<h){
-           const size=clamp(Math.abs(right.x-center.x)*2.16,32,85);
+           const size=clamp(Math.abs(right.x-center.x)*2.55,40,94);
            frame.style.display='block';frame.style.left=center.x+'px';frame.style.top=center.y+'px';
            frame.style.width=size+'px';frame.style.height=size+'px';
          }else frame.style.display='none';
