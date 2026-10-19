@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.18 — veritable moteur WebGL 3D pour La Grande Evasion.
+/* SUPERVILAINS V4.19 — moteur WebGL 3D pour La Grande Evasion.
  * Sans CDN, sans API, avec retour transparent au Canvas 2D si WebGL est absent.
  * Les portraits des joueurs restent dans leur stockage prive, non telecharges par WebGL.
  */
@@ -168,7 +168,7 @@
      }
    }
    function character(x,z,police,g,tint){
-     const t=g.elapsed*15,step=Math.sin(t),bob=Math.abs(step)*.06;
+     const t=g.elapsed*18.5,step=Math.sin(t),bob=Math.abs(step)*.085;
      const jumping=police&&g.jump>0?Math.sin((.88-g.jump)/.88*PI)*1.48:0;
      const duck=police&&g.slide>0,sy=duck?.63:1;
      const base=jumping+bob;
@@ -177,26 +177,31 @@
      box(x,.03,z,1.05,.04,.65,'#162238');
      box(x,base+.95*sy,z,.91,.41,.50,pants);
      for(const side of [-1,1]){
-       const ang=step*side*.69;
+       const ang=step*side*.87;
        const hip=base+.80*sy;
-       box(x+side*.24,hip-.39*Math.cos(ang),z+.36*Math.sin(ang),.30,.86,.32,pants,ang);
-       box(x+side*.24,Math.max(base+.12,hip-.80*Math.cos(ang)),z+.72*Math.sin(ang)+.13,
+       box(x+side*.24,hip-.39*Math.cos(ang),z+.52*Math.sin(ang),.30,.86,.32,pants,ang);
+       box(x+side*.24,Math.max(base+.12,hip-.80*Math.cos(ang)),z+.87*Math.sin(ang)+.13,
          .46,.26,.58,'#131f38',ang*.28);
      }
      box(x,base+1.67*sy,z,1.10,1.27*sy,.64,clothing);
      box(x,base+1.15*sy,z+.34,1.08,.15*sy,.12,'#142442');
      box(x,base+1.63*sy,z+.35,.72,.5*sy,.1,police?'#1c355f':'#522e54');
      if(police){
-       box(x-.27,base+1.80*sy,z+.42,.18,.24*sy,.07,'#ffe08c');
-       box(x+.27,base+1.53*sy,z+.42,.21,.16*sy,.10,'#88f6ec');
-       box(x+.47,base+2.06*sy,z,.18,.17,.24,'#152b52');
-       box(x-.43,base+2.29*sy,z-.23,.24,.12,.20,'#ed536c');
-       box(x+.43,base+2.29*sy,z-.23,.24,.12,.20,'#66daf4');
+       // Le policier est vu de DOS par la camera.
+       box(x,base+1.85*sy,z+.365,.93,.59*sy,.105,'#12375c');
+       box(x,base+1.45*sy,z+.43,.88,.10*sy,.09,'#8fe7ef');
+       box(x,base+1.23*sy,z+.41,.94,.09*sy,.09,'#8fe7ef');
+       box(x-.44,base+2.02*sy,z+.40,.16,.17*sy,.1,'#ffdd86');
+       box(x+.45,base+2.07*sy,z+.26,.23,.32*sy,.16,'#1a294a');
+       box(x+.45,base+2.19*sy,z+.365,.12,.08*sy,.08,'#6df3e8');
+       box(x-.43,base+2.25*sy,z-.2,.24,.12,.20,'#ed536c');
+       box(x+.43,base+2.25*sy,z-.2,.24,.12,.20,'#66daf4');
      }else{
-       box(x,base+1.81*sy,z+.40,.45,.19*sy,.06,'#f2d69c');
+       box(x,base+1.79*sy,z+.4,.56,.36*sy,.11,'#52304d');
+       box(x,base+1.82*sy,z+.46,.34,.15*sy,.06,'#f2d69c');
      }
      for(const side of [-1,1]){
-       const a=side*step*.74,shoulder=base+2.05*sy;
+       const a=side*step*.98,shoulder=base+2.05*sy;
        box(x+side*.69,shoulder-.42*Math.cos(a),z+.42*Math.sin(a),
          .31,.9*sy,.36,police?'#346ca2':clothing,a);
        ball(x+side*.69,shoulder-.87*Math.cos(a),z+.88*Math.sin(a),.17,.20,.17,skin);
@@ -204,16 +209,15 @@
      ball(x,base+2.60*sy,z,.48,.49,.45,skin);
      if(police){
        box(x,base+3.02*sy,z,1.02,.22,.83,'#163b70');
-       box(x,base+2.96*sy,z+.30,1.14,.10,.50,'#142647');
-       box(x,base+3.10*sy,z+.35,.15,.14,.1,'#ffda80');
+       // Visiere orientee dans le SENS DE LA COURSE (-Z).
+       box(x,base+2.96*sy,z-.30,1.14,.10,.50,'#142647');
+       box(x,base+2.94*sy,z+.40,.74,.10,.14,'#31517d');
+       box(x,base+3.10*sy,z-.35,.15,.14,.1,'#ffda80');
      }else{
-       ball(x,base+2.91*sy,z-.12,.49,.21,.42,'#30243f');
-       box(x,base+2.82*sy,z-.34,.80,.22,.24,'#30243f');
+       ball(x,base+2.91*sy,z+.12,.49,.24,.45,'#30243f');
+       box(x,base+2.82*sy,z+.32,.81,.20,.16,'#30243f');
      }
-     for(const side of [-1,1]){
-       ball(x+side*.18,base+2.63*sy,z+.40,.072,.085,.043,'#fff6e8');
-       box(x+side*.18,base+2.63*sy,z+.45,.05,.08,.025,'#192640');
-     }
+     // Pas d'yeux vers la camera : les deux personnages courent vers l'horizon.
      return [x,base+2.61*sy,z+.46];
    }
    function project(vec,width,height){
@@ -231,6 +235,20 @@
      'background:#10283bd9;border:1px solid #5bdcc1;padding:7px 10px;'+
      'border-radius:9px;pointer-events:none;box-shadow:0 2px 12px #0006';
    parent.append(indicator);
+   const agentTag=document.createElement('div');
+   agentTag.textContent='POLICE';
+   agentTag.style.cssText='display:none;position:absolute;z-index:3;pointer-events:none;'+
+     'color:#effdff;font:900 12px Arial,sans-serif;letter-spacing:1px;'+
+     'text-shadow:0 2px 3px #09162d;transform:translate(-50%,-50%);';
+   parent.append(agentTag);
+   const wantedTag=document.createElement('div');
+   wantedTag.style.cssText='display:none;position:absolute;z-index:3;pointer-events:none;'+
+     'color:#fff7ce;background:#402345e8;border:1px solid #facb77;'+
+     'padding:3px 7px;border-radius:7px;text-shadow:0 1px 2px #000;'+
+     'font:900 11px Arial,sans-serif;letter-spacing:.3px;'+
+     'max-width:145px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'+
+     'transform:translate(-50%,-50%);';
+   parent.append(wantedTag);
    const frame=document.createElement('div'),photo=document.createElement('img');
    frame.className='sv-runner-3d-portrait';
    frame.style.cssText='display:none;position:absolute;z-index:3;pointer-events:none;'+
@@ -240,7 +258,7 @@
    photo.alt='Portrait du super-vilain';frame.append(photo);parent.append(frame);
    photo.addEventListener('error',()=>frame.style.display='none');
    canvas.addEventListener('webglcontextlost',e=>{
-     e.preventDefault();ok=false;canvas.style.display='none';frame.style.display='none';indicator.style.display='none';
+     e.preventDefault();ok=false;canvas.style.display='none';frame.style.display='none';indicator.style.display='none';agentTag.style.display='none';wantedTag.style.display='none';
    });
    canvas.addEventListener('webglcontextrestored',()=>{ok=false});
    function resize(){
@@ -255,8 +273,8 @@
    let villain={};
    function begin(v){
      if(!ok)return;
-     active=true;villain=v||{};
-     canvas.style.display='block';frame.style.display='none';indicator.style.display='block';
+     active=true;villain=v||{};wantedTag.textContent='😈 '+String(villain.name||'FUGITIF').slice(0,34);
+     canvas.style.display='block';frame.style.display='none';indicator.style.display='block';agentTag.style.display='block';wantedTag.style.display='block';
      photo.onload=null;photo.removeAttribute('src');
      if(villain.portrait){
        photo.onload=()=>{if(active)frame.style.display='block'};
@@ -265,7 +283,7 @@
      resize();
    }
    function end(){
-     active=false;canvas.style.display='none';frame.style.display='none';indicator.style.display='none';
+     active=false;canvas.style.display='none';frame.style.display='none';indicator.style.display='none';agentTag.style.display='none';wantedTag.style.display='none';
      photo.onload=null;photo.removeAttribute('src');lastFrame=0;
    }
    function draw(g){
@@ -283,9 +301,17 @@
          at=[lane*.10,1.54,-11];
        vp=mul(perspective(62*PI/180,w/h,.1,150),look(eye,at));
        world(g);hazards(g);
-       const vx=.32*Math.sin(g.elapsed*1.95),vz=-17+progress*7;
+       const vx=.48*Math.sin(g.elapsed*1.55),vz=-12.5+progress*7.2;
        const faceAt=character(vx,vz,false,g,villain.color);
        character(lane*2.72,3.18,true,g);
+       const jump=g.jump>0?Math.sin((.88-g.jump)/.88*PI)*1.48:0;
+       const copBack=project([lane*2.72,1.83+jump,3.62],w,h);
+       if(copBack){
+         agentTag.style.display='block';agentTag.style.left=copBack.x+'px';agentTag.style.top=copBack.y+'px';
+       }else agentTag.style.display='none';
+       const labelAt=project([faceAt[0],faceAt[1]+1.09,faceAt[2]],w,h);
+       if(labelAt){wantedTag.style.display='block';wantedTag.style.left=labelAt.x+'px';wantedTag.style.top=labelAt.y+'px'}
+       else wantedTag.style.display='none';
        const data=new Float32Array(points);
        gl.useProgram(program);gl.enable(gl.DEPTH_TEST);
        gl.disable(gl.BLEND);gl.depthFunc(gl.LEQUAL);
@@ -301,7 +327,7 @@
          const center=project(faceAt,w,h),
            right=project([faceAt[0]+.43,faceAt[1],faceAt[2]],w,h);
          if(center&&right&&center.y>0&&center.y<h){
-           const size=clamp(Math.abs(right.x-center.x)*2.05,25,82);
+           const size=clamp(Math.abs(right.x-center.x)*2.16,32,85);
            frame.style.display='block';frame.style.left=center.x+'px';frame.style.top=center.y+'px';
            frame.style.width=size+'px';frame.style.height=size+'px';
          }else frame.style.display='none';
@@ -309,7 +335,7 @@
        return true;
      }catch(e){
        console.warn('Poursuite 3D desactivee :',e);
-       ok=false;canvas.style.display='none';frame.style.display='none';indicator.style.display='none';
+       ok=false;canvas.style.display='none';frame.style.display='none';indicator.style.display='none';agentTag.style.display='none';wantedTag.style.display='none';
        return false;
      }
    }
