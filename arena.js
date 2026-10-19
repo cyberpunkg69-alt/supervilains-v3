@@ -199,18 +199,40 @@ function openArenaMeter(data){
   closeArenaMeter();
   const elapsed=Math.max(0,Number(data.server_ms)-Number(data.started_ms));
   const period=Number(data.period_ms)||5400;
+  const version=Number(data.motion_version)||1;
+  const geomV2=window.SUPERVILAINS_METER_GEOMETRY_V2;
   if(!Number.isFinite(elapsed)||period<=0)throw Error("Synchronisation de la jauge impossible.");
-  arenaMeter={id:active.id,elapsed,period,received:performance.now()};
+  if(version>=2&&typeof geomV2!=="function")
+    throw Error("La jauge progressive exige la dernière version de l'application. Ferme puis rouvre SUPERVILAINS.");
+  // Estimation purement visuelle du trajet réseau. Le serveur ignore cette valeur.
+  const latency=Math.max(0,Math.min(300,Number(data._roundtrip_ms)||0));
+  arenaMeter={id:active.id,elapsed,period,version,latency,received:performance.now(),lastLabel:-Infinity};
   const shade=$("arena-meter-overlay"),stop=$("arena-meter-stop");
   if(!shade||!stop)throw Error("Interface de la jauge introuvable.");
   shade.hidden=false;stop.disabled=false;
-  $("arena-meter-status").textContent="🎯 Arrête le curseur dans la zone turquoise. Timing vérifié par le serveur.";
+  $("arena-meter-status").textContent=version>=2
+    ?"🎯 La zone turquoise se referme et s'ouvre ; la barre accélère. Timing vérifié par Supabase."
+    :"🎯 Arrête le curseur dans la zone turquoise. Timing vérifié par Supabase.";
   const paint=now=>{
     if(!arenaMeter||shade.hidden)return;
-    const ms=arenaMeter.elapsed+Math.max(0,now-arenaMeter.received);
-    const phase=(ms/(arenaMeter.period/2))%2;
-    const pct=5+90*(phase<=1?phase:2-phase);
+    const ms=arenaMeter.elapsed+arenaMeter.latency+Math.max(0,now-arenaMeter.received);
+    let pct,width,speed;
+    if(arenaMeter.version>=2){
+      const g=geomV2(ms);
+      pct=g.positionPct;width=g.zoneWidthPct;speed=g.speed;
+    }else{
+      const phase=(ms/(arenaMeter.period/2))%2;
+      pct=5+90*(phase<=1?phase:2-phase);
+      width=30;speed=1;
+    }
     $("arena-meter-indicator").style.left=pct.toFixed(2)+"%";
+    const target=$("arena-meter-target");
+    target.style.width=width.toFixed(2)+"%";
+    target.style.left=(50-width/2).toFixed(2)+"%";
+    if(now-arenaMeter.lastLabel>180){
+      $("arena-meter-difficulty").textContent="⚡ Vitesse ×"+speed.toFixed(2).replace(".",",")+" · Zone "+Math.round(width)+" %";
+      arenaMeter.lastLabel=now;
+    }
     arenaMeterFrame=requestAnimationFrame(paint);
   };
   arenaMeterFrame=requestAnimationFrame(paint);
@@ -345,7 +367,10 @@ function completeArenaEncounter(result,before){
 }
 on("arena-capture",()=>action(async()=>{
   if(!active)return;
+  const requestAt=performance.now();
   const data=await RPC("arena_meter_begin",{p_encounter:active.id});
+  // Ajustement d'affichage uniquement : aucun chrono client n'est transmis à la base.
+  if(data?.ready)data._roundtrip_ms=performance.now()-requestAt;
   if(data?.expired){
     active=null;vis("arena-encounter",false);
     showMessage("⌛ Ta patrouille a expiré. Relance une rencontre.","warn");
