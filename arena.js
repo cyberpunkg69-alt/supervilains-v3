@@ -14,6 +14,14 @@ window.SUPERVILAINS_SET_ARENA_CUSTOMS=roster=>{
   for(const row of Array.isArray(roster)?roster:[]){
     if(row?.id&&row.portrait&&row.troll&&row.capture)personalTargets.set(String(row.id),row);
   }
+  const label=$("arena-custom-roster");
+  if(label)label.textContent=personalTargets.size
+    ?"🦹 "+personalTargets.size+" méchant"+(personalTargets.size>1?"s":"")+" personnel"+(personalTargets.size>1?"s":"")+" jouable"+(personalTargets.size>1?"s":"")+" · 45 % de rencontres perso"
+    :"🦹 Valide les trois portraits d'un méchant pour le rencontrer dans l'ARÈNE.";
+  if(!personalTargets.size){
+    vis("arena-custom-result",false);
+    $("arena-custom-result-image")?.removeAttribute("src");
+  }
   renderEncounter();
 };
 const personalTarget=id=>id?personalTargets.get(String(id)):null;
