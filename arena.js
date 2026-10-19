@@ -14,6 +14,7 @@ const HEROES=[
 ];
 let db=null,user=null,active=null,period="week",profile=null,loading=false,lastRefresh=0,refreshing=false;
 let createdDuelCode="",inviteDuelCode=null,shareDuelCode="";
+let arenaMeter=null,arenaMeterFrame=0;
 // Le créateur réutilise l'authentification existante au lieu de créer une seconde session.
 window.SUPERVILAINS_GET_ARENA_CLIENT=()=>db;
 const personalTargets=new Map();
@@ -182,10 +183,58 @@ function renderEncounter(){
     ?"🦹 CIBLE PERSONNELLE · Danger "+danger+"/5 · 5 minutes · points équilibrés"
     :"Danger "+danger+"/5 · 5 minutes pour le capturer";
   $("arena-hits").textContent=hits+" / 3";$("arena-stunbar").style.width=(hits/3*100)+"%";
-  $("arena-chance").textContent="Chance de capture : "+Math.max(22,Math.min(92,53-danger*5+hits*18))+" % (calcul serveur)";
+  $("arena-chance").textContent="Chance de base : "+Math.max(22,Math.min(92,53-danger*5+hits*18))+" % · Précision de jauge : ±15 points (serveur)";
   $("arena-attack").disabled=loading||hits>=3;$("arena-capture").disabled=loading;
   $("arena-hunt").textContent="🔁 REPRENDRE LA PATROUILLE";
   renderArenaWeakness();
+}
+// Jauge serveur : le client ne transmet ni position ni bonus.
+function closeArenaMeter(){
+  cancelAnimationFrame(arenaMeterFrame);arenaMeterFrame=0;
+  const shade=$("arena-meter-overlay");if(shade)shade.hidden=true;
+  arenaMeter=null;
+}
+function openArenaMeter(data){
+  if(!active||!data?.ready)return;
+  closeArenaMeter();
+  const elapsed=Math.max(0,Number(data.server_ms)-Number(data.started_ms));
+  const period=Number(data.period_ms)||5400;
+  if(!Number.isFinite(elapsed)||period<=0)throw Error("Synchronisation de la jauge impossible.");
+  arenaMeter={id:active.id,elapsed,period,received:performance.now()};
+  const shade=$("arena-meter-overlay"),stop=$("arena-meter-stop");
+  if(!shade||!stop)throw Error("Interface de la jauge introuvable.");
+  shade.hidden=false;stop.disabled=false;
+  $("arena-meter-status").textContent="🎯 Arrête le curseur dans la zone turquoise. Timing vérifié par le serveur.";
+  const paint=now=>{
+    if(!arenaMeter||shade.hidden)return;
+    const ms=arenaMeter.elapsed+Math.max(0,now-arenaMeter.received);
+    const phase=(ms/(arenaMeter.period/2))%2;
+    const pct=5+90*(phase<=1?phase:2-phase);
+    $("arena-meter-indicator").style.left=pct.toFixed(2)+"%";
+    arenaMeterFrame=requestAnimationFrame(paint);
+  };
+  arenaMeterFrame=requestAnimationFrame(paint);
+}
+async function finishArenaMeter(){
+  if(!arenaMeter||loading||!active||active.id!==arenaMeter.id)return;
+  const stop=$("arena-meter-stop"),status=$("arena-meter-status");
+  cancelAnimationFrame(arenaMeterFrame);arenaMeterFrame=0;
+  stop.disabled=true;
+  status.textContent="⏳ Le serveur valide le timing et le résultat…";
+  const previous=active;working(true);
+  try{
+    const result=await RPC("arena_meter_finish",{p_encounter:previous.id});
+    closeArenaMeter();
+    completeArenaEncounter(result,previous);
+    if(result?.expired)showMessage("⌛ Patrouille expirée pendant la jauge.","warn");
+    else showMessage("🎯 Précision serveur : "+result.precision+" % · Bonus "+(result.bonus>=0?"+":"")+result.bonus+" points de chance · Probabilité finale "+result.chance+" %.","good");
+    await refresh();
+  }catch(e){
+    status.textContent="⚠️ "+messageError(e)+" · Réessaie ou actualise l'ARÈNE.";
+  }finally{
+    working(false);
+    stop.disabled=false;
+  }
 }
 function arenaTrollReaction(){
   if(!active)return;
@@ -254,9 +303,9 @@ on("arena-send-link",()=>action(async()=>{const email=$("arena-email").value.tri
 const callbackUrl=location.origin+location.pathname;
 const {error}=await db.auth.signInWithOtp({email,options:{emailRedirectTo:callbackUrl,shouldCreateUser:true}});if(error)throw error;showMessage("📩 Lien envoyé. Consulte ta boîte mail !","good");}));
 on("arena-register-btn",()=>action(async()=>{const handle=$("arena-handle").value.trim();if(!/^[A-Za-z0-9_]{3,18}$/.test(handle))throw Error("Pseudo : 3 à 18 caractères, lettres, chiffres et _.");await RPC("arena_register",{p_handle:handle});await refresh();}));
-on("arena-logout",()=>action(async()=>{const {error}=await db.auth.signOut();if(error)throw error;user=null;active=null;await authView();}));
+on("arena-logout",()=>action(async()=>{closeArenaMeter();const {error}=await db.auth.signOut();if(error)throw error;user=null;active=null;await authView();}));
 on("arena-hunt",()=>action(async()=>{
-  active=await RPC("arena_start");renderEncounter();
+  closeArenaMeter();active=await RPC("arena_start");renderEncounter();
   vis("arena-last-result",false);vis("arena-custom-result",false);
   arenaPersonalVoice(personalTarget(active.custom_villain_id),"intro");
   showMessage(active.custom_villain_id?"🦹 Méchant personnel détecté ! Capture-le pour gagner les mêmes points que les autres.":"📡 Signal détecté. Capture le super-méchant !","good");
@@ -272,10 +321,11 @@ function completeArenaEncounter(result,before){
   const hero=HEROES[Number(result.villain_id)]||["CIBLE","👾"];
   const custom=personalTarget(result.custom_villain_id||before?.custom_villain_id);
   const name=custom?.name||hero[0];
-  active=null;
+  closeArenaMeter();active=null;
+  const aim=Number.isFinite(result?.precision)?" · 🎯 Précision "+result.precision+" %":"";
   const text=result.success
-    ? "🏆 "+name+" CAPTURÉ ! +"+result.points+" points"+(result.ultimate?" · 🎴 FAILLE ULTIME !":"")
-    :result.expired?"⌛ Patrouille expirée !":"💨 "+name+" s'est échappé !";
+    ? "🏆 "+name+" CAPTURÉ ! +"+result.points+" points"+(result.ultimate?" · 🎴 FAILLE ULTIME !":"")+aim
+    :result.expired?"⌛ Patrouille expirée !":"💨 "+name+" s'est échappé !"+aim;
   $("arena-last-result").textContent=text;
   $("arena-last-result").className="arena-status "+(result.success?"good":"warn");
   vis("arena-last-result",true);
@@ -295,10 +345,17 @@ function completeArenaEncounter(result,before){
 }
 on("arena-capture",()=>action(async()=>{
   if(!active)return;
-  const previous=active,result=await RPC("arena_capture",{p_encounter:active.id});
-  completeArenaEncounter(result,previous);
-  await refresh();
+  const data=await RPC("arena_meter_begin",{p_encounter:active.id});
+  if(data?.expired){
+    active=null;vis("arena-encounter",false);
+    showMessage("⌛ Ta patrouille a expiré. Relance une rencontre.","warn");
+    await refresh();return;
+  }
+  if(!data?.ready)throw Error("Jauge indisponible, recommence.");
+  openArenaMeter(data);
 }));
+on("arena-meter-stop",finishArenaMeter);
+on("arena-meter-back",closeArenaMeter);
 on("arena-weakness-grid",event=>action(async()=>{
   const button=event.target.closest?.("button[data-weak-slot]");
   if(!button||!active||active.weakness_used)return;
@@ -318,7 +375,7 @@ on("arena-weakness-grid",event=>action(async()=>{
     showMessage("❌ Carte "+(slot+1)+" incorrecte. Tu peux toujours affaiblir et capturer cette cible.","warn");
   }
 }));
-on("arena-flee",()=>action(async()=>{if(!active)return;await RPC("arena_flee",{p_encounter:active.id});active=null;vis("arena-custom-result",false);$("arena-hunt").textContent="📡 LANCER UNE PATROUILLE EN LIGNE";await refresh();}));
+on("arena-flee",()=>action(async()=>{if(!active)return;closeArenaMeter();await RPC("arena_flee",{p_encounter:active.id});active=null;vis("arena-custom-result",false);$("arena-hunt").textContent="📡 LANCER UNE PATROUILLE EN LIGNE";await refresh();}));
 on("arena-refresh",()=>action(async()=>{await refresh();}));
 on("arena-create-duel",()=>action(async()=>{
   const code=validDuelCode(await RPC("arena_create_duel"));if(!code)throw Error("Code reçu invalide.");
