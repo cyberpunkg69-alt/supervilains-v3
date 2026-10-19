@@ -268,40 +268,55 @@ on("arena-attack",()=>action(async()=>{
   arenaPersonalVoice(personalTarget(active.custom_villain_id),"taunt");
   showMessage("⚡ Neutralisation "+active.hits+"/3","good");
 }));
-on("arena-capture",()=>action(async()=>{
-  if(!active)return;
-  const result=await RPC("arena_capture",{p_encounter:active.id});
+function completeArenaEncounter(result,before){
   const hero=HEROES[Number(result.villain_id)]||["CIBLE","👾"];
-  const custom=personalTarget(result.custom_villain_id||active.custom_villain_id);
+  const custom=personalTarget(result.custom_villain_id||before?.custom_villain_id);
   const name=custom?.name||hero[0];
   active=null;
-  const text=result.success?"🏆 "+name+" CAPTURÉ ! +"+result.points+" points":
-    result.expired?"⌛ Patrouille expirée !":"💨 "+name+" s'est échappé !";
+  const text=result.success
+    ? "🏆 "+name+" CAPTURÉ ! +"+result.points+" points"+(result.ultimate?" · 🎴 FAILLE ULTIME !":"")
+    :result.expired?"⌛ Patrouille expirée !":"💨 "+name+" s'est échappé !";
   $("arena-last-result").textContent=text;
   $("arena-last-result").className="arena-status "+(result.success?"good":"warn");
   vis("arena-last-result",true);
-  // Les six officiels possèdent également un visuel de capture / de fuite.
-  const finishImage=custom?(result.success?custom.capture:custom.troll):
+  const image=custom?(result.success?custom.capture:custom.troll):
     (result.success?hero[5]:hero[3]);
-  vis("arena-custom-result",!!finishImage);
-  if(finishImage){
-    const img=$("arena-custom-result-image");
-    img.src=finishImage;img.alt=(result.success?"Capturé : ":"En fuite : ")+name;
-    $("arena-custom-result-label").textContent=result.success
-      ?name+" a été capturé !"
-      :name+" s'est échappé : réessaie une autre patrouille.";
+  vis("arena-custom-result",!!image);
+  if(image){
+    const pic=$("arena-custom-result-image");pic.src=image;
+    pic.alt=(result.success?"Capturé : ":"En fuite : ")+name;
+    const object=String(result.weakness_object||custom?.weakness_object||custom?.weakness_label||"").slice(0,120);
+    $("arena-custom-result-label").textContent=result.ultimate
+      ?"🎴 "+name+" : faille ultime découverte ! "+weaknessIcon(object)+" "+object+" · capture immédiate."
+      :result.success?name+" a été capturé !":"💨 "+name+" s'est échappé : nouvelle patrouille possible.";
   }
-  if(custom){
-    const img=$("arena-custom-result-image");
-    img.src=result.success?custom.capture:custom.troll;
-    img.alt=(result.success?"Capturé : ":"En fuite : ")+name;
-    $("arena-custom-result-label").textContent=result.success
-      ?name+" arrêté ! Son image de prisonnier rejoint la victoire de l'ARÈNE."
-      :name+" a pris la fuite. On se retrouve à la prochaine patrouille !";
-    arenaPersonalVoice(custom,result.success?"capture":"taunt");
-  }
+  if(custom)arenaPersonalVoice(custom,result.success?"capture":"taunt");
   $("arena-hunt").textContent="📡 LANCER UNE PATROUILLE EN LIGNE";
+}
+on("arena-capture",()=>action(async()=>{
+  if(!active)return;
+  const previous=active,result=await RPC("arena_capture",{p_encounter:active.id});
+  completeArenaEncounter(result,previous);
   await refresh();
+}));
+on("arena-weakness-grid",event=>action(async()=>{
+  const button=event.target.closest?.("button[data-weak-slot]");
+  if(!button||!active||active.weakness_used)return;
+  const slot=Number(button.dataset.weakSlot);
+  if(!Number.isInteger(slot)||slot<0||slot>5)return;
+  const previous=active;
+  const result=await RPC("arena_guess_weakness",{p_encounter:active.id,p_slot:slot});
+  if(result.resolved){
+    completeArenaEncounter(result,previous);
+    if(result.ultimate){
+      showMessage("🎴 CARTE "+(slot+1)+" ! "+weaknessIcon(result.weakness_object)+" "+String(result.weakness_object||"Faille ultime")+" : capture immédiate !","good");
+    }
+    await refresh();
+  }else{
+    active={...active,weakness_used:true,weakness_selected:slot};
+    renderEncounter();
+    showMessage("❌ Carte "+(slot+1)+" incorrecte. Tu peux toujours affaiblir et capturer cette cible.","warn");
+  }
 }));
 on("arena-flee",()=>action(async()=>{if(!active)return;await RPC("arena_flee",{p_encounter:active.id});active=null;vis("arena-custom-result",false);$("arena-hunt").textContent="📡 LANCER UNE PATROUILLE EN LIGNE";await refresh();}));
 on("arena-refresh",()=>action(async()=>{await refresh();}));
