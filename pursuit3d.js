@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.23 — moteur WebGL 3D pour La Grande Evasion.
+/* SUPERVILAINS V4.24 — moteur WebGL 3D pour La Grande Evasion.
  * Sans CDN, sans API, avec retour transparent au Canvas 2D si WebGL est absent.
  * Les portraits des joueurs restent dans leur stockage prive, non telecharges par WebGL.
  */
@@ -186,46 +186,49 @@
      }
    }
    function ionicMesh(x,z,winning){
-     // Le filet se deploie puis reste autour du fugitif le temps
-     // d'ouvrir la jauge de visee. Effet d'acquisition, pas capture validee.
-     const time=clamp((1.3-winning)/1.3,0,1);
-     const unfold=clamp(time/.34,.12,1),pulse=1+.035*Math.sin(time*19);
-     const width=.99*unfold*pulse,depth=.72*unfold*pulse;
-     const low=.12,high=.12+3.18*unfold,rows=7,columns=6;
-     for(const sign of [-1,1]){
-       const zz=z+sign*depth;
-       // Grille face avant et arriere.
-       for(let j=0;j<=rows;j++){
-         const yy=low+(high-low)*j/rows;
-         strand([x-width,yy,zz],[x+width,yy,zz],.031,j%2?'#83f9de':'#c4fff1');
-       }
-       for(let j=0;j<=columns;j++){
-         const xx=x-width+2*width*j/columns;
-         strand([xx,low,zz],[xx,high,zz],.028,j%2?'#73f0ef':'#f4d88c');
-       }
-       // Mailles diagonales sur les faces visibles : trame de filet.
-       for(let j=0;j<5;j++){
-         const a=x-width+(2*width*j/5);
-         strand([a,low,zz],[Math.min(x+width,a+.64*unfold),high,zz],.024,'#99dfff');
+     // Filet souple en losanges autour du fugitif, plutot qu'une cage rectangulaire.
+     // Il tombe du haut du corps, s'ouvre et suit une silhouette ovoide.
+     // Cet effet d'interception ne garantit PAS le succes du filet final.
+     const phase=clamp((1.3-winning)/1.3,0,1);
+     const opening=clamp(phase/.30,0,1);
+     const ease=opening*opening*(3-2*opening);
+     const lift=(1-ease)*2.05;
+     const expansion=.32+.68*ease;
+     const rings=8,sectors=12,top=3.26;
+     const profile=[.50,.65,.79,.90,.92,.84,.67,.43,.10];
+     function node(row,j){
+       const t=row/rings,angle=(j+(row%2)*.5)*2*Math.PI/sectors;
+       // La forme epouse la silhouette au lieu de former 4 murs.
+       const radius=profile[row]*expansion;
+       const wobble=1+.018*Math.sin(phase*17+row*.9+j*.6);
+       return [
+         x+Math.cos(angle)*radius*wobble,
+         .18+top*t+lift,
+         z+Math.sin(angle)*radius*.83*wobble
+       ];
+     }
+     // Mailles en losanges : 2 diagonales entre chaque niveau courbe.
+     // Fil fin pour permettre de distinguer le vetement et le visage.
+     for(let row=0;row<rings;row++){
+       for(let j=0;j<sectors;j++){
+         const origin=node(row,j);
+         strand(origin,node(row+1,j),.0155,(j+row)%3===0?'#ffe7a3':'#8cf9e4');
+         strand(origin,node(row+1,(j+sectors-1)%sectors),.015,'#6bdde9');
        }
      }
-     // Les faces laterales completent le volume autour du personnage.
-     for(const side of [-1,1]){
-       const xx=x+side*width;
-       for(let i=0;i<=rows;i++){
-         const yy=low+(high-low)*i/rows;
-         strand([xx,yy,z-depth],[xx,yy,z+depth],.029,i%2?'#77ebe7':'#f4dc94');
-       }
-       for(let k=0;k<=4;k++){
-         const zz=z-depth+2*depth*k/4;
-         strand([xx,low,zz],[xx,high,zz],.028,'#90f7d8');
+     // Ourlet au sol et resserrement arrondi sur le haut du filet.
+     for(let j=0;j<sectors;j++){
+       strand(node(0,j),node(0,(j+1)%sectors),.022,'#c3ffe6');
+       strand(node(rings,j),[x,.18+top+lift+.13,z],.016,'#ffe8af');
+     }
+     // Cercle d'impact elliptique : signale le pied de la cible sans l'enfermer.
+     if(ease>.7){
+       for(let j=0;j<sectors;j++){
+         const a=j*2*Math.PI/sectors,b=(j+1)*2*Math.PI/sectors;
+         strand([x+Math.cos(a)*.97,.08,z+Math.sin(a)*.80],
+                [x+Math.cos(b)*.97,.08,z+Math.sin(b)*.80],.020,'#56dedc');
        }
      }
-     // Bordure d'impulsion au sol, pour donner une profondeur lisible.
-     for(const xx of [-width,width]){
-       strand([x+xx,.11,z-depth],[x+xx,.11,z+depth],.08,'#fff4ad');
-     }
-     strand([x-width,.11,z+depth],[x+width,.11,z+depth],.075,'#7af4f1');
    }
    function character(x,z,police,g,tint){
      const t=g.elapsed*18.5,step=Math.sin(t),bob=Math.abs(step)*.085;
