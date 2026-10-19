@@ -340,6 +340,9 @@
     .district-card.custom-zone .district-icon.district-photo{border-color:#ff9bea}
     .district-card.custom-zone .district-custom-occupants{margin-top:7px;min-height:26px}
     @media(max-width:370px){.district{min-height:229px}.district strong{font-size:11px}.district .district-icon.district-photo{width:65px;height:65px}.district .district-object-badge{top:62px;left:63px}}
+
+    .suspect-avatar{overflow:hidden}
+    .suspect-avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:13px}
 </style>
 </head>
 <body>
@@ -1310,7 +1313,31 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
 
     function districtVillain(districtId){const d=districts[districtId];return d&&villains[d.villains[0]]?villains[d.villains[0]]:null}
     function randomWantedReason(name){const feminine=['LÉA','NATSU','AMÉLIE'].includes(name);return wantedReasons[rand(0,wantedReasons.length-1)].replaceAll('{name}',name).replaceAll('(e)',feminine?'e':'')}
-    function openSuspectSheet(districtId){const d=districts[districtId],v=districtVillain(districtId);if(!d||!v)return;suspectDistrictId=districtId;suspectReason=randomWantedReason(v.name);$('suspect-avatar').textContent=v.icon;$('suspect-name').textContent=v.name;$('suspect-district').textContent=`${d.name} · ${d.desc}`;$('suspect-line').textContent=v.line;$('suspect-status').textContent=`🔎 SUSPECT RECHERCHÉ · DANGER ${v.danger}/6`;$('suspect-weakness').textContent='😂 Motif de recherche classé hautement ridicule';$('suspect-report').textContent=`Les agents de Néo-City surveillent ${v.name} de près. Dernière zone observée : ${d.name}. Activité typique : ${v.type.toUpperCase()} · menace ${v.boss?'ÉLEVÉE':'MODÉRÉE'}.`;$('suspect-reason').textContent=suspectReason;show('overlay-suspect');tone(620,.08)}
+    function openSuspectSheet(districtId){
+      const d=districts[districtId],v=districtVillain(districtId);if(!d||!v)return;
+      suspectDistrictId=districtId;
+      suspectReason=v.custom&&v.wantedReason?v.wantedReason:randomWantedReason(v.name);
+      const face=$('suspect-avatar');
+      face.replaceChildren();
+      if(v.portrait){
+        const image=document.createElement('img');
+        image.src=v.portrait;image.alt='Portrait de '+v.name;
+        image.loading='lazy';face.appendChild(image);
+      }else face.textContent=v.icon;
+      $('suspect-name').textContent=v.name;
+      $('suspect-district').textContent=d.name+' · '+d.desc;
+      $('suspect-line').textContent=v.line;
+      $('suspect-status').textContent='🔎 SUSPECT RECHERCHÉ · DANGER '+v.danger+'/'+(v.custom?5:6);
+      $('suspect-weakness').textContent=v.custom
+        ?'🎴 Objet secret parmi les 6 cartes mystère'
+        :'😂 Motif de recherche classé hautement ridicule';
+      $('suspect-report').textContent='Les agents de Néo-City surveillent '+v.name+
+        ' de près. Dernière zone observée : '+d.name+
+        '. Activité : '+v.type.toUpperCase()+
+        ' · menace '+(v.boss?'ÉLEVÉE':'MODÉRÉE')+'.';
+      $('suspect-reason').textContent=suspectReason;
+      show('overlay-suspect');tone(620,.08);
+    }
     function rerollSuspectReason(){if(suspectDistrictId===null)return;const v=districtVillain(suspectDistrictId);if(!v)return;let next=randomWantedReason(v.name),guard=0;while(next===suspectReason&&guard<6){next=randomWantedReason(v.name);guard++}suspectReason=next;$('suspect-reason').textContent=suspectReason;tone(760,.05)}
     function startRadar(villainId,districtId){
       radar={id:villainId,district:districtId,targetSlot:rand(0,9),misses:[],found:false,phraseOrder:shuffled(radarPhrases),message:'Dix inconnus détectés. Trouve le méchant en cinq essais maximum !'};
