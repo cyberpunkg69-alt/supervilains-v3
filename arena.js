@@ -119,6 +119,47 @@ const messageError=e=>String(e&&e.message||"Erreur du serveur. Réessaie.");
 const RPC=async(fn,args={})=>{if(!db)throw Error("Arène non configurée");const {data,error}=await db.rpc(fn,args);if(error)throw error;return data;};
 function working(yes){loading=yes;["arena-send-link","arena-register-btn","arena-hunt","arena-attack","arena-capture","arena-flee","arena-create-duel","arena-join-duel","arena-accept-invite","arena-refresh"].forEach(id=>{if($(id))$(id).disabled=yes;});if(!yes)renderEncounter();}
 async function action(fn){if(loading)return;working(true);try{await fn();}catch(e){showMessage("⚠️ "+messageError(e),"warn");}finally{working(false);}}
+const officialWeaknesses=[
+  ["🪥","Brosse à dents"],["👓","Lunettes"],["🍗","Magret de canard"],
+  ["🎤","Micro"],["📘","Bescherelle"],["🧴","Déodorant"]
+];
+const weaknessIcon=name=>{
+  const str=String(name||"").toLocaleLowerCase("fr");
+  if(/rouge.{0,8}l[eè]vres|lipstick|maquill/.test(str))return "💄";
+  if(/lunett/.test(str))return "👓";
+  if(/brosse.*dent|dentifrice/.test(str))return "🪥";
+  if(/magret|canard|poulet/.test(str))return "🍗";
+  if(/micro|chant/.test(str))return "🎤";
+  if(/bescherelle|livre|dictionnaire/.test(str))return "📘";
+  if(/d[eé]odorant|parfum/.test(str))return "🧴";
+  if(/cafe|caf[eé]|the|th[eé]/.test(str))return "☕";
+  return "🎴";
+};
+function renderArenaWeakness(){
+  const root=$("arena-weakness-grid"),hint=$("arena-ultimate-hint"),info=$("arena-weakness-status");
+  if(!root||!active)return;
+  const custom=personalTarget(active.custom_villain_id);
+  const target=custom?.weakness_object||custom?.weakness_label||officialWeaknesses[Number(active.villain_id)]?.[1]||"Objet mystère";
+  const mark=custom?weaknessIcon(target):officialWeaknesses[Number(active.villain_id)]?.[0]||"🎴";
+  hint.textContent=mark+" Objet à découvrir : "+target+" · Il est caché parmi les 6 cartes.";
+  const used=active.weakness_used===true;
+  const chosen=Number.isInteger(active.weakness_selected)?active.weakness_selected:-1;
+  info.textContent=used
+    ?(chosen>=0?"❌ Carte "+(chosen+1)+" incorrecte. Continue avec AFFAIBLIR ou CAPTURER.":"🎴 Tentative déjà utilisée. Continue le combat.")
+    :"🎲 1 seule tentative : une bonne carte déclenche immédiatement la capture.";
+  root.replaceChildren();
+  for(let i=0;i<6;i++){
+    const card=document.createElement("button");
+    card.type="button";card.className="arena-weakness-card";
+    if(used&&i===chosen)card.classList.add("wrong");
+    card.disabled=used||loading;
+    card.dataset.weakSlot=String(i);
+    const symbol=document.createElement("span");symbol.className="symbol";
+    symbol.textContent=used&&i===chosen?"❌":"❔";
+    const label=document.createElement("span");label.textContent="CARTE "+(i+1);
+    card.append(symbol,label);root.appendChild(card);
+  }
+}
 function renderEncounter(){
   vis("arena-encounter",!!active);if(!active)return;
   const base=HEROES[Number(active.villain_id)]||["CIBLE","👾",1,null,null,null];
@@ -144,6 +185,7 @@ function renderEncounter(){
   $("arena-chance").textContent="Chance de capture : "+Math.max(22,Math.min(92,53-danger*5+hits*18))+" % (calcul serveur)";
   $("arena-attack").disabled=loading||hits>=3;$("arena-capture").disabled=loading;
   $("arena-hunt").textContent="🔁 REPRENDRE LA PATROUILLE";
+  renderArenaWeakness();
 }
 function arenaTrollReaction(){
   if(!active)return;
