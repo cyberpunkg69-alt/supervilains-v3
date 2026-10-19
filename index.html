@@ -830,6 +830,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     const save=()=>{try{localStorage.setItem(storageKey,JSON.stringify(state))}catch(e){}};
     const rand=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+    const escapeHtml=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     const originalVillains=6;
     // Les trophées « 6 super-méchants » restent exclusivement réservés aux originaux.
     const seen=()=>Array.from({length:originalVillains},(_,i)=>i).filter(i=>Number(state.owned[i])>0).length;
@@ -1071,7 +1072,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       };next();
     }
     const commissaireClip=scene=>`commissaire_${myVoiceIndex()}_${scene}`;
-    const villainClip=(id,scene)=>`${bossKeys[id]}_${scene}`;
+    const villainClip=(id,scene)=>bossKeys[id]?`${bossKeys[id]}_${scene}`:null;
     function readSuspectReason(){
       if(suspectDistrictId===null||!('speechSynthesis' in window))return toast('Lecture vocale des motifs indisponible sur cet appareil.');
       const v=districtVillain(suspectDistrictId);if(!v)return;
@@ -1082,14 +1083,39 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
       window.speechSynthesis.speak(utterance);
     }
 
-    const shuffleCards=()=>{const deck=weaknessItems.map(w=>w.id);for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]]}return deck};
+    const shuffleCards=targetId=>{
+      // Toujours 6 cartes exactement, avec UNE faille correcte, même si
+      // le joueur a créé 10 personnages personnalisés supplémentaires.
+      const correct=villains[targetId]?.weakness;
+      if(!correct||!weaknessItems.some(w=>w.id===correct))throw Error("Faille du personnage introuvable");
+      const others=weaknessItems.filter(w=>w.id!==correct).map(w=>w.id);
+      for(let i=others.length-1;i>0;i--){const j=rand(0,i);[others[i],others[j]]=[others[j],others[i]]}
+      const deck=[correct,...others.slice(0,5)];
+      for(let i=deck.length-1;i>0;i--){const j=rand(0,i);[deck[i],deck[j]]=[deck[j],deck[i]]}
+      return deck;
+    };
     let reactionTimeout=null;
-    function normalPortrait(id){const v=villains[id];$('villain-figure').innerHTML=v.portrait?`<img src="${v.portrait}" alt="${v.name}">`:v.icon;}
+    function normalPortrait(id){
+      const v=villains[id],frame=$('villain-figure');
+      if(v.custom){
+        frame.replaceChildren();
+        const image=document.createElement('img');image.src=v.portrait;image.alt="Portrait de "+v.name;
+        frame.appendChild(image);return;
+      }
+      frame.innerHTML=v.portrait?`<img src="${v.portrait}" alt="${v.name}">`:v.icon;
+    }
     function reactionPortrait(id,type){
       const v=villains[id];clearTimeout(reactionTimeout);
-      const src=`assets/reactions/${bossKeys[id]}_${type}.gif?t=${Date.now()}`;
-      $('villain-figure').innerHTML=`<img alt="${v.name} en réaction ${type}" src="${src}">`;
-      const img=$('villain-figure').querySelector('img');img.onerror=()=>normalPortrait(id);
+      const src=v.custom?(type==='troller'?v.troll:v.capture):`assets/reactions/${bossKeys[id]}_${type}.gif?t=${Date.now()}`;
+      const frame=$('villain-figure');
+      if(v.custom){
+        const img=document.createElement('img');img.src=src;img.alt=v.name+" en réaction "+type;
+        frame.replaceChildren(img);
+        img.onerror=()=>normalPortrait(id);
+      }else{
+        frame.innerHTML=`<img alt="${v.name} en réaction ${type}" src="${src}">`;
+        frame.querySelector('img').onerror=()=>normalPortrait(id);
+      }
       if(type==='troller')reactionTimeout=setTimeout(()=>{if(enemy&&enemy.id===id)normalPortrait(id)},1380);
     }
     // Le radar est une étape distincte : l'identité du criminel ne s'affiche qu'après découverte.
@@ -1182,7 +1208,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     function beginBattle(villainId,id){
       const d=districts[id],villain=villains[villainId];
       const maxhp=68+villain.danger*19+(villain.boss?20:0);
-      enemy={id:villainId,district:id,hp:maxhp,maxhp,shield:100,attacks:0,exposed:false,weaknessUsed:null,guessUsed:false,selectedSlot:-1,cards:shuffleCards()};
+      enemy={id:villainId,district:id,hp:maxhp,maxhp,shield:100,attacks:0,exposed:false,weaknessUsed:null,guessUsed:false,selectedSlot:-1,cards:shuffleCards(villainId)};
       $('battle-district').textContent=`⚠️ ${d.name} · ${villain.boss?'BOSS VIRAL':'SUSPECT VIRAL'}`;
       $('encounter-scene').style.setProperty('--scenecolor',villain.color+'aa');normalPortrait(villainId);
       $('battle-name').textContent=villain.name;$('battle-description').textContent=villain.line+` • Danger ${villain.danger}/6 ${villain.boss?'• BOSS':''} • 🎴 6 cartes mystère`;
@@ -1203,7 +1229,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
         const reveal=enemy.selectedSlot===i;
         const item=weaknessItems.find(w=>w.id===itemId);
         const chosenCorrect=reveal&&itemId===v.weakness;
-        return `<button type="button" class="weak-btn ${reveal?(chosenCorrect?'active revealed-card':'missed-card revealed-card'):'mystery-card'}" data-slot="${i}" aria-label="Carte mystère ${i+1}${reveal?' retournée':''}" ${enemy.guessUsed||busy?'disabled':''}><span class="wicon">${reveal?item.icon:'❔'}</span><span class="wlabel">${reveal?item.label:`CARTE ${i+1}`}</span></button>`;
+        return `<button type="button" class="weak-btn ${reveal?(chosenCorrect?'active revealed-card':'missed-card revealed-card'):'mystery-card'}" data-slot="${i}" aria-label="Carte mystère ${i+1}${reveal?' retournée':''}" ${enemy.guessUsed||busy?'disabled':''}><span class="wicon">${reveal?item.icon:'❔'}</span><span class="wlabel">${reveal?escapeHtml(item.label):`CARTE ${i+1}`}</span></button>`;
       }).join('');
     }
     function message(txt,warn=false){$('battle-message').textContent=txt;$('battle-message').className='battle-message'+(warn?' warn':'')}
@@ -1246,7 +1272,7 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     }
     function endBattle(kind,reward={}){if(!enemy)return;const v=villains[enemy.id];hide('overlay-meter');hide('overlay-battle');meterActive=false;cancelAnimationFrame(meterAnimation);busy=false;let escaped=kind==='escape';$('result-icon').textContent=escaped?'💨':'🏆';
       const gifFrame=$('result-gif-frame');gifFrame.hidden=escaped;
-      if(!escaped){$('result-gif').src=`assets/reactions/${bossKeys[enemy.id]}_capture.gif?t=${Date.now()}`;}else{$('result-gif').removeAttribute('src');}
+      if(!escaped){$('result-gif').src=v.custom?v.capture:`assets/reactions/${bossKeys[enemy.id]}_capture.gif?t=${Date.now()}`;}else{$('result-gif').removeAttribute('src');}
       clearTimeout(reactionTimeout);$('result-kicker').textContent=escaped?'LE SUSPECT S’EST ÉCHAPPÉ':'CIBLE IMMOBILISÉE';$('result-title').textContent=escaped?'POURSUITE TERMINÉE':'CAPTURE RÉUSSIE !';$('result-text').textContent=escaped?`${v.name} s'est échappé. Son cringe l'a sauvé pour cette fois.`:`${v.name} rejoint ton coffre des criminels ! ${reward.newEntry?'NOUVEAU DOSSIER DÉBLOQUÉ ! ':''}${reward.ultimate?'🎴 CARTE FATALE AU PREMIER ESSAI ! Capture automatique et bonus spécial.':''}`;$('result-stats').innerHTML=escaped?'<span>🛡️ Bouclier épuisé</span><span>📡 Suspect localisé</span>':`<span>🪙 <b>+${reward.coins}</b></span><span>⭐ <b>+${reward.xp} XP</b></span>${reward.perfect?'<span>🎯 CAPTURE PARFAITE</span>':''}${reward.ultimate?'<span>🎴 FAILLE ULTIME : +160 🪙 · +130 XP · +1 🕸️</span>':''}`;$('result-button').textContent=escaped?'RECOMMENCER UNE PATROUILLE':'CONTINUER LA CHASSE';const spokenId=enemy.id;enemy=null;show('overlay-result');lastResultVoiceKeys=escaped?[commissaireClip('escape'),villainClip(spokenId,'escape')]:[commissaireClip('capture'),villainClip(spokenId,'capture')];playVoiceSeries(lastResultVoiceKeys);checkAchievements();save();renderAll()}
     function flee(){if(!enemy)return;endBattle('escape');$('result-text').textContent='Tu as quitté l’affrontement. Le criminel pourra être retrouvé dans son quartier.'}
     function claim(id){let m=missionData.find(m=>m.id===id);if(!m||state.claimed.includes(id)||missionValue(m)<m.total)return;state.claimed.push(id);state.coins+=m.coins;state.nets+=m.nets;addXP(m.xp);notifySave();tone(840,.2);vibrate(65);toast(`🎁 Mission accomplie : +${m.coins} 🪙 +${m.nets} 🕸️`)}
