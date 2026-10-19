@@ -1,7 +1,7 @@
 {
-  "name": "SUPERVILAINS V4.14 — Opération Minuit",
+  "name": "SUPERVILAINS V4.15 — Opération Minuit",
   "short_name": "SUPERVILAINS",
-  "description": "Jeu de capture SOLO et ARÈNE avec jauge de précision sécurisée côté serveur, carte des quartiers, succès bonus pour les personnages personnalisés.",
+  "description": "Chasse les super-vilains en solo et arène, avec une jauge progressive : cible dynamique et curseur accélérant, scores d’arène validés sur Supabase.",
   "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
