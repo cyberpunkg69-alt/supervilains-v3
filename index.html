@@ -349,6 +349,20 @@
     .arena-feedline>span:last-child{min-width:0;flex:1}
     .arena-feed-avatar{display:inline-flex;align-items:center;justify-content:center;flex:0 0 36px;width:36px;height:36px;object-fit:cover;border:1px solid #7098bf;border-radius:9px;background:#283657}
     .arena-feed-privacy{font-size:21px;color:#aefff2}
+
+    /* V4.12 — Failles ultimes personnelles, SOLO + ARÈNE */
+    .weakness-target{padding:9px 10px;background:#1b294b;color:#bffcf3;border:1px solid #465c86;border-radius:10px;font-size:11px;line-height:1.45;margin:10px 0}
+    .weakness-target[hidden]{display:none}
+    .arena-ultimate{background:linear-gradient(140deg,#1c2348,#18233c);padding:12px;border:1px solid #555b96;border-radius:14px;margin:13px 0}
+    .arena-ultimate-title{font-size:11px;letter-spacing:.4px;font-weight:950;color:#ffd991}
+    .arena-ultimate .arena-muted{font-size:10px;line-height:1.5;margin:8px 0 10px}
+    .arena-weakness-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .arena-weakness-card{min-height:84px;border:1px solid #695bb5;border-radius:11px;background:linear-gradient(135deg,#493073,#182d55);color:#eef9ff;font-size:11px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;font-weight:900}
+    .arena-weakness-card .symbol{font-size:28px;line-height:1}
+    .arena-weakness-card:disabled{opacity:.65}
+    .arena-weakness-card.chosen{background:#163f48;color:#d3fff8;border-color:#68dcc5;opacity:1}
+    .arena-weakness-card.wrong{background:#4d2639;color:#ffe4ec;border-color:#f58b9d;opacity:1}
+    .arena-weakness-status{font-size:10px;line-height:1.5;color:#c9d8ed;margin:10px 0 0}
 </style>
 </head>
 <body>
@@ -594,6 +608,12 @@
               <div class="progress"><i id="arena-stunbar" style="width:0%"></i></div>
               <p class="arena-muted" id="arena-chance">Probabilité de capture : ?</p>
               <div class="arena-actions-row"><button id="arena-attack" class="arena-action" type="button">⚡ AFFAIBLIR</button><button id="arena-capture" class="arena-action pink" type="button">🕸️ CAPTURER</button></div>
+              <div id="arena-ultimate" class="arena-ultimate">
+                <div class="arena-ultimate-title">🎴 FAILLE ULTIME · 1 CHANCE SUR 6</div>
+                <p id="arena-ultimate-hint" class="arena-muted">Six cartes mystère : une seule cache la faille ultime de ce personnage.</p>
+                <div id="arena-weakness-grid" class="arena-weakness-grid" aria-label="Six cartes secrètes de faille ultime"></div>
+                <p id="arena-weakness-status" class="arena-weakness-status" role="status" aria-live="polite">Une seule tentative par rencontre. La bonne carte déclenche une capture immédiate.</p>
+              </div>
               <button id="arena-flee" class="arena-mini" type="button" style="margin-top:13px">Abandonner la patrouille</button>
             </div>
             <div id="arena-last-result" class="arena-status" hidden></div>
@@ -727,7 +747,7 @@
       <div class="encounter-scene" id="encounter-scene"><div class="target-rings"></div><div class="scanline"></div><span class="scene-tag">CIBLE VERROUILLÉE</span><div class="villain-figure" id="villain-figure">👾</div><span class="scene-bottom">RADAR // NÉO-CITY // EN DIRECT</span></div>
       <div class="villain-info"><h2 id="battle-name">LE BARON NÉON</h2><p id="battle-description">Suspect dangereux.</p><div class="hp-caption"><span>❤️ RÉSISTANCE</span><strong id="hp-number">100 / 100</strong></div><div class="progress pink"><i id="hp-bar" style="width:100%"></i></div></div>
       <div class="battle-message" id="battle-message" aria-live="polite">Neutralise le suspect pour augmenter tes chances.</div>
-      <div class="battle-actions"><div class="battle-actions-grid"><button id="attack-btn" type="button" class="button primary">⚡ TROLLER <small>(-3 ⚡)</small></button><button id="capture-btn" type="button" class="button capture">🕸️ CAPTURER</button></div><div class="battle-help"><span id="capture-odds">Probabilité : 35 %</span><span id="shield-info">🛡️ Bouclier : 100</span></div><div class="battle-weakness"><div class="weakness-title">🎴 FAILLE ULTIME • 1 CHANCE SUR 6</div><div id="weakness-grid" class="weakness-grid"></div><div class="weakness-help" id="weakness-help">Les cartes sont face cachée. Un seul choix : trouve la bonne du premier coup !</div></div></div>
+      <div class="battle-actions"><div class="battle-actions-grid"><button id="attack-btn" type="button" class="button primary">⚡ TROLLER <small>(-3 ⚡)</small></button><button id="capture-btn" type="button" class="button capture">🕸️ CAPTURER</button></div><div class="battle-help"><span id="capture-odds">Probabilité : 35 %</span><span id="shield-info">🛡️ Bouclier : 100</span></div><div class="battle-weakness"><div class="weakness-title">🎴 FAILLE ULTIME • 1 CHANCE SUR 6</div><p id="weakness-target" class="weakness-target" hidden></p><div id="weakness-grid" class="weakness-grid"></div><div class="weakness-help" id="weakness-help">Les cartes sont face cachée. Un seul choix : trouve la bonne du premier coup !</div></div></div>
     </div>
   </div>
   <div id="overlay-meter" class="overlay" role="dialog" aria-modal="true" aria-label="Précision de capture">
