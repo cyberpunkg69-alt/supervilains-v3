@@ -77,7 +77,7 @@
     if(game)game.notice=1.0;
   }
   function act(action){
-    if(!game||!game.active||game.paused)return;
+    if(!game||!game.active||game.paused||game.winning>0)return;
     if(action==='left')game.lane=Math.max(-1,game.lane-1);
     if(action==='right')game.lane=Math.min(1,game.lane+1);
     if(action==='jump'&&game.slide<=0)game.jump=0.88;
