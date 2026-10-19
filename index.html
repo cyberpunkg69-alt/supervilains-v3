@@ -307,6 +307,9 @@
     .custom-map-panel[hidden]{display:none}
     .custom-map-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#8cefe4;font-weight:950;font-size:12px;letter-spacing:.2px}
     .custom-map-heading small{font-size:10px;color:#d2e6ff;font-weight:800}
+    .custom-map-heading span{display:flex;align-items:center;gap:6px}
+    .custom-map-heading button{border:1px solid #639aa9;background:#23475a;color:#d3fff8;border-radius:8px;min-height:29px;padding:4px 8px;font-size:16px}
+    .custom-map-empty{font-size:10px;color:#c7dbf3;padding:12px;border:1px dashed #526996;border-radius:10px;min-width:100%;margin:0!important}
     .custom-map-panel p{font-size:10px;line-height:1.55;color:#b5cae7;margin:7px 0 11px}
     .custom-map-list{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;overscroll-behavior-x:contain;padding-bottom:5px}
     .custom-map-target{flex:0 0 min(80%,255px);scroll-snap-align:start;display:flex;align-items:center;gap:10px;border:1px solid #54719d;background:#101e39;border-radius:12px;padding:9px}
@@ -378,7 +381,7 @@
         </div>
         <div class="section-heading">🗺️ CARTE DES QUARTIERS <small>Appuie pour patrouiller</small></div>
         <div id="custom-map-panel" class="custom-map-panel" hidden>
-          <div class="custom-map-heading"><strong>🦹 MES MÉCHANTS SUR LA CARTE</strong><small id="custom-map-count">0 cible</small></div>
+          <div class="custom-map-heading"><strong>🦹 MES MÉCHANTS SUR LA CARTE</strong><span><small id="custom-map-count">0 cible</small> <button id="custom-map-refresh" type="button" aria-label="Actualiser les personnages de ma carte">↻</button></span></div>
           <p>Tes personnages personnalisés validés sont ici. Appuie sur <b>TRAQUER</b> pour retrouver directement ton super-vilain dans le radar.</p>
           <div id="custom-map-list" class="custom-map-list"></div>
         </div>
@@ -1024,8 +1027,13 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     function renderCustomMapPanel(){
       const panel=$('custom-map-panel'),list=$('custom-map-list');
       if(!panel||!list)return;
-      panel.hidden=!customSoloReady.length;
+      panel.hidden=false;
       list.replaceChildren();
+      if(!customSoloReady.length){
+        const note=document.createElement('p');note.className='custom-map-empty';
+        note.textContent='Pas encore de cible chargée : connecte-toi à l’ARÈNE, valide tes trois images puis appuie sur ↻.';
+        list.appendChild(note);
+      }
       $('custom-map-count').textContent=customSoloReady.length+' cible'+(customSoloReady.length>1?'s':'');
       for(const item of customSoloReady){
         const card=document.createElement('div');card.className='custom-map-target';
@@ -1391,6 +1399,8 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     }
     document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
     $('district-grid').addEventListener('click',e=>{let info=e.target.closest('[data-info]');if(info){e.preventDefault();e.stopPropagation();openSuspectSheet(Number(info.dataset.info));return}let b=e.target.closest('[data-district]');if(b)openDistrict(Number(b.dataset.district))});
+    $('custom-map-refresh').addEventListener('click',()=>window.SUPERVILAINS_REFRESH_CUSTOMS?.());
+
     $('radar-targets').addEventListener('click',e=>{let b=e.target.closest('[data-radar-slot]');if(b)identifyRadar(Number(b.dataset.radarSlot))});$('radar-fight').addEventListener('click',confirmRadar);$('close-radar').addEventListener('click',()=>endRadarEscape('',false));$('suspect-close').addEventListener('click',()=>{stopVoices();hide('overlay-suspect')});$('suspect-reroll').addEventListener('click',rerollSuspectReason);
     $('mission-list').addEventListener('click',e=>{let b=e.target.closest('[data-claim]');if(b)claim(b.dataset.claim)});
     document.querySelectorAll('[data-mission-filter]').forEach(btn=>btn.addEventListener('click',()=>{missionFilter=btn.dataset.missionFilter;missionVisible=12;renderMissions()}));
