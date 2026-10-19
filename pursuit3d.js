@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.24 — moteur WebGL 3D pour La Grande Evasion.
+/* SUPERVILAINS V4.25 — moteur WebGL 3D pour La Grande Evasion.
  * Sans CDN, sans API, avec retour transparent au Canvas 2D si WebGL est absent.
  * Les portraits des joueurs restent dans leur stockage prive, non telecharges par WebGL.
  */
@@ -230,6 +230,119 @@
        }
      }
    }
+   // V4.25 : agent de police articule, animations procedurales entierement locales.
+   // Les points (hanches / genoux / chevilles / epaules / coudes) sont recalcules
+   // a chaque trame, sans librairie de squelette ni chargement externe.
+   function policeRunner(x,z,g,targetX){
+     const jumpActive=g.jump>0,slideActive=g.slide>0,intercept=g.winning>0;
+     const phase=g.elapsed*16.2,cycle=Math.sin(phase);
+     const air=jumpActive?Math.sin(clamp((.88-g.jump)/.88,0,1)*PI)*1.32:0;
+     const bounce=!jumpActive&&!slideActive&&!intercept?.075*Math.abs(Math.sin(phase)):0;
+     const yShift=air+bounce;
+     const dodge=clamp((g.lane-g.smoothLane)*.14,-.18,.18);
+     const torsoX=x+dodge;
+     const blue='#286eb2',vest='#152f51',trousers='#253050',
+       dark='#142039',skin='#efbc91',stripe='#93eeeb';
+     // La silhouette garde un vrai volume meme dans les animations extremes.
+     box(x,.035,z,1.00,.04,.63,'#15243a');
+     const segment=(p,q,width,color)=>strand(p,q,width,color);
+     if(slideActive){
+       // Glissade basse, pieds tendus vers le prochain obstacle.
+       const slideProgress=clamp((.85-g.slide)/.85,0,1);
+       const tuck=.08*Math.sin(slideProgress*PI);
+       const hip=[x,.49+tuck,z+.05],chest=[torsoX,.63+tuck,z+.41];
+       box(x,.48+tuck,z+.05,.87,.40,.57,trousers);
+       box(chest[0],chest[1],chest[2],1.10,.89,.59,blue,.98);
+       box(torsoX,.70+tuck,z+.56,.96,.57,.12,vest,.98);
+       box(torsoX,.75+tuck,z+.72,.78,.085,.14,stripe,.98);
+       for(const side of [-1,1]){
+         const legX=x+side*.27;
+         const knee=[legX,.38+tuck,z-.50],ankle=[legX,.18,z-1.27];
+         segment([legX,.48+tuck,z+.05],knee,.19,trousers);
+         segment(knee,ankle,.16,trousers);
+         ball(...knee,.20,.19,.19,trousers);
+         box(legX,.17,z-1.39,.43,.22,.73,dark);
+         const sh=[torsoX+side*.62,.67+tuck,z+.26],
+           elbow=[torsoX+side*.67,.43+tuck,z-.19],
+           hand=[torsoX+side*.57,.24+tuck,z-.55];
+         segment(sh,elbow,.15,blue);segment(elbow,hand,.12,blue);
+         ball(...hand,.16,.16,.16,'#182c48');
+       }
+       const neck=[torsoX,.84+tuck,z+.81];
+       ball(...neck,.22,.18,.22,skin);
+       ball(torsoX,.90+tuck,z+1.00,.46,.42,.44,skin);
+       box(torsoX,1.20+tuck,z+1.02,.98,.18,.82,'#1b3b68',.3);
+       box(torsoX,1.13+tuck,z+.73,1.02,.08,.40,'#102d4f',.3);
+       return [torsoX,.73+tuck,z+.70];
+     }
+     // Course avec alternance jambe/bras opposee et pliure des genoux.
+     const hipY=1.06+yShift,shoulderY=2.19+yShift;
+     const lean=jumpActive?-.15:(intercept?-.23:-.10);
+     const chestZ=z+lean;
+     box(x,hipY,z+.02,.91,.48,.59,trousers);
+     box(torsoX,1.70+yShift,chestZ,1.12,1.13,.65,blue,-.12);
+     box(torsoX,1.73+yShift,chestZ+.365,.94,.73,.13,vest,-.12);
+     box(torsoX,1.48+yShift,chestZ+.45,.93,.095,.14,stripe);
+     box(torsoX,1.24+yShift,chestZ+.39,.99,.11,.12,stripe);
+     box(torsoX,1.18+yShift,z+.35,.94,.15,.18,dark);
+     // Radio, plaque, sangles et protection d'epaules.
+     box(torsoX+.41,2.00+yShift,chestZ+.38,.19,.38,.19,'#122943');
+     box(torsoX+.41,2.12+yShift,chestZ+.49,.12,.11,.06,'#67f2f1');
+     box(torsoX-.44,2.10+yShift,chestZ,.27,.24,.38,'#163c68');
+     box(torsoX+.44,2.10+yShift,chestZ,.27,.24,.38,'#163c68');
+     box(torsoX,1.73+yShift,chestZ+.45,.25,.16,.055,'#f6cf75');
+     // Le soulagement de la victoire s'accompagne d'un bras tendu vers la cible.
+     const targetSide=targetX>=x?1:-1;
+     for(const side of [-1,1]){
+       const legSwing=cycle*side;
+       const legX=x+side*.265;
+       let knee=[legX,hipY-.45,z-.29-.28*legSwing],
+         foot=[legX,hipY-.91+.29*Math.max(0,legSwing),z-.78*legSwing+.04];
+       if(jumpActive){
+         knee=[legX,hipY-.29,z-.38+side*.07];
+         foot=[legX,hipY-.66,z-.71+side*.10];
+       }else if(intercept){
+         knee=[legX,hipY-.45,z-.33];
+         foot=[legX,hipY-.91,z-.41];
+       }
+       segment([legX,hipY-.03,z+.04],knee,.205,trousers);
+       ball(...knee,.22,.23,.22,'#26375f');
+       segment(knee,foot,.155,trousers);
+       ball(...foot,.15,.15,.16,dark);
+       box(foot[0],foot[1]-.04,foot[2]-.18,.42,.22,.64,'#101c35',
+          jumpActive?.12*side:legSwing*.15);
+       box(foot[0],foot[1]-.12,foot[2]-.17,.42,.06,.60,'#70c3e5');
+       let shoulder=[torsoX+side*.62,shoulderY-.14,chestZ-.01],
+         elbow=[torsoX+side*.73,shoulderY-.57,chestZ+.23*legSwing],
+         hand=[torsoX+side*.66,shoulderY-.97,chestZ+.55*legSwing];
+       if(jumpActive){
+         elbow=[torsoX+side*.84,shoulderY+.22,chestZ-.26],
+         hand=[torsoX+side*.64,shoulderY+.54,chestZ-.62];
+       }else if(intercept&&side===targetSide){
+         elbow=[torsoX+side*.93,shoulderY-.22,chestZ-.48],
+         hand=[torsoX+side*1.14,shoulderY-.33,chestZ-.91];
+       }
+       segment(shoulder,elbow,.17,blue);
+       ball(...elbow,.17,.18,.17,'#2a679f');
+       segment(elbow,hand,.14,blue);
+       ball(...hand,.16,.17,.15,'#142b48');
+     }
+     // Nuque, oreilles, visage oriente vers -Z et casquette de police.
+     ball(torsoX,2.32+yShift,chestZ-.06,.21,.22,.21,skin);
+     ball(torsoX,2.61+yShift,chestZ-.20,.45,.48,.41,skin);
+     ball(torsoX-.45,2.61+yShift,chestZ-.20,.095,.16,.11,skin);
+     ball(torsoX+.45,2.61+yShift,chestZ-.20,.095,.16,.11,skin);
+     box(torsoX,3.01+yShift,chestZ-.20,1.04,.20,.83,'#173d70');
+     box(torsoX,2.94+yShift,chestZ-.54,1.14,.10,.50,'#0f2b50');
+     box(torsoX,2.98+yShift,chestZ+.17,.83,.11,.12,'#365d83');
+     box(torsoX,3.11+yShift,chestZ-.55,.15,.12,.09,'#f4d489');
+     if(jumpActive){
+       // Halo discret de saut au sol sans changer la collision.
+       box(x,.055,z,.75,.04,.35,'#5e8094');
+     }
+     // Coordonnees d'ancrage du mot POLICE, adaptees a la pose.
+     return [torsoX,1.73+yShift,chestZ+.49];
+   }
    function character(x,z,police,g,tint){
      const t=g.elapsed*18.5,step=Math.sin(t),bob=Math.abs(step)*.085;
      const jumping=police&&g.jump>0?Math.sin((.88-g.jump)/.88*PI)*1.48:0;
@@ -385,9 +498,7 @@
        // Maillage volumetrique qui englobe visuellement la cible sans
        // modifier le resultat du dernier tir dans la jauge Solo.
        if(g.winning>0)ionicMesh(vx,vz,g.winning);
-       character(lane*2.72,3.18,true,g);
-       const jump=g.jump>0?Math.sin((.88-g.jump)/.88*PI)*1.48:0;
-       const copBack=project([lane*2.72,1.83+jump,3.62],w,h);
+       const copBack=project(policeRunner(lane*2.72,3.18,g,vx),w,h);
        if(copBack){
          agentTag.style.display='block';agentTag.style.left=copBack.x+'px';agentTag.style.top=copBack.y+'px';
        }else agentTag.style.display='none';
