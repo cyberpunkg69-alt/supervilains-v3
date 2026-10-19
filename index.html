@@ -325,6 +325,21 @@
     .district-card.has-personals .district{min-height:183px}
     .district-card.has-personals .district-info-btn{top:125px;bottom:auto}
     @media(max-width:350px){.custom-map-target{flex-basis:90%}.district-custom-caption{font-size:8px}.district-custom-avatar{height:25px;width:25px}}
+
+    /* V4.11 — Portraits visibles sur chaque quartier; les objets deviennent de
+       petites icônes de faiblesse, pas des substituts au visage. */
+    .district{min-height:222px;padding:12px 11px;display:flex;flex-direction:column;align-items:flex-start}
+    .district .district-icon.district-photo{width:75px;height:75px;position:relative;display:block;filter:none;flex-shrink:0;font-size:35px;overflow:hidden;border:2px solid #89dbed88;border-radius:13px;background:#13294e;box-shadow:0 5px 17px #0006}
+    .district-icon.district-photo img{display:block;width:100%;height:100%;object-fit:cover}
+    .district .district-object-badge{position:absolute;top:69px;left:70px;min-width:29px;height:29px;display:grid;place-items:center;padding:2px;border:1px solid #85cfe3;border-radius:10px;background:#15274cea;font-size:18px;line-height:1.1;box-shadow:0 2px 9px #0008}
+    .district strong{margin:11px 0 5px;font-size:12px;line-height:1.25;padding-right:20px;min-height:29px}
+    .district-person-name{position:relative;display:block;color:#b2fef2;font-weight:850;font-size:10px;line-height:1.35;margin:0 0 6px;overflow-wrap:anywhere}
+    .district .district-sub{margin-top:auto;min-height:20px}
+    .district-card.custom-zone .district{min-height:234px;border-color:#d98bd7;background:linear-gradient(145deg,#4b245b,#211d40 70%)}
+    .district-card.custom-zone .district-info-btn{bottom:10px;top:auto}
+    .district-card.custom-zone .district-icon.district-photo{border-color:#ff9bea}
+    .district-card.custom-zone .district-custom-occupants{margin-top:7px;min-height:26px}
+    @media(max-width:370px){.district{min-height:229px}.district strong{font-size:11px}.district .district-icon.district-photo{width:65px;height:65px}.district .district-object-badge{top:62px;left:63px}}
 </style>
 </head>
 <body>
@@ -1040,23 +1055,34 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     function renderStats(){regen();$('top-level').textContent=`AGENT · NIV. ${state.level}`;$('top-energy').textContent=`${state.energy}/${state.maxEnergy}`;$('top-coins').textContent=state.coins;$('top-nets').textContent=state.nets;$('stat-captured').textContent=state.captured;$('stat-unique').textContent=`${seen()}/${originalVillains}`;$('stat-districts').textContent=`${unlocked()}/${originalVillains}`}
     function renderMap(){
       let html='';
-      districts.forEach(d=>{
+      for(const d of districts){
         const lock=state.level<d.min;
+        const lead=villains[d.villains[0]];
         const here=customSoloReady.filter(item=>item.zone===d.id);
-        const avatars=here.length?
-          '<span class="district-custom-occupants">'+here.slice(0,3).map(item=>
-            '<img class="district-custom-avatar" loading="lazy" src="'+escapeHtml(item.portrait)+'" alt="'+escapeHtml(item.name)+'" title="'+escapeHtml(item.name)+'">'
-          ).join('')+
-          '<span class="district-custom-caption">🦹 '+here.length+' perso'+(here.length>1?'s':'')+'</span></span>':'';
-        html+='<div class="district-card '+(here.length?'has-personals':'')+'">'+
-          '<button class="district '+(lock?'locked':'')+'" data-district="'+d.id+'" style="--glow:'+d.color+';--haze:'+d.glow+';--stroke:'+d.stroke+'" type="button" aria-label="'+escapeHtml(d.name)+(here.length?', '+here.length+' super-vilain personnalisé':'')+'">'+
+        const img=lead?.portrait
+          ?'<img src="'+escapeHtml(lead.portrait)+'" loading="lazy" alt="Portrait de '+escapeHtml(lead.name)+'">'
+          :escapeHtml(d.icon);
+        const others=here.length>1
+          ?'<span class="district-custom-occupants">'+here.slice(1,4).map(item=>
+            '<img class="district-custom-avatar" loading="lazy" src="'+escapeHtml(item.portrait)+'" alt="'+escapeHtml(item.name)+'">'
+          ).join('')+'</span>':'';
+        const detail=d.personal
+          ?'<span class="district-person-name">🦹 '+escapeHtml(here.length===1?here[0].name:here.length+' méchants personnels')+'</span>'
+          :'<span class="district-person-name">🕵️ '+escapeHtml(lead?.name||'SUSPECT')+'</span>';
+        const weakIcon=lead?.weaknessIcon||d.icon;
+        html+='<div class="district-card '+(d.personal?'has-personals custom-zone':'official-zone')+'">'+
+          '<button class="district '+(lock?'locked':'')+'" data-district="'+d.id+
+          '" style="--glow:'+d.color+';--haze:'+d.glow+';--stroke:'+d.stroke+
+          '" type="button" aria-label="'+escapeHtml(d.name)+(d.personal?', quartier personnalisé':'')+'">'+
           '<span class="district-lvl">NIV. '+d.min+'+</span>'+
-          '<span class="district-icon">'+d.icon+'</span>'+
-          '<strong>'+escapeHtml(d.name)+'</strong>'+
+          '<span class="district-icon district-photo">'+img+'</span>'+
+          '<span class="district-object-badge" title="Objet de faille">'+escapeHtml(weakIcon)+'</span>'+
+          '<strong>'+escapeHtml(d.name)+'</strong>'+detail+
           '<span class="district-sub">'+(lock?'🔒 DÉBLOQUER NIV. '+d.min:'<i class="live-dot"></i> SIGNAL DÉTECTÉ')+'</span>'+
-          avatars+'</button>'+
-          '<button class="district-info-btn" data-info="'+d.id+'" type="button" aria-label="En savoir plus sur le suspect de '+escapeHtml(d.name)+'">!</button></div>';
-      });
+          others+'</button>'+
+          '<button class="district-info-btn" data-info="'+d.id+
+          '" type="button" aria-label="Voir la fiche de recherche de '+escapeHtml(lead?.name||d.name)+'">!</button></div>';
+      }
       $('district-grid').innerHTML=html;
       renderCustomMapPanel();
     }
