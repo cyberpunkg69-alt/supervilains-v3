@@ -343,6 +343,12 @@
 
     .suspect-avatar{overflow:hidden}
     .suspect-avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:13px}
+
+    /* V4.11 — mini portraits dans le fil d'actualité ARÈNE */
+    .arena-feedline{display:flex;align-items:center;gap:10px;min-height:48px}
+    .arena-feedline>span:last-child{min-width:0;flex:1}
+    .arena-feed-avatar{display:inline-flex;align-items:center;justify-content:center;flex:0 0 36px;width:36px;height:36px;object-fit:cover;border:1px solid #7098bf;border-radius:9px;background:#283657}
+    .arena-feed-privacy{font-size:21px;color:#aefff2}
 </style>
 </head>
 <body>
@@ -1058,7 +1064,10 @@ const initial=()=>({version:3,level:1,xp:0,energy:35,maxEnergy:35,lastEnergy:Dat
     function renderStats(){regen();$('top-level').textContent=`AGENT · NIV. ${state.level}`;$('top-energy').textContent=`${state.energy}/${state.maxEnergy}`;$('top-coins').textContent=state.coins;$('top-nets').textContent=state.nets;$('stat-captured').textContent=state.captured;$('stat-unique').textContent=`${seen()}/${originalVillains}`;$('stat-districts').textContent=`${unlocked()}/${originalVillains}`}
     function renderMap(){
       let html='';
-      for(const d of districts){
+      // Les repaires personnels sont visibles tout en haut de la carte.
+      // Les six quartiers officiels restent présents et inchangés.
+      const mapOrder=[...districts.slice(originalVillains),...districts.slice(0,originalVillains)];
+      for(const d of mapOrder){
         const lock=state.level<d.min;
         const lead=villains[d.villains[0]];
         const here=customSoloReady.filter(item=>item.zone===d.id);
