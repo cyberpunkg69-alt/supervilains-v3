@@ -1,4 +1,4 @@
-/* SUPERVILAINS V5.0 — Nouvelle scene semi-realiste pour La Grande Evasion.
+/* SUPERVILAINS V5.1 — Direction de course et lisibilite des personnages pour La Grande Evasion.
  * Three.js r180 + GLTFLoader : modeles humains skinnes et animations GLB.
  * Les regles de collision, la progression et la capture restent gerees par pursuit.js.
  * Un repli 2D/ancien WebGL reste disponible si la 3D moderne ne se charge pas.
@@ -192,7 +192,7 @@ function create(source){
   photo.addEventListener('error',()=>photo.style.display='none');
   parent.appendChild(photo);
   const mark=document.createElement('div');
-  mark.textContent='● 3D SEMI-RÉALISTE BÊTA';
+  mark.textContent='● 3D V5.1 BÊTA';
   mark.style.cssText='display:none;position:absolute;z-index:4;pointer-events:none;top:9px;left:9px;border-radius:9px;border:1px solid #a9dfe0;background:#132636dc;color:#d4fcff;padding:5px 8px;font:900 10px Arial;';
   parent.appendChild(mark);
 
@@ -220,7 +220,10 @@ function create(source){
     const bounds=new THREE.Box3().setFromObject(model);
     const size=bounds.getSize(new THREE.Vector3());
     const scale=2.75/Math.max(.3,size.y);
-    model.scale.multiplyScalar(scale);model.rotation.y=Math.PI;
+    model.scale.multiplyScalar(scale);
+    // Le GLB Vanguard est deja oriente vers -Z dans son repere d'origine.
+    // Le retourner de PI le faisait courir face a la camera (course a reculons).
+    model.rotation.y=0;
     model.traverse(o=>{
       if(!o.isMesh)return;
       o.castShadow=true;o.receiveShadow=true;
@@ -311,15 +314,21 @@ function create(source){
       sun.position.x=camera.position.x-6.5;
       sun.target.position.set(camera.position.x,0,-7);sun.target.updateMatrixWorld();
       renderer.render(scene,camera);
-      const t=positionTag(targetX,3.72,targetZ),p=positionTag(targetX,4.45,targetZ);
-      if(t&&t.y>=0&&t.y<h){
-        tag.style.display='block';tag.style.left=t.x+'px';tag.style.top=t.y+'px';
-      }else tag.style.display='none';
-      if(p&&p.y>=0&&p.y<h&&photo.complete&&photo.naturalWidth){
-        const size=clamp(60-Math.abs(targetZ)*1.1,29,49);
-        photo.style.display='block';photo.style.left=p.x+'px';photo.style.top=p.y+'px';
-        photo.style.width=size+'px';photo.style.height=size+'px';
+      // Portrait et nom : meme point d'ancrage, pile verticale sans
+      // chevauchement. Ne pas masquer le corps du fugitif a distance.
+      const portraitPoint=positionTag(targetX,3.90,targetZ);
+      const portraitSize=clamp(47-Math.abs(targetZ)*.65,28,46);
+      const hasPortrait=!!(portraitPoint&&photo.complete&&photo.naturalWidth);
+      if(hasPortrait&&portraitPoint.y>0&&portraitPoint.y<h){
+        photo.style.display='block';photo.style.left=portraitPoint.x+'px';
+        photo.style.top=portraitPoint.y+'px';
+        photo.style.width=portraitSize+'px';photo.style.height=portraitSize+'px';
       }else photo.style.display='none';
+      if(portraitPoint&&portraitPoint.y>0&&portraitPoint.y<h){
+        const tagY=hasPortrait?portraitPoint.y-portraitSize*.5-18:portraitPoint.y;
+        tag.style.display=tagY>8?'block':'none';
+        tag.style.left=portraitPoint.x+'px';tag.style.top=tagY+'px';
+      }else tag.style.display='none';
       renderer.domElement.style.display='block';mark.style.display='block';
       return true;
     }catch(e){
