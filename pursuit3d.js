@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.27 — personnages arrondis et ville detaillee pour La Grande Evasion.
+/* SUPERVILAINS V4.28 — silhouettes et ville plus naturelles pour La Grande Evasion.
  * Sans CDN, sans API, avec retour transparent au Canvas 2D si WebGL est absent.
  * Les portraits des joueurs restent dans leur stockage prive, non telecharges par WebGL.
  */
@@ -135,10 +135,31 @@
        for(const vtx of [p,r,q,q,r,s])vertex(vtx.p,vtx.n,c);
      }
    }
+   // Buste sculpte : taille et epaules mieux proportionnees.
+   function torso(x,y,z,w,h,d,shade){
+     const col=rgb(shade),facets=14;
+     const rings=[[-.50,.46,.47],[-.39,.68,.70],[-.17,.80,.82],
+                  [.10,.97,.98],[.34,1.00,1.00],[.49,.48,.55]];
+     const point=(ring,angle)=>{
+       const co=Math.cos(angle),si=Math.sin(angle);
+       return {p:[x+co*w*.5*ring[1],y+h*ring[0],z+si*d*.5*ring[2]],
+               n:normalize([co*d,ring[0]*.10,si*w])};
+     };
+     for(let j=0;j<rings.length-1;j++)for(let k=0;k<facets;k++){
+       const a=k*2*PI/facets,b=(k+1)*2*PI/facets;
+       const p=point(rings[j],a),q=point(rings[j],b);
+       const t=point(rings[j+1],a),u=point(rings[j+1],b);
+       for(const vtx of [p,t,q,q,t,u])vertex(vtx.p,vtx.n,col);
+     }
+   }
    function world(g){
      // Route, trottoirs, lignes animees et immeubles de la ville.
      box(0,-.26,-51,88,.25,132,'#273550');
      box(0,-.10,-51,9.4,.13,132,'#223043');
+     for(const side of [-1,1]){
+       box(side*4.22,-.02,-51,.055,.026,132,'#546578');
+       box(side*5.11,.18,-51,.075,.02,132,'#887c8f');
+     }
      for(const side of [-1,1]){
        box(side*4.78,.07,-51,.22,.36,132,'#80dee5');
        box(side*5.80,.02,-51,1.75,.32,132,'#64526d');
@@ -160,6 +181,8 @@
        box(x,height/2,z,6.25,height,11,palette[(i*3+(side+2))%palette.length]);
        box(x,height+.17,z,6.55,.35,11.3,'#192a48');
        box(x,height+.40,z,6.81,.13,11.52,'#34425e');
+       box(x,height-.10,z,6.54,.24,11.10,'#45506e');
+       box(x,.51,z,6.40,1.02,11.08,'#33405b');
        const front=x-side*3.16;
        // Appuis de fenetre, cadres et bandeaux de facade en relief.
        box(front-side*.07,height*.53,z+5.43,.16,height*.92,.10,'#253650');
@@ -174,6 +197,8 @@
        if(i%3===0){
          box(front-side*.14,1.60,z,.16,.55,3.1,'#da5190');
          box(front-side*.21,1.60,z,.09,.13,2.25,'#f4d390');
+         box(front-side*.50,2.17,z,1.08,.13,3.25,'#6e5479');
+         box(front-side*.58,2.12,z,.91,.075,3.00,'#dbac8b');
        }
        const lampX=side*6.45,lampZ=z+4.1;
        limb([lampX,.13,lampZ],[lampX,4.56,lampZ],.095,'#4e5b73');
@@ -288,7 +313,7 @@
      const blue='#286eb2',vest='#152f51',trousers='#253050',
        dark='#142039',skin='#efbc91',stripe='#93eeeb';
      // La silhouette garde un vrai volume meme dans les animations extremes.
-     box(x,.035,z,1.00,.04,.63,'#15243a');
+     ball(x,.031,z,.53,.025,.36,'#15243a');
      const segment=(p,q,width,color)=>limb(p,q,width,color);
      if(slideActive){
        // Glissade V4.25.1 : posture accroupie dynamique, tete vers l'avant
@@ -322,8 +347,8 @@
          segment([legX,hipY,z+.10],knee,.19,trousers);
          ball(...knee,.19,.18,.19,'#2b3b5f');
          segment(knee,ankle,.16,trousers);
-         box(legX,.145,ankle[2]-.16,.40,.22,.57,dark,leading?-.1:.1);
-         box(legX,.075,ankle[2]-.16,.40,.055,.55,'#69acc6');
+         ball(legX,.145,ankle[2]-.16,.23,.14,.35,dark);
+         ball(legX,.075,ankle[2]-.16,.23,.035,.35,'#69acc6');
          const sh=[torsoX+side*.61,chestY+.36,chestZ-.03],
            elbow=[torsoX+side*.72,.62,z-.37],
            hand=[torsoX+side*.60,.28,z-.77+sway];
@@ -347,7 +372,7 @@
      const lean=jumpActive?-.15:(intercept?-.23:-.10);
      const chestZ=z+lean;
      ball(x,hipY,z+.02,.48,.30,.34,trousers);
-     ball(torsoX,1.70+yShift,chestZ,.59,.66,.38,blue);
+     torso(torsoX,1.70+yShift,chestZ,1.15,1.29,.77,blue);
      ball(torsoX,1.73+yShift,chestZ+.34,.50,.43,.14,vest);
      box(torsoX,1.48+yShift,chestZ+.45,.93,.095,.14,stripe);
      box(torsoX,1.24+yShift,chestZ+.39,.99,.11,.12,stripe);
@@ -376,9 +401,8 @@
        ball(...knee,.22,.23,.22,'#26375f');
        segment(knee,foot,.155,trousers);
        ball(...foot,.15,.15,.16,dark);
-       box(foot[0],foot[1]-.04,foot[2]-.18,.42,.22,.64,'#101c35',
-          jumpActive ? .12*side : legSwing*.15);
-       box(foot[0],foot[1]-.12,foot[2]-.17,.42,.06,.60,'#70c3e5');
+       ball(foot[0],foot[1]-.04,foot[2]-.18,.245,.16,.38,'#101c35');
+       ball(foot[0],foot[1]-.15,foot[2]-.17,.24,.045,.34,'#70c3e5');
        let shoulder=[torsoX+side*.62,shoulderY-.14,chestZ-.01],
          elbow=[torsoX+side*.73,shoulderY-.57,chestZ+.23*legSwing],
          hand=[torsoX+side*.66,shoulderY-.97,chestZ+.55*legSwing];
@@ -396,11 +420,11 @@
      }
      // Nuque, oreilles, visage oriente vers -Z et casquette de police.
      ball(torsoX,2.32+yShift,chestZ-.06,.21,.22,.21,skin);
-     ball(torsoX,2.61+yShift,chestZ-.20,.45,.48,.41,skin);
-     ball(torsoX-.45,2.61+yShift,chestZ-.20,.095,.16,.11,skin);
-     ball(torsoX+.45,2.61+yShift,chestZ-.20,.095,.16,.11,skin);
-     ball(torsoX,3.01+yShift,chestZ-.20,.53,.14,.42,'#173d70');
-     box(torsoX,2.94+yShift,chestZ-.54,1.14,.10,.50,'#0f2b50');
+     ball(torsoX,2.61+yShift,chestZ-.20,.37,.41,.37,skin);
+     ball(torsoX-.36,2.61+yShift,chestZ-.20,.072,.12,.085,skin);
+     ball(torsoX+.36,2.61+yShift,chestZ-.20,.072,.12,.085,skin);
+     ball(torsoX,3.00+yShift,chestZ-.20,.45,.13,.38,'#173d70');
+     ball(torsoX,2.94+yShift,chestZ-.53,.47,.063,.26,'#0f2b50');
      box(torsoX,2.98+yShift,chestZ+.17,.83,.11,.12,'#365d83');
      box(torsoX,3.11+yShift,chestZ-.55,.15,.12,.09,'#f4d489');
      if(jumpActive){
@@ -431,9 +455,9 @@
      const hipY=1.01+bounce,shoulderY=2.10+bounce;
      const bx=x+sidestep*.45,bodyZ=z+forward;
      // Ombre au sol, taille et buste athletique.
-     box(x,.028,z,1.02,.045,.67,'#1c1c37');
+     ball(x,.031,z,.55,.025,.37,'#1c1c37');
      ball(x,hipY,z,.47,.29,.34,pants);
-     ball(bx,1.69+bounce,bodyZ,.58,.65,.35,main);
+     torso(bx,1.69+bounce,bodyZ,1.13,1.28,.72,main);
      ball(bx,1.88+bounce,bodyZ+.33,.45,.24,.12,trim);
      box(bx,1.43+bounce,bodyZ+.35,.91,.105,.12,dark);
      // Ceinture et sacoche/chiffre de serie sur le dos.
@@ -470,9 +494,9 @@
      // Tete mobile, nuque et coiffure dirigees vers l'horizon (-Z).
      const headY=2.61+bounce+Math.abs(secondary)*.024,headZ=bodyZ-.10;
      ball(bx,2.32+bounce,headZ,.22,.22,.23,skin);
-     ball(bx,headY,headZ,.46,.47,.43,skin);
-     ball(bx,headY+.25,headZ+.16,.48,.27,.45,isEric?'#412f43':isMorgane?'#493354':'#30263e');
-     ball(bx,headY+.32,headZ+.38,.36,.13,.12,'#382940');
+     ball(bx,headY,headZ,.375,.42,.38,skin);
+     ball(bx,headY+.25,headZ+.16,.40,.25,.40,isEric?'#412f43':isMorgane?'#493354':'#30263e');
+     ball(bx,headY+.32,headZ+.36,.32,.12,.11,'#382940');
      if(isMorgane){
        // Noeud rose sur la coiffure, sans reutiliser la tenue d'un autre mechant.
        ball(bx-.27,headY+.39,headZ+.35,.20,.13,.17,'#f06aa8');
