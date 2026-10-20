@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.28 — silhouettes et ville plus naturelles pour La Grande Evasion.
+/* SUPERVILAINS V4.29 — silhouettes affinees et ville plus vivante pour La Grande Evasion.
  * Sans CDN, sans API, avec retour transparent au Canvas 2D si WebGL est absent.
  * Les portraits des joueurs restent dans leur stockage prive, non telecharges par WebGL.
  */
@@ -372,16 +372,16 @@
      const lean=jumpActive?-.15:(intercept?-.23:-.10);
      const chestZ=z+lean;
      ball(x,hipY,z+.02,.48,.30,.34,trousers);
-     torso(torsoX,1.70+yShift,chestZ,1.15,1.29,.77,blue);
-     ball(torsoX,1.73+yShift,chestZ+.34,.50,.43,.14,vest);
-     box(torsoX,1.48+yShift,chestZ+.45,.93,.095,.14,stripe);
-     box(torsoX,1.24+yShift,chestZ+.39,.99,.11,.12,stripe);
-     box(torsoX,1.18+yShift,z+.35,.94,.15,.18,dark);
+     torso(torsoX,1.70+yShift,chestZ,1.05,1.33,.73,blue);
+     torso(torsoX,1.72+yShift,chestZ+.345,.91,.81,.22,vest);
+     box(torsoX,1.48+yShift,chestZ+.465,.82,.07,.09,stripe);
+     box(torsoX,1.24+yShift,chestZ+.39,.84,.07,.09,stripe);
+     ball(torsoX,1.18+yShift,z+.34,.45,.10,.14,dark);
      // Radio, plaque, sangles et protection d'epaules.
      box(torsoX+.41,2.00+yShift,chestZ+.38,.19,.38,.19,'#122943');
      box(torsoX+.41,2.12+yShift,chestZ+.49,.12,.11,.06,'#67f2f1');
-     box(torsoX-.44,2.10+yShift,chestZ,.27,.24,.38,'#163c68');
-     box(torsoX+.44,2.10+yShift,chestZ,.27,.24,.38,'#163c68');
+     ball(torsoX-.40,2.09+yShift,chestZ,.22,.14,.26,'#163c68');
+     ball(torsoX+.40,2.09+yShift,chestZ,.22,.14,.26,'#163c68');
      box(torsoX,1.73+yShift,chestZ+.45,.25,.16,.055,'#f6cf75');
      // Le soulagement de la victoire s'accompagne d'un bras tendu vers la cible.
      const targetSide=targetX>=x?1:-1;
@@ -397,13 +397,13 @@
          knee=[legX,hipY-.45,z-.33];
          foot=[legX,hipY-.91,z-.41];
        }
-       segment([legX,hipY-.03,z+.04],knee,.205,trousers);
-       ball(...knee,.22,.23,.22,'#26375f');
-       segment(knee,foot,.155,trousers);
+       segment([legX,hipY-.03,z+.04],knee,.180,trousers);
+       ball(...knee,.18,.19,.18,'#26375f');
+       segment(knee,foot,.140,trousers);
        ball(...foot,.15,.15,.16,dark);
-       ball(foot[0],foot[1]-.04,foot[2]-.18,.245,.16,.38,'#101c35');
-       ball(foot[0],foot[1]-.15,foot[2]-.17,.24,.045,.34,'#70c3e5');
-       let shoulder=[torsoX+side*.62,shoulderY-.14,chestZ-.01],
+       ball(foot[0],foot[1]-.04,foot[2]-.18,.225,.135,.35,'#101c35');
+       ball(foot[0],foot[1]-.145,foot[2]-.17,.225,.034,.34,'#70c3e5');
+       let shoulder=[torsoX+side*.56,shoulderY-.14,chestZ-.01],
          elbow=[torsoX+side*.73,shoulderY-.57,chestZ+.23*legSwing],
          hand=[torsoX+side*.66,shoulderY-.97,chestZ+.55*legSwing];
        if(jumpActive){
@@ -413,10 +413,10 @@
          elbow=[torsoX+side*.93,shoulderY-.22,chestZ-.48],
          hand=[torsoX+side*1.14,shoulderY-.33,chestZ-.91];
        }
-       segment(shoulder,elbow,.17,blue);
-       ball(...elbow,.17,.18,.17,'#2a679f');
-       segment(elbow,hand,.14,blue);
-       ball(...hand,.16,.17,.15,'#142b48');
+       segment(shoulder,elbow,.145,blue);
+       ball(...elbow,.145,.16,.145,'#2a679f');
+       segment(elbow,hand,.12,blue);
+       ball(...hand,.135,.15,.135,'#142b48');
      }
      // Nuque, oreilles, visage oriente vers -Z et casquette de police.
      ball(torsoX,2.32+yShift,chestZ-.06,.21,.22,.21,skin);
@@ -457,39 +457,39 @@
      // Ombre au sol, taille et buste athletique.
      ball(x,.031,z,.55,.025,.37,'#1c1c37');
      ball(x,hipY,z,.47,.29,.34,pants);
-     torso(bx,1.69+bounce,bodyZ,1.13,1.28,.72,main);
+     torso(bx,1.70+bounce,bodyZ,1.04,1.33,.69,main);
      ball(bx,1.88+bounce,bodyZ+.33,.45,.24,.12,trim);
-     box(bx,1.43+bounce,bodyZ+.35,.91,.105,.12,dark);
+     ball(bx,1.43+bounce,bodyZ+.34,.40,.075,.10,dark);
      // Ceinture et sacoche/chiffre de serie sur le dos.
-     box(bx,1.18+bounce,z+.32,.89,.12,.16,'#201f35');
-     box(bx,1.77+bounce,z+.39,.58,.48,.12,dark);
-     box(bx,1.77+bounce,z+.48,.39,.18,.07,trim);
+     ball(bx,1.18+bounce,z+.30,.39,.08,.12,'#201f35');
+     ball(bx,1.77+bounce,z+.38,.31,.30,.115,dark);
+     ball(bx,1.77+bounce,z+.49,.22,.105,.055,trim);
      // Veste a pans courts et flaps animes en courant.
      for(const side of [-1,1]){
-       box(bx+side*.39,1.17+bounce,z+.13+step*side*.10,.23,.51,.44,main,step*side*.08);
+       ball(bx+side*.34,1.19+bounce,z+.13+step*side*.10,.16,.29,.22,main);
      }
      // Deux jambes avec articulation au genou, pas deux blocs pivotants.
      for(const side of [-1,1]){
        const direction=step*side,legX=x+side*.23;
        const knee=[legX,hipY-.40,z-.20-.32*direction];
        const ankle=[legX,hipY-.88+.19*Math.max(0,direction),z-.72*direction+.06];
-       limb([legX,hipY-.07,z],knee,.185,pants);
-       ball(...knee,.20,.21,.21,pants);
-       limb(knee,ankle,.15,pants);
+       limb([legX,hipY-.07,z],knee,.17,pants);
+       ball(...knee,.17,.18,.17,pants);
+       limb(knee,ankle,.138,pants);
        ball(legX,ankle[1]-.06,ankle[2]-.18,.25,.15,.36,sole);
-       box(legX,ankle[1]-.15,ankle[2]-.17,.43,.06,.57,trim);
+       ball(legX,ankle[1]-.15,ankle[2]-.17,.22,.035,.32,trim);
        // Les bras balancent en opposition avec les jambes.
-       const sh=[bx+side*.63,shoulderY-.06,bodyZ];
+       const sh=[bx+side*.54,shoulderY-.06,bodyZ];
        let elbow=[bx+side*.79,shoulderY-.39,bodyZ+.32*direction],
          hand=[bx+side*.68,shoulderY-.82,bodyZ+.66*direction];
        if(ending){
          elbow=[bx+side*.81,shoulderY+.15,bodyZ-.21],
          hand=[bx+side*.85,shoulderY+.48,bodyZ-.27];
        }
-       limb(sh,elbow,.16,main);
-       ball(...elbow,.16,.17,.16,main);
-       limb(elbow,hand,.13,main);
-       ball(...hand,.155,.15,.16,skin);
+       limb(sh,elbow,.14,main);
+       ball(...elbow,.14,.15,.14,main);
+       limb(elbow,hand,.12,main);
+       ball(...hand,.135,.14,.135,skin);
      }
      // Tete mobile, nuque et coiffure dirigees vers l'horizon (-Z).
      const headY=2.61+bounce+Math.abs(secondary)*.024,headZ=bodyZ-.10;
@@ -584,7 +584,7 @@
    }
    parent.append(canvas);
    const indicator=document.createElement('div');
-   indicator.textContent='● 3D AMÉLIORÉE';
+   indicator.textContent='● 3D V4.29';
    indicator.style.cssText='display:none;position:absolute;z-index:4;top:10px;left:10px;'+
      'font:900 10px Arial,sans-serif;letter-spacing:1px;color:#d9fff5;'+
      'background:#10283bd9;border:1px solid #5bdcc1;padding:7px 10px;'+
@@ -702,7 +702,7 @@
          const center=project(portraitWorld,w,h),
            right=project([portraitWorld[0]+.43,portraitWorld[1],portraitWorld[2]],w,h);
          if(center&&right&&center.y>0&&center.y<h){
-           const size=clamp(Math.abs(right.x-center.x)*2.50,32,76);
+           const size=clamp(Math.abs(right.x-center.x)*2.20,29,62);
            frame.style.display='block';frame.style.left=center.x+'px';frame.style.top=center.y+'px';
            frame.style.width=size+'px';frame.style.height=size+'px';
          }else frame.style.display='none';
