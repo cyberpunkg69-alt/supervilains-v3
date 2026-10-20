@@ -1,4 +1,4 @@
-/* SUPERVILAINS V5.2 — tenues distinctes et mobilier urbain pour La Grande Evasion.
+/* SUPERVILAINS V5.3 — personnages civils locaux animes pour La Grande Evasion.
  * Three.js r180 + GLTFLoader : modeles humains skinnes et animations GLB.
  * Les regles de collision, la progression et la capture restent gerees par pursuit.js.
  * Un repli 2D/ancien WebGL reste disponible si la 3D moderne ne se charge pas.
@@ -212,12 +212,14 @@ function create(source){
   photo.addEventListener('error',()=>photo.style.display='none');
   parent.appendChild(photo);
   const mark=document.createElement('div');
-  mark.textContent='● 3D V5.2 BÊTA';
+  mark.textContent='● 3D V5.3 BÊTA';
   mark.style.cssText='display:none;position:absolute;z-index:4;pointer-events:none;top:9px;left:9px;border-radius:9px;border:1px solid #a9dfe0;background:#132636dc;color:#d4fcff;padding:5px 8px;font:900 10px Arial;';
   parent.appendChild(mark);
 
   let active=false,ready=false,failed=false,loading=false,agent=null,villain=null;
   let lastTime=0,villainInfo={},w=0,h=0,renderReady=true;
+  const actorSources={sam:null,harper:null,soldier:null};
+  let villainModelKey=null;
   renderer.domElement.addEventListener('webglcontextlost',e=>{
     e.preventDefault();renderReady=false;hide();
   });
@@ -233,7 +235,7 @@ function create(source){
     w=width;h=height;renderer.setSize(w,h,false);
     camera.aspect=w/h;camera.updateProjectionMatrix();
   }
-  function actorFrom(gltf,color){
+  function actorFrom(gltf,color,natural=false){
     const model=cloneSkeleton(gltf.scene);
     // Taille reelle GLB mesuree, puis normalization a environ 3 metres du jeu.
     model.updateMatrixWorld(true);
@@ -241,6 +243,15 @@ function create(source){
     const size=bounds.getSize(new THREE.Vector3());
     const scale=2.75/Math.max(.3,size.y);
     model.scale.multiplyScalar(scale);
+    if(natural){
+      // Les modeles MakeHuman ont un repere et une hauteur differents de Soldier.
+      model.updateMatrixWorld(true);
+      const box=new THREE.Box3().setFromObject(model);
+      const center=box.getCenter(new THREE.Vector3());
+      model.position.x-=center.x;
+      model.position.y-=box.min.y;
+      model.position.z-=center.z;
+    }
     // Le GLB Vanguard est deja oriente vers -Z dans son repere d'origine.
     // Le retourner de PI le faisait courir face a la camera (course a reculons).
     model.rotation.y=0;
@@ -250,7 +261,7 @@ function create(source){
       const mats=Array.isArray(o.material)?o.material:[o.material];
       const next=mats.map(m=>{
         const copy=m.clone();
-        if(copy.color)copy.color.multiply(new THREE.Color(color));
+        if(color&&copy.color)copy.color.multiply(new THREE.Color(color));
         copy.roughness=typeof copy.roughness==='number'?Math.max(.55,copy.roughness):.8;
         return copy;
       });
@@ -262,7 +273,7 @@ function create(source){
     if(!clip)throw Error('Animation de course absente du modele');
     const action=mixer.clipAction(clip);
     action.reset().setLoop(THREE.LoopRepeat,Infinity).play();
-    return {root,model,mixer,action};
+    return {root,model,mixer,action,natural};
   }
 
   // Des accessoires WebGL legers distinguent les roles sans remplacer
@@ -326,11 +337,13 @@ function create(source){
     const [bright,dark]=villainLooks[key]||['#be5d98','#453151'];
     const group=new THREE.Group();
     const coat=mat(bright,.96),trim=mat(dark,.90),gold=mat('#d8b67a',.49,.15);
-    outfitPart(group,ballGeo,coat,0,1.68,.46,.43,.47,.12);
-    outfitPart(group,boxGeo,trim,0,1.33,.55,.73,.11,.09);
+    // Conserver la texture et les vetements des vrais GLB civils.
+    // Sur le vieux soldat uniquement, simuler une veste avec un volume additionnel.
+    if(!actor.natural)outfitPart(group,ballGeo,coat,0,1.68,.46,.43,.47,.12);
+    outfitPart(group,boxGeo,trim,0,1.33,.55,.73,.095,.09);
     const flaps=[];
     for(const side of [-1,1]){
-      const flap=outfitPart(group,boxGeo,coat,side*.27,1.12,.48,.24,.53,.09);
+      const flap=outfitPart(group,boxGeo,coat,side*.27,1.12,.48,.20,actor.natural?.29:.53,.09);
       flaps.push(flap);
     }
     // Sacoche de ville plutot qu'un second equipement militaire.
@@ -357,23 +370,68 @@ function create(source){
       for(const m of mats){
         if(!m?.color)continue;
         if(!m.userData.baseTone)m.userData.baseTone=m.color.clone();
-        m.color.copy(m.userData.baseTone).lerp(dye,.38);
+        m.color.copy(m.userData.baseTone).lerp(dye,actor.natural?.065:.38);
       }
     });
+  }
+  async function storedGltf(id){
+    try{
+      const item=await window.SUPERVILAINS_3D_ASSETS?.get(id);
+      if(!item?.buffer)return null;
+      return await new Promise((resolve,reject)=>{
+        new GLTFLoader().parse(item.buffer,'',resolve,reject);
+      });
+    }catch(e){
+      console.warn('[SUPERVILAINS V5.3] GLB local illisible :',id,e);
+      return null;
+    }
+  }
+  function femaleVillain(info){
+    const n=String(info?.name||'').normalize('NFD')
+      .replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    return ['lea','amelie','morgane'].some(x=>n.includes(x));
+  }
+  function villainSource(info){
+    if(femaleVillain(info)){
+      if(actorSources.harper)return ['harper',actorSources.harper];
+      if(actorSources.sam)return ['sam',actorSources.sam];
+    }else{
+      if(actorSources.sam)return ['sam',actorSources.sam];
+      if(actorSources.harper)return ['harper',actorSources.harper];
+    }
+    return ['soldier',actorSources.soldier];
+  }
+  function switchVillain(info){
+    const [key,source]=villainSource(info);
+    if(!source)return;
+    if(villainModelKey!==key){
+      if(villain){
+        villain.mixer.stopAllAction();
+        scene.remove(villain.root);
+      }
+      villain=actorFrom(source,key==='soldier'?'#e7c3dc':null,key!=='soldier');
+      villainModelKey=key;
+    }
+    applyVillainOutfit(villain,info);
   }
   function load(){
     if(loading||ready||failed)return;
     loading=true;
-    loadSoldier().then(gltf=>{
-      if(failed)return;
-      agent=actorFrom(gltf,'#90b5fa');
-      villain=actorFrom(gltf,'#e7c3dc');
-      outfitForPolice(agent);
-      applyVillainOutfit(villain,villainInfo);
-      ready=true;
-    }).catch(e=>{
-      failed=true;hide();console.warn('[SUPERVILAINS 5.0] Modele 3D non charge, repli 2D',e);
-    }).finally(()=>{loading=false});
+    Promise.all([storedGltf('sam'),storedGltf('harper')])
+      .then(async ([sam,harper])=>{
+        actorSources.sam=sam;actorSources.harper=harper;
+        // Si aucun modele n'a ete importe, conserver le soldat historique.
+        // Charger Soldier seulement en repli, pas quand les GLB locaux existent.
+        if(!sam&&!harper)actorSources.soldier=await loadSoldier();
+        const source=sam||harper||actorSources.soldier;
+        agent=actorFrom(source,source===actorSources.soldier?'#90b5fa':null,!!(sam||harper));
+        outfitForPolice(agent);
+        switchVillain(villainInfo);
+        ready=true;
+      }).catch(e=>{
+        failed=true;hide();
+        console.warn('[SUPERVILAINS V5.3] Echec du chargement des coureurs, retour 2D',e);
+      }).finally(()=>{loading=false;});
   }
   function begin(info){
     active=true;lastTime=0;villainInfo=info||{};
@@ -384,7 +442,7 @@ function create(source){
       photo.onload=()=>{if(active&&ready)photo.style.display='block';};
       photo.src=villainInfo.portrait;
     }
-    if(ready&&villain)applyVillainOutfit(villain,villainInfo);
+    if(ready)switchVillain(villainInfo);
     load();resize();
   }
   function end(){active=false;hide();lastTime=0;}
@@ -459,4 +517,4 @@ function create(source){
   }
   return {begin,end,draw,resize,isReady:()=>renderReady&&!failed};
 }
-window.SUPERVILAINS_PURSUIT_REAL3D={create,version:'5.2-beta'};
+window.SUPERVILAINS_PURSUIT_REAL3D={create,version:'5.3-beta'};
