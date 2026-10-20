@@ -424,6 +424,9 @@ function create(source){
         // Charger Soldier seulement en repli, pas quand les GLB locaux existent.
         if(!sam&&!harper)actorSources.soldier=await loadSoldier();
         const source=sam||harper||actorSources.soldier;
+        mark.textContent=(sam||harper)
+          ?'● 3D V5.3 • GLB CIVILS'
+          :'● 3D V5.3 • SOLDAT DE SECOURS';
         agent=actorFrom(source,source===actorSources.soldier?'#90b5fa':null,!!(sam||harper));
         outfitForPolice(agent);
         switchVillain(villainInfo);
