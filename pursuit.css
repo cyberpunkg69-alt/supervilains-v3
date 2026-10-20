@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.17 — La Grande Évasion, mini-jeu de poursuite mobile */
+/* SUPERVILAINS V5.0 beta — La Grande Évasion, mini-jeu de poursuite mobile */
 .sv-runner-open{overflow:hidden!important}
 .sv-runner-shade[hidden]{display:none!important}
 .sv-runner-shade{position:fixed;inset:0;z-index:25000;display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top,6px) 8px env(safe-area-inset-bottom,6px);background:rgba(4,8,25,.96);overscroll-behavior:contain}
@@ -23,3 +23,7 @@
 .sv-runner-shade button:focus-visible{outline:3px solid #77fce7;outline-offset:2px}
 @media(max-height:630px){#sv-runner-canvas{height:45dvh}.sv-runner-help{padding:4px 8px 0}.sv-runner-controls{padding:4px 12px 9px}.sv-runner-head{padding-top:7px}}
 @media(prefers-reduced-motion:reduce){.sv-runner-fill,.sv-runner-toast{transition:none}}
+
+/* Les messages et la pause restent au-dessus du nouveau canvas WebGL. */
+.sv-runner-toast,.sv-runner-pause{z-index:6}
+.sv-runner-real3d{touch-action:none}
