@@ -278,7 +278,7 @@
       img.onload=()=>{if(game&&game.active)portrait=img};
       img.src=v.portrait;
     }
-    $('sv-runner-target').textContent=game.name+' s’enfuit ! Rattrape-le avant qu’il disparaisse.';
+    $('sv-runner-target').textContent=game.name+' s’enfuit ! Rattrape cette cible avant qu’elle ne disparaisse.';
     $('sv-runner-life').textContent='🛡️🛡️🛡️';
     $('sv-runner-fill').style.width='0%';$('sv-runner-progress').textContent='0 %';
     $('sv-runner-toast').classList.remove('visible');
