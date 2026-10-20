@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a1227">
+<title>SUPERVILAINS — Labo 3D V3 — modèles persistants</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<script src="./pursuit-local-models.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#0a1123;color:#f1f6ff;font-family:Inter,system-ui,sans-serif}
+main{width:min(900px,100%);margin:auto;padding:18px 13px 35px}
+h1{font-size:clamp(19px,5vw,28px);margin:0 0 6px}
+p{font-size:13px;line-height:1.55;color:#b8c8e1}
+header{display:flex;justify-content:space-between;gap:10px;align-items:center}
+a{color:#82e5ff}
+#viewer{height:min(62dvh,520px);min-height:280px;border:1px solid #40577d;border-radius:19px;overflow:hidden;position:relative;background:linear-gradient(175deg,#a6b1c0,#4d637c 72%,#252c40)}
+#viewer canvas{width:100%;height:100%;display:block;touch-action:none}
+#hud{position:absolute;top:12px;left:12px;background:#0c1b30d9;border:1px solid #6694a5;padding:9px;border-radius:11px;font-size:11px;font-weight:850;pointer-events:none}
+#loading{position:absolute;bottom:12px;left:12px;right:12px;min-height:28px;background:#0a1d31ea;padding:8px 11px;border-radius:10px;color:#e4f6ff;font-size:12px}
+button,.download{display:inline-flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;border:1px solid #556c93;border-radius:12px;background:#182948;color:#f0f7ff;padding:11px 13px;min-height:45px;font-weight:850;font-size:12px;cursor:pointer}
+button[aria-pressed=true]{background:#2a716f;border-color:#9ce3d2}
+button:focus-visible{outline:2px solid #aef9f0}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+#status{color:#ddedf7;font-size:12px;line-height:1.5;margin-top:9px}
+.warn{padding:11px 12px;border:1px solid #73684d;border-radius:12px;background:#42331b50;color:#ffe4a6;font-size:12px}
+small{font-size:11px;color:#abc1d9}
+</style>
+</head>
+<body>
+<main>
+<header><div><h1>🦹 Laboratoire 3D V3 — SUPERVILAINS</h1><p>Essai indépendant : vrais modèles humains animés, sans modifier tes captures ni le mini-jeu.</p></div><a href="./">Retour au jeu</a></header>
+<div id="viewer" aria-label="Visualiseur 3D">
+<div id="hud">MODÈLE : —</div>
+<div id="loading">Choisis un modèle ci-dessous. Le téléchargement démarre uniquement après ton clic.</div>
+</div>
+<div class="actions" id="model-buttons">
+<button data-model="soldier">Soldat actuel (référence)</button>
+</div>
+<div class="warn" id="download-steps">
+<strong>✅ Harper et Sam : chargement local (sans erreur CORS)</strong>
+<p>1. Télécharge les fichiers GLB optimisés fournis dans ChatGPT. 2. Appuie sur « Importer et enregistrer mon GLB » pour chacun. 3. Lance une poursuite : le jeu les reconnaîtra automatiquement sur ce téléphone.</p>
+<div class="actions">
+<a class="download" href="https://www.innerscene.com/tools/library/3d-parts/run-harper-3d-person-animated-a726b25c" target="_blank" rel="noopener">⬇️ Page de téléchargement Harper (17,8 Mo)</a>
+<a class="download" href="https://www.innerscene.com/tools/library/3d-parts/run-sam-3d-person-animated-fa008c06" target="_blank" rel="noopener">⬇️ Page de téléchargement Sam (20 Mo)</a>
+</div>
+<button id="open-glb">📂 Importer et enregistrer mon GLB</button>
+<input id="local-glb" type="file" accept=".glb,model/gltf-binary,application/octet-stream" hidden>
+<small>Les noms contenant « sam » et « harper » sont reconnus automatiquement. Les fichiers ne quittent pas ton téléphone.</small>
+<div id="saved-status" role="status" style="margin-top:9px;font-size:12px;color:#c3ffe4">Vérification des modèles pour le jeu…</div>
+</div>
+<div class="actions">
+<button id="rotation" aria-pressed="false">🔄 Rotation automatique : NON</button>
+<button id="animation" aria-pressed="true">🏃 Animation : OUI</button>
+</div>
+<div id="status" role="status">Version V3 • import des personnages Sam et Harper pour les futures poursuites.</div>
+<p class="warn">⚠️ Les modèles enregistrés sont conservés dans IndexedDB, sans API et sans serveur. Le stockage est propre à ce navigateur et ne se synchronise pas entre appareils.</p>
+<p><small>Modèles Harper et Sam : Innerscene / MakeHuman, annoncés sous <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">licence CC0</a>. <a target="_blank" rel="noopener" href="https://www.innerscene.com/tools/library/3d-parts/run-harper-3d-person-animated-a726b25c">Source Harper</a> · <a target="_blank" rel="noopener" href="https://www.innerscene.com/tools/library/3d-parts/run-sam-3d-person-animated-fa008c06">Source Sam</a>. Le soldat est celui des exemples Three.js.</small></p>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const sources={
+ soldier:{name:'Soldat actuel',url:'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r180/examples/models/gltf/Soldier.glb'}
+};
+const viewer=document.getElementById('viewer');
+const status=document.getElementById('status');
+const loading=document.getElementById('loading');
+const hud=document.getElementById('hud');
+let renderer,scene,camera,character=null,mixer=null,motion=true,autoRotate=false,rotation=0,token=0,currentName='—';
+let last=0,lastFps=performance.now(),frames=0;
+function init(){
+ if(renderer)return;
+ renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'low-power'});
+ renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.4));
+ renderer.outputColorSpace=THREE.SRGBColorSpace;
+ renderer.toneMapping=THREE.ACESFilmicToneMapping;
+ renderer.toneMappingExposure=1.30;
+ viewer.insertBefore(renderer.domElement,viewer.firstChild);
+ scene=new THREE.Scene();
+ scene.background=new THREE.Color('#aab3c5');
+ camera=new THREE.PerspectiveCamera(48,1,.1,60);
+ camera.position.set(0,1.65,6.1);camera.lookAt(0,1.38,0);
+ scene.add(new THREE.HemisphereLight('#eaf4ff','#897762',2.1));
+ const light=new THREE.DirectionalLight('#fff0d8',2.1);
+ light.position.set(-4,7,5);scene.add(light);
+ const ground=new THREE.Mesh(new THREE.CircleGeometry(2.15,48),new THREE.MeshStandardMaterial({color:'#758498',roughness:.98}));
+ ground.rotation.x=-Math.PI/2;ground.position.y=-.04;scene.add(ground);
+ const grid=new THREE.GridHelper(6,12,'#7e90a4','#7e90a4');grid.position.y=-.018;scene.add(grid);
+ resize();requestAnimationFrame(tick);
+}
+function resize(){
+ if(!renderer)return;
+ const w=viewer.clientWidth,h=viewer.clientHeight;
+ if(!w||!h)return;
+ renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+}
+window.addEventListener('resize',resize);
+const loader=new GLTFLoader();
+function display(gltf,name,id){
+ if(id!==token)return;
+ if(character){scene.remove(character);character=null;}
+ if(mixer){mixer.stopAllAction();mixer=null;}
+ character=gltf.scene;
+ const bounds=new THREE.Box3().setFromObject(character);
+ const height=bounds.getSize(new THREE.Vector3()).y||1;
+ character.scale.multiplyScalar(2.65/height);
+ character.updateMatrixWorld(true);
+ const after=new THREE.Box3().setFromObject(character);
+ const center=after.getCenter(new THREE.Vector3());
+ character.position.x-=center.x;character.position.z-=center.z;
+ character.position.y-=after.min.y;
+ rotation=0;
+ character.rotation.y=0;
+ character.traverse(m=>{if(m.isMesh){m.frustumCulled=false;}});
+ scene.add(character);
+ if(gltf.animations.length){
+   mixer=new THREE.AnimationMixer(character);
+   const clip=gltf.animations.find(c=>/run|sprint|jog/i.test(c.name))||gltf.animations[0];
+   mixer.clipAction(clip).reset().setLoop(THREE.LoopRepeat,Infinity).play();
+   status.textContent='Modèle chargé ✓ — '+gltf.animations.length+' animation(s), clip : '+clip.name+'. Glisse pour faire tourner le personnage.';
+ }else status.textContent='Modèle chargé ✓ — aucune animation intégrée.';
+ currentName=name;
+ loading.textContent='✅ Chargement terminé : '+name;
+}
+function choose(key){
+ init();
+ const data=sources[key];if(!data)return;
+ const id=++token;
+ document.querySelectorAll('[data-model]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.model===key)));
+ loading.textContent='Téléchargement : '+data.name+'…';
+ status.textContent='Connexion au fichier GLB…';
+ loader.load(data.url,
+   gltf=>display(gltf,data.name,id),
+   ev=>{if(id!==token)return;
+      const progress=ev.total?Math.round(ev.loaded/ev.total*100)+' %':Math.round(ev.loaded/1048576)+' Mo';
+      loading.textContent='Téléchargement '+data.name+' : '+progress;},
+   e=>{if(id!==token)return;
+      loading.textContent='Erreur : soldat de référence indisponible (réseau).';
+      status.textContent='Les fichiers GLB locaux peuvent toujours être ouverts après le chargement de Three.js.';
+      console.warn('Laboratoire GLB référence',e);}
+ );
+}
+document.querySelectorAll('[data-model]').forEach(b=>b.addEventListener('click',()=>choose(b.dataset.model)));
+const localInput=document.getElementById('local-glb');
+const savedStatus=document.getElementById('saved-status');
+async function refreshSaved(){
+ try{
+  const files=await window.SUPERVILAINS_3D_ASSETS.listing();
+  const ids=new Set(files.map(f=>f.id));
+  savedStatus.textContent='Pour les poursuites sur cet appareil : Sam '+(ids.has('sam')?'✅':'❌')+' • Harper '+(ids.has('harper')?'✅':'❌');
+ }catch(e){savedStatus.textContent='⚠️ Stockage local indisponible : '+(e?.message||e)}
+}
+refreshSaved();
+document.getElementById('open-glb').addEventListener('click',()=>localInput.click());
+localInput.addEventListener('change',async()=>{
+ const file=localInput.files?.[0];if(!file)return;
+ const id=++token;
+ document.querySelectorAll('[data-model]').forEach(b=>b.setAttribute('aria-pressed','false'));
+ init();
+ if(!/\.glb$/i.test(file.name)){
+   loading.textContent='Format non reconnu : sélectionne un fichier .glb';
+   localInput.value='';return;
+ }
+ if(file.size>100*1024*1024){
+   loading.textContent='Fichier trop gros pour le labo mobile (maximum 100 Mo).';
+   localInput.value='';return;
+ }
+ loading.textContent='Lecture locale de '+file.name+' ('+(file.size/1048576).toFixed(1)+' Mo)…';
+ status.textContent='Analyse du modèle sur ton téléphone : aucun envoi vers Internet.';
+ try{
+   const data=await file.arrayBuffer();
+   if(id!==token)return;
+   loader.parse(data,'',
+     async gltf=>{
+       display(gltf,file.name,id);
+       if(id!==token)return;
+       const kind=/harper/i.test(file.name)?'harper':/sam/i.test(file.name)?'sam':null;
+       if(!kind){
+         status.textContent+=' Nom non reconnu : aperçu uniquement (Sam ou Harper attendu).';
+         return;
+       }
+       try{
+         await window.SUPERVILAINS_3D_ASSETS.save(kind,data,file.name);
+         if(id===token){
+           status.textContent+=' ✅ '+(kind==='sam'?'Sam':'Harper')+' mémorisé pour La Grande Évasion.';
+           loading.textContent='✅ Enregistré dans ce navigateur : '+file.name;
+         }
+         refreshSaved();
+       }catch(e){
+         if(id===token){
+           loading.textContent='Modèle affiché, mais la sauvegarde locale a échoué.';
+           status.textContent+=' ⚠️ '+(e?.message||e);
+         }
+       }
+     },
+     e=>{
+       if(id!==token)return;
+       loading.textContent='Impossible de lire '+file.name+'.';
+       status.textContent='Vérifie que le fichier téléchargé est un vrai GLB avec ses textures intégrées.';
+       console.warn('Erreur GLB local',e);
+     });
+ }catch(e){
+   if(id===token)loading.textContent='Impossible de lire le fichier sélectionné.';
+   console.warn('Lecture fichier GLB',e);
+ }
+ localInput.value='';
+});
+const btnRotate=document.getElementById('rotation'),btnAnimation=document.getElementById('animation');
+btnRotate.onclick=()=>{autoRotate=!autoRotate;btnRotate.setAttribute('aria-pressed',String(autoRotate));btnRotate.textContent='🔄 Rotation automatique : '+(autoRotate?'OUI':'NON')};
+btnAnimation.onclick=()=>{motion=!motion;btnAnimation.setAttribute('aria-pressed',String(motion));btnAnimation.textContent='🏃 Animation : '+(motion?'OUI':'NON')};
+let down=null;
+viewer.addEventListener('pointerdown',e=>{down={x:e.clientX,rotation};viewer.setPointerCapture(e.pointerId)});
+viewer.addEventListener('pointermove',e=>{if(!down||!character)return;rotation=down.rotation+(e.clientX-down.x)*.012});
+viewer.addEventListener('pointerup',()=>down=null);
+viewer.addEventListener('pointercancel',()=>down=null);
+function tick(now){
+ requestAnimationFrame(tick);
+ if(!renderer)return;
+ const dt=Math.min(.05,(now-(last||now))/1000);last=now;
+ if(document.hidden)return;
+ if(motion&&mixer)mixer.update(dt);
+ if(character){if(autoRotate)rotation+=dt*.55;character.rotation.y=rotation;}
+ renderer.render(scene,camera);
+ frames++;
+ if(now-lastFps>900){
+   hud.textContent=currentName+' · '+Math.round(frames*1000/(now-lastFps))+' FPS';
+   lastFps=now;frames=0;
+ }
+}
+</script>
+</body>
+</html>
