@@ -1,4 +1,4 @@
-/* SUPERVILAINS V5.1 — Direction de course et lisibilite des personnages pour La Grande Evasion.
+/* SUPERVILAINS V5.2 — tenues distinctes et mobilier urbain pour La Grande Evasion.
  * Three.js r180 + GLTFLoader : modeles humains skinnes et animations GLB.
  * Les regles de collision, la progression et la capture restent gerees par pursuit.js.
  * Un repli 2D/ancien WebGL reste disponible si la 3D moderne ne se charge pas.
@@ -192,7 +192,7 @@ function create(source){
   photo.addEventListener('error',()=>photo.style.display='none');
   parent.appendChild(photo);
   const mark=document.createElement('div');
-  mark.textContent='● 3D V5.1 BÊTA';
+  mark.textContent='● 3D V5.2 BÊTA';
   mark.style.cssText='display:none;position:absolute;z-index:4;pointer-events:none;top:9px;left:9px;border-radius:9px;border:1px solid #a9dfe0;background:#132636dc;color:#d4fcff;padding:5px 8px;font:900 10px Arial;';
   parent.appendChild(mark);
 
@@ -244,13 +244,109 @@ function create(source){
     action.reset().setLoop(THREE.LoopRepeat,Infinity).play();
     return {root,model,mixer,action};
   }
+
+  // Des accessoires WebGL legers distinguent les roles sans remplacer
+  // les squelettes ni telecharger les portraits personnels en 3D.
+  function labelTexture(title){
+    const cv=document.createElement('canvas');cv.width=512;cv.height=160;
+    const c=cv.getContext('2d');
+    c.clearRect(0,0,512,160);
+    c.fillStyle='#12283e';c.fillRect(6,8,500,144);
+    c.strokeStyle='#e4faff';c.lineWidth=9;c.strokeRect(10,12,492,136);
+    c.fillStyle='#ffffff';c.font='bold 96px Arial, sans-serif';
+    c.textBaseline='middle';c.textAlign='center';c.fillText(title,256,83,475);
+    const tex=new THREE.CanvasTexture(cv);
+    tex.colorSpace=THREE.SRGBColorSpace;
+    return tex;
+  }
+  const policeLetterTexture=labelTexture('POLICE');
+  function outfitPart(parent,geo,material,x,y,z,sx,sy,sz){
+    const mesh=new THREE.Mesh(geo,material);
+    mesh.position.set(x,y,z);mesh.scale.set(sx,sy,sz);
+    parent.add(mesh);
+    return mesh;
+  }
+  function outfitForPolice(actor){
+    if(actor.cosmetics)return;
+    const outfit=new THREE.Group();
+    const uniform=mat('#183d71',.91),reflective=mat('#a9e6e5',.62);
+    outfitPart(outfit,ballGeo,uniform,0,1.72,.44,.49,.48,.14);
+    outfitPart(outfit,boxGeo,reflective,0,1.40,.586,.83,.06,.034);
+    outfitPart(outfit,boxGeo,reflective,0,2.00,.58,.74,.052,.03);
+    const patch=new THREE.Mesh(new THREE.PlaneGeometry(.80,.24),new THREE.MeshBasicMaterial({
+      map:policeLetterTexture,transparent:true,side:THREE.DoubleSide,depthWrite:false
+    }));
+    patch.position.set(0,1.74,.592);
+    outfit.add(patch);
+    // Liseres souples sur les manches, lisibles en vue arriere.
+    outfitPart(outfit,ballGeo,reflective,-.56,1.87,.08,.105,.06,.17);
+    outfitPart(outfit,ballGeo,reflective,.56,1.87,.08,.105,.06,.17);
+    actor.root.add(outfit);actor.cosmetics=outfit;
+  }
+  const villainLooks={
+    morgane:['#e44b9b','#562947'],manu:['#50b99d','#243f48'],
+    lea:['#ab82e8','#473053'],natsu:['#dd9650','#58413b'],
+    amelie:['#efa8a6','#703c57'],ludo:['#75b8df','#304959'],
+    eric:['#6bd1ca','#334a57']
+  };
+  function applyVillainOutfit(actor,info){
+    if(!actor)return;
+    if(actor.cosmetics){
+      actor.root.remove(actor.cosmetics);
+      // La tenue change uniquement entre deux poursuites, jamais pendant la course.
+      actor.cosmetics.traverse(o=>{
+        if(o.isMesh){o.geometry?.dispose?.();if(Array.isArray(o.material))o.material.forEach(m=>m.dispose?.());else o.material?.dispose?.();}
+      });
+    }
+    const name=String(info?.name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    const key=Object.keys(villainLooks).find(k=>name.includes(k));
+    const [bright,dark]=villainLooks[key]||['#be5d98','#453151'];
+    const group=new THREE.Group();
+    const coat=mat(bright,.96),trim=mat(dark,.90),gold=mat('#d8b67a',.49,.15);
+    outfitPart(group,ballGeo,coat,0,1.68,.46,.43,.47,.12);
+    outfitPart(group,boxGeo,trim,0,1.33,.55,.73,.11,.09);
+    const flaps=[];
+    for(const side of [-1,1]){
+      const flap=outfitPart(group,boxGeo,coat,side*.27,1.12,.48,.24,.53,.09);
+      flaps.push(flap);
+    }
+    // Sacoche de ville plutot qu'un second equipement militaire.
+    const handbag=outfitPart(group,ballGeo,trim,.50,1.11,.39,.23,.24,.12);
+    outfitPart(group,boxGeo,gold,.50,1.15,.52,.18,.05,.035);
+    const strap=outfitPart(group,boxGeo,coat,.31,1.53,.48,.055,.75,.04);
+    strap.rotation.z=-.3;
+    // Accessoire specifique a Morgane Makeup : noeud rose visible derriere.
+    if(key==='morgane'){
+      const bow=new THREE.Group();bow.position.set(0,2.67,.27);
+      const l=outfitPart(bow,ballGeo,coat,-.20,0,0,.22,.13,.11);
+      const r=outfitPart(bow,ballGeo,coat,.20,0,0,.22,.13,.11);
+      l.rotation.z=.28;r.rotation.z=-.28;
+      outfitPart(bow,ballGeo,gold,0,0,.03,.095,.10,.11);
+      group.add(bow);
+    }
+    actor.root.add(group);
+    actor.cosmetics=group;actor.coatFlaps=flaps;
+    // Conserver les textures du GLB, mais varier legerement la couleur textile.
+    const dye=new THREE.Color(bright);
+    actor.model.traverse(o=>{
+      if(!o.isMesh)return;
+      const mats=Array.isArray(o.material)?o.material:[o.material];
+      for(const m of mats){
+        if(!m?.color)continue;
+        if(!m.userData.baseTone)m.userData.baseTone=m.color.clone();
+        m.color.copy(m.userData.baseTone).lerp(dye,.38);
+      }
+    });
+  }
   function load(){
     if(loading||ready||failed)return;
     loading=true;
     loadSoldier().then(gltf=>{
       if(failed)return;
       agent=actorFrom(gltf,'#90b5fa');
-      villain=actorFrom(gltf,'#eb9ac0');
+      villain=actorFrom(gltf,'#e7c3dc');
+      outfitForPolice(agent);
+      applyVillainOutfit(villain,villainInfo);
       ready=true;
     }).catch(e=>{
       failed=true;hide();console.warn('[SUPERVILAINS 5.0] Modele 3D non charge, repli 2D',e);
@@ -265,6 +361,7 @@ function create(source){
       photo.onload=()=>{if(active&&ready)photo.style.display='block';};
       photo.src=villainInfo.portrait;
     }
+    if(ready&&villain)applyVillainOutfit(villain,villainInfo);
     load();resize();
   }
   function end(){active=false;hide();lastTime=0;}
@@ -289,6 +386,7 @@ function create(source){
       agent.root.scale.set(1,g.slide>0?.68:1,1);
       villain.root.position.set(targetX,0,targetZ);
       villain.root.rotation.x=g.winning>0?-.12:-.06;
+      if(villain.coatFlaps)for(let i=0;i<villain.coatFlaps.length;i++)villain.coatFlaps[i].rotation.x=.12*Math.sin(g.elapsed*12+i*2.6);
       const paused=!!g.paused;
       if(!paused){
         agent.mixer.update(dt*(g.slide>0?.52:1.13));
@@ -338,4 +436,4 @@ function create(source){
   }
   return {begin,end,draw,resize,isReady:()=>renderReady&&!failed};
 }
-window.SUPERVILAINS_PURSUIT_REAL3D={create,version:'5.0-beta'};
+window.SUPERVILAINS_PURSUIT_REAL3D={create,version:'5.2-beta'};
