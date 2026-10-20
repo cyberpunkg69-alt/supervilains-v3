@@ -89,6 +89,17 @@ function create(source){
   const ballGeo=new THREE.SphereGeometry(1,12,9);
   const coneGeo=new THREE.ConeGeometry(1,1,9);
   const cylGeo=new THREE.CylinderGeometry(1,1,1,10);
+  function outfitCar(parent,paint,rubber){
+    const body=new THREE.Mesh(ballGeo,paint);
+    body.position.set(0,.58,0);body.scale.set(.88,.32,1.52);parent.add(body);
+    const cabin=new THREE.Mesh(ballGeo,paint);
+    cabin.position.set(0,.91,-.12);cabin.scale.set(.72,.40,.82);parent.add(cabin);
+    for(const x of [-.71,.71])for(const z of [-.93,.96]){
+      const tyre=new THREE.Mesh(cylGeo,rubber);
+      tyre.rotation.z=Math.PI*.5;tyre.position.set(x,.34,z);
+      tyre.scale.set(.26,.105,.26);parent.add(tyre);
+    }
+  }
   const road=new THREE.Mesh(new THREE.PlaneGeometry(9.65,150),roadMat);
   road.rotation.x=-Math.PI/2;road.position.set(0,0,-57);
   road.receiveShadow=true;scene.add(road);
@@ -134,6 +145,15 @@ function create(source){
     if(i%3===0){
       cube(group,toward-side*.52,2.52,0,1.2,.15,3.45,awningMat);
       cube(group,toward-side*.58,2.41,0,1,.06,3.1,kerbMat);
+    }
+    // Quelques voitures garees HORS des voies jouables pour casser la repetition.
+    // Geometries partagees et carrosserie arrondie pour ne pas ajouter trop de draw calls.
+    if(i===2||i===5){
+      const car=new THREE.Group();
+      car.position.set(-side*4.48,0,(i===2?2.9:-2.7));
+      const paint=mat(i===2?'#485b6b':'#876970',.57,.15),rubber=mat('#232730',.99);
+      outfitCar(car,paint,rubber);
+      group.add(car);
     }
     // Un arbre avec feuillage non cubique et pied cylindrique.
     if(i%2===0){
