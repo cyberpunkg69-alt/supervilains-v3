@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.26 — moteur WebGL 3D pour La Grande Evasion.
+/* SUPERVILAINS V4.27 — personnages arrondis et ville detaillee pour La Grande Evasion.
  * Sans CDN, sans API, avec retour transparent au Canvas 2D si WebGL est absent.
  * Les portraits des joueurs restent dans leur stockage prive, non telecharges par WebGL.
  */
@@ -43,17 +43,27 @@
     'uniform mat4 camera;',
     'varying vec3 tint;',
     'varying float fog;',
+    'varying vec3 worldPos;',
     'void main(){',
     'gl_Position=camera*vec4(position,1.0);',
-    'float light=max(dot(normalize(normal),normalize(vec3(0.5,0.9,0.4))),0.0);',
-    'tint=color*(0.61+0.39*light);',
-    'fog=clamp((-position.z-15.0)/95.0,0.0,0.76);',
+    'worldPos=position;',
+    'vec3 n=normalize(normal);',
+    'float key=max(dot(n,normalize(vec3(0.48,0.88,0.38))),0.0);',
+    'float fill=max(dot(n,normalize(vec3(-0.72,0.22,-0.6))),0.0);',
+    'float hemi=clamp(n.y*0.5+0.5,0.0,1.0);',
+    'tint=color*(0.51+0.31*key+0.11*fill+0.16*hemi);',
+    'fog=clamp((-position.z-17.0)/105.0,0.0,0.70);',
     '}'].join('\n');
    const frag=[
     'precision mediump float;',
     'varying vec3 tint;',
     'varying float fog;',
-    'void main(){gl_FragColor=vec4(mix(tint,vec3(0.46,0.33,0.49),fog),1.0);}'].join('\n');
+    'varying vec3 worldPos;',
+    'void main(){',
+    'float grain=fract(sin(dot(worldPos.xz*3.7+worldPos.yy*1.3,vec2(12.9898,78.233)))*43758.5453);',
+    'vec3 surface=tint*(0.978+grain*0.044);',
+    'gl_FragColor=vec4(mix(surface,vec3(0.46,0.34,0.50),fog),1.0);',
+    '}'].join('\n');
    function compile(kind,src){
      const shader=gl.createShader(kind);
      gl.shaderSource(shader,src);gl.compileShader(shader);
@@ -94,7 +104,7 @@
      }
    }
    function ball(x,y,z,rx,ry,rz,shade){
-     const c=rgb(shade),lon=9,lat=6;
+     const c=rgb(shade),lon=12,lat=8;
      const at=(a,b)=>{
        const u=a*PI,v=b*2*PI;
        const q=[Math.sin(u)*Math.cos(v),Math.cos(u),Math.sin(u)*Math.sin(v)];
@@ -104,6 +114,25 @@
        const a=at(i/lat,j/lon),b=at((i+1)/lat,j/lon),
          c1=at(i/lat,(j+1)/lon),d=at((i+1)/lat,(j+1)/lon);
        for(const v of [a,b,c1,b,d,c1])vertex(v.p,v.n,c);
+     }
+   }
+   // Cylindres orientes a dix pans, utilises pour les membres, troncs et lampadaires.
+   // Le filet conserve ses tiges simples pour eviter de penaliser le mobile.
+   function limb(a,b,radius,shade){
+     const d=b.map((v,i)=>v-a[i]),len=Math.hypot(...d);
+     if(len<.001)return;
+     const axis=d.map(v=>v/len),guide=Math.abs(axis[2])>.9?[0,1,0]:[0,0,1];
+     const u=normalize(cross(axis,guide)),v=normalize(cross(u,axis)),c=rgb(shade),facets=10;
+     const ring=(at,theta,r)=>{
+       const co=Math.cos(theta),si=Math.sin(theta);
+       return {p:at.map((x,i)=>x+r*(u[i]*co+v[i]*si)),
+         n:[u[0]*co+v[0]*si,u[1]*co+v[1]*si,u[2]*co+v[2]*si]};
+     };
+     for(let k=0;k<facets;k++){
+       const t=k*2*PI/facets,next=(k+1)*2*PI/facets;
+       const p=ring(a,t,radius),q=ring(a,next,radius),
+         r=ring(b,t,radius*.85),s=ring(b,next,radius*.85);
+       for(const vtx of [p,r,q,q,r,s])vertex(vtx.p,vtx.n,c);
      }
    }
    function world(g){
@@ -118,6 +147,10 @@
      for(let z=-114+scroll;z<10;z+=8){
        for(const line of [-1,1])box(line*1.52,-.025,z,.09,.025,3.3,'#c9ebef');
        box(0,-.025,z,.3,.03,.7,'#42738f');
+       for(const side of [-1,1]){
+         box(side*5.72,.186,z,.95,.018,.085,'#89748b');
+         box(side*5.90,.188,z+3.8,.62,.018,.065,'#584f73');
+       }
      }
      const shift=g.distance*.92%16;
      for(let i=0;i<8;i++)for(const side of [-1,1]){
@@ -126,21 +159,32 @@
        const palette=['#3c496f','#4c3d65','#2d4a69','#65495d','#35475e'];
        box(x,height/2,z,6.25,height,11,palette[(i*3+(side+2))%palette.length]);
        box(x,height+.17,z,6.55,.35,11.3,'#192a48');
+       box(x,height+.40,z,6.81,.13,11.52,'#34425e');
        const front=x-side*3.16;
-       for(let floor=1;floor<Math.min(6,height/2);floor++)for(let j=-1;j<=1;j++)
-         box(front,1.15+floor*2,z+j*2.75,.09,.76,.98,
-           (i+floor+j+side)%4===0?'#263c56':'#efb977');
+       // Appuis de fenetre, cadres et bandeaux de facade en relief.
+       box(front-side*.07,height*.53,z+5.43,.16,height*.92,.10,'#253650');
+       box(front-side*.07,height*.53,z-5.43,.16,height*.92,.10,'#253650');
+       for(let floor=1;floor<Math.min(6,height/2);floor++)for(let j=-1;j<=1;j++){
+         const wy=1.15+floor*2,wz=z+j*2.75;
+         box(front,wy,wz,.09,.76,.98,(i+floor+j+side)%4===0?'#263c56':'#efb977');
+         box(front-side*.055,wy-.43,wz,.12,.095,1.17,'#273651');
+         box(front-side*.06,wy+.43,wz,.12,.065,1.10,'#65708d');
+         box(front-side*.07,wy,wz,.13,.77,.045,'#6e637c');
+       }
        if(i%3===0){
          box(front-side*.14,1.60,z,.16,.55,3.1,'#da5190');
          box(front-side*.21,1.60,z,.09,.13,2.25,'#f4d390');
        }
        const lampX=side*6.45,lampZ=z+4.1;
-       box(lampX,2.3,lampZ,.15,4.6,.14,'#414f72');
-       box(lampX-side*.5,4.55,lampZ,1,.15,.2,'#64708b');
-       box(lampX-side*.91,4.43,lampZ,.27,.13,.3,'#ffde96');
+       limb([lampX,.13,lampZ],[lampX,4.56,lampZ],.095,'#4e5b73');
+       limb([lampX,4.54,lampZ],[lampX-side*.92,4.54,lampZ],.08,'#69738c');
+       ball(lampX-side*.91,4.43,lampZ,.22,.10,.20,'#ffde9d');
        if(i%2===0){
-         box(side*5.60,.65,z+2.5,.36,1.2,.36,'#a15970');
-         ball(side*5.60,1.62,z+2.5,.64,.75,.64,'#42af94');
+         const treeX=side*5.60,treeZ=z+2.5;
+         limb([treeX,.17,treeZ],[treeX,1.43,treeZ],.16,'#845873');
+         ball(treeX,1.68,treeZ,.61,.71,.58,'#317e78');
+         ball(treeX-.25,1.83,treeZ-.21,.45,.53,.43,'#49a48d');
+         ball(treeX+.27,1.63,treeZ+.24,.41,.42,.41,'#388e87');
        }
      }
    }
@@ -245,7 +289,7 @@
        dark='#142039',skin='#efbc91',stripe='#93eeeb';
      // La silhouette garde un vrai volume meme dans les animations extremes.
      box(x,.035,z,1.00,.04,.63,'#15243a');
-     const segment=(p,q,width,color)=>strand(p,q,width,color);
+     const segment=(p,q,width,color)=>limb(p,q,width,color);
      if(slideActive){
        // Glissade V4.25.1 : posture accroupie dynamique, tete vers l'avant
        // (-Z). La V4.25 inclinait le corps vers la camera et donnait
@@ -258,9 +302,9 @@
        const chestZ=z-.24,headZ=z-.63;
        const backZ=z+.13;
        // Bassin pres du sol, buste penche vers le fugitif.
-       box(x,hipY,z+.08,.88,.41,.59,trousers);
-       box(torsoX,chestY,chestZ,1.12,.93,.63,blue,-.48);
-       box(torsoX,chestY+.08,z+.18,1.00,.57,.14,vest,-.48);
+       ball(x,hipY,z+.08,.49,.26,.33,trousers);
+       ball(torsoX,chestY,chestZ,.57,.52,.38,blue);
+       ball(torsoX,chestY+.08,z+.18,.51,.30,.15,vest);
        box(torsoX,chestY-.12,z+.30,.97,.10,.12,stripe,-.48);
        box(torsoX,chestY-.31,z+.37,.94,.09,.13,stripe,-.48);
        box(torsoX+.44,chestY+.27,z+.05,.19,.28,.18,'#173049',-.48);
@@ -302,9 +346,9 @@
      const hipY=1.06+yShift,shoulderY=2.19+yShift;
      const lean=jumpActive?-.15:(intercept?-.23:-.10);
      const chestZ=z+lean;
-     box(x,hipY,z+.02,.91,.48,.59,trousers);
-     box(torsoX,1.70+yShift,chestZ,1.12,1.13,.65,blue,-.12);
-     box(torsoX,1.73+yShift,chestZ+.365,.94,.73,.13,vest,-.12);
+     ball(x,hipY,z+.02,.48,.30,.34,trousers);
+     ball(torsoX,1.70+yShift,chestZ,.59,.66,.38,blue);
+     ball(torsoX,1.73+yShift,chestZ+.34,.50,.43,.14,vest);
      box(torsoX,1.48+yShift,chestZ+.45,.93,.095,.14,stripe);
      box(torsoX,1.24+yShift,chestZ+.39,.99,.11,.12,stripe);
      box(torsoX,1.18+yShift,z+.35,.94,.15,.18,dark);
@@ -355,7 +399,7 @@
      ball(torsoX,2.61+yShift,chestZ-.20,.45,.48,.41,skin);
      ball(torsoX-.45,2.61+yShift,chestZ-.20,.095,.16,.11,skin);
      ball(torsoX+.45,2.61+yShift,chestZ-.20,.095,.16,.11,skin);
-     box(torsoX,3.01+yShift,chestZ-.20,1.04,.20,.83,'#173d70');
+     ball(torsoX,3.01+yShift,chestZ-.20,.53,.14,.42,'#173d70');
      box(torsoX,2.94+yShift,chestZ-.54,1.14,.10,.50,'#0f2b50');
      box(torsoX,2.98+yShift,chestZ+.17,.83,.11,.12,'#365d83');
      box(torsoX,3.11+yShift,chestZ-.55,.15,.12,.09,'#f4d489');
@@ -388,9 +432,9 @@
      const bx=x+sidestep*.45,bodyZ=z+forward;
      // Ombre au sol, taille et buste athletique.
      box(x,.028,z,1.02,.045,.67,'#1c1c37');
-     box(x,hipY,z,.87,.43,.56,pants);
-     box(bx,1.69+bounce,bodyZ,1.10,1.12,.60,main,-.08);
-     box(bx,1.88+bounce,bodyZ+.33,.86,.38,.11,trim,-.09);
+     ball(x,hipY,z,.47,.29,.34,pants);
+     ball(bx,1.69+bounce,bodyZ,.58,.65,.35,main);
+     ball(bx,1.88+bounce,bodyZ+.33,.45,.24,.12,trim);
      box(bx,1.43+bounce,bodyZ+.35,.91,.105,.12,dark);
      // Ceinture et sacoche/chiffre de serie sur le dos.
      box(bx,1.18+bounce,z+.32,.89,.12,.16,'#201f35');
@@ -405,10 +449,10 @@
        const direction=step*side,legX=x+side*.23;
        const knee=[legX,hipY-.40,z-.20-.32*direction];
        const ankle=[legX,hipY-.88+.19*Math.max(0,direction),z-.72*direction+.06];
-       strand([legX,hipY-.07,z],knee,.185,pants);
+       limb([legX,hipY-.07,z],knee,.185,pants);
        ball(...knee,.20,.21,.21,pants);
-       strand(knee,ankle,.15,pants);
-       box(legX,ankle[1]-.06,ankle[2]-.18,.43,.23,.61,sole,.10*direction);
+       limb(knee,ankle,.15,pants);
+       ball(legX,ankle[1]-.06,ankle[2]-.18,.25,.15,.36,sole);
        box(legX,ankle[1]-.15,ankle[2]-.17,.43,.06,.57,trim);
        // Les bras balancent en opposition avec les jambes.
        const sh=[bx+side*.63,shoulderY-.06,bodyZ];
@@ -418,9 +462,9 @@
          elbow=[bx+side*.81,shoulderY+.15,bodyZ-.21],
          hand=[bx+side*.85,shoulderY+.48,bodyZ-.27];
        }
-       strand(sh,elbow,.16,main);
+       limb(sh,elbow,.16,main);
        ball(...elbow,.16,.17,.16,main);
-       strand(elbow,hand,.13,main);
+       limb(elbow,hand,.13,main);
        ball(...hand,.155,.15,.16,skin);
      }
      // Tete mobile, nuque et coiffure dirigees vers l'horizon (-Z).
@@ -428,7 +472,7 @@
      ball(bx,2.32+bounce,headZ,.22,.22,.23,skin);
      ball(bx,headY,headZ,.46,.47,.43,skin);
      ball(bx,headY+.25,headZ+.16,.48,.27,.45,isEric?'#412f43':isMorgane?'#493354':'#30263e');
-     box(bx,headY+.32,headZ+.38,.67,.18,.16,'#382940');
+     ball(bx,headY+.32,headZ+.38,.36,.13,.12,'#382940');
      if(isMorgane){
        // Noeud rose sur la coiffure, sans reutiliser la tenue d'un autre mechant.
        ball(bx-.27,headY+.39,headZ+.35,.20,.13,.17,'#f06aa8');
@@ -516,7 +560,7 @@
    }
    parent.append(canvas);
    const indicator=document.createElement('div');
-   indicator.textContent='● MODE 3D';
+   indicator.textContent='● 3D AMÉLIORÉE';
    indicator.style.cssText='display:none;position:absolute;z-index:4;top:10px;left:10px;'+
      'font:900 10px Arial,sans-serif;letter-spacing:1px;color:#d9fff5;'+
      'background:#10283bd9;border:1px solid #5bdcc1;padding:7px 10px;'+
