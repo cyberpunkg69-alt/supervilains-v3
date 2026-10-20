@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#20060e">
+  <meta name="description" content="L'incroyable vente aux enchères 100 % fictive de MANU, la diva du trône. Enchérissez en direct pour rire !">
+  <title>MANU aux enchères | Cabaret de l'impossible</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="curtain curtain-left" aria-hidden="true"></div>
+  <div class="curtain curtain-right" aria-hidden="true"></div>
+  <div class="stage-lights" aria-hidden="true"></div>
+  <header class="masthead wrap">
+    <a class="brand" href="./" aria-label="Le cabaret de l'impossible, accueil">
+      <span class="brand-star">✦</span><span>LE CABARET <small>DE L'IMPOSSIBLE</small></span>
+    </a>
+    <div class="live-status"><span class="live-pulse"></span><span id="connection-label">Connexion au direct…</span></div>
+  </header>
+
+  <main class="wrap">
+    <div class="intro">
+      <div class="eyebrow">✦ LA GRANDE VENTE FICTIVE ✦</div>
+      <h1>QUI VEUT <em>MANU ?</em></h1>
+      <p>Le seul objet de collection que personne n'a demandé. <strong>Et pourtant, tout le monde peut enchérir.</strong></p>
+    </div>
+    <div class="marquee" aria-label="Enchères pour rire uniquement">
+      <span>✶ VENTE POUR RIRE ✶ AUCUN PAIEMENT ✶ 100 % FICTIF ✶ HUMOUR GARANTI, MANU NON ✶</span>
+    </div>
+
+    <div class="columns">
+      <article class="lot-panel">
+        <div class="lot-label"><span>LOT N° 001 — PIÈCE UNIQUE</span><span class="star-rating">★★★★★</span></div>
+        <div class="portrait-frame">
+          <img src="./manu-photo.jpg" alt="Manu dans un costume de cabaret rouge à paillettes, sur un trône en porcelaine, coupe de champagne à la main." width="480" height="600" fetchpriority="high">
+          <div class="photo-stamp">CERTIFIÉ<br>INVENDABLE<br><small>✦ OU PRESQUE ✦</small></div>
+        </div>
+        <div class="lot-body">
+          <span class="label-gold">COLLECTION « ON N'OSE PAS Y CROIRE »</span>
+          <h2>MANU <span>LA DIVA DU TRÔNE</span></h2>
+          <p class="subtitle">Faux blond, vrai désastre. Prestige à paillettes, dignité en rupture de stock.</p>
+          <div class="tags"><span>♛ ÉGO XXL</span><span>✦ PAILLETTES NON LIMITÉES</span><span>🚽 TRÔNE INCLUS*</span></div>
+          <h3>DESCRIPTION DU LOT</h3>
+          <p>Mesdames, messieurs, amateurs de catastrophes de luxe : voici <strong>MANU</strong>, monument national du mauvais goût assumé, livré dans son écrin de plumes rouges et de décisions regrettables.</p>
+          <p>Élevé au champagne tiède et aux compliments forcés, ce spécimen est capable de transformer <strong>une simple visite aux toilettes en spectacle de cabaret</strong>. Ses talons sont plus hauts que ses exigences ; c'est dire si le plafond souffre.</p>
+          <p>Son regard juge le carrelage. Son corset lutte pour sa survie. Ses boucles blondes ont traversé plus de drames qu'une saison entière de téléréalité.</p>
+          <div class="specs">
+            <div><span>ÉTAT</span><strong>Presque neuf… de loin et dans le noir.</strong></div>
+            <div><span>OPTIONS</span><strong>Crises de diva, pose dramatique, chasse d'eau royale.</strong></div>
+            <div><span>ENTRETIEN</span><strong>Champagne, miroirs et applaudissements toutes les 2 h.</strong></div>
+            <div><span>GARANTIE</span><strong>Expirée avant sa sortie d'usine.</strong></div>
+          </div>
+          <p class="warning">⚠️ ATTENTION : ce lot est <strong>ni repris, ni échangé</strong>. Même les objets trouvés ont refusé de le récupérer. Livré sans mode silencieux. Le trône est symbolique, la honte est offerte.</p>
+          <p class="fine-print">* La personne, le trône et tous les accessoires sont fictivement « mis aux enchères » pour un jeu humoristique. Personne n'est à vendre. Aucun argent, paiement ou transfert réel.</p>
+        </div>
+      </article>
+
+      <aside class="bid-panel" aria-label="Salle des enchères en direct">
+        <div class="bid-header"><span class="dot"></span> SALLE DES ENCHÈRES <span class="bid-live">● LIVE</span></div>
+        <div class="price-card">
+          <div class="price-heading" id="price-heading">MISE À PRIX</div>
+          <div class="amount" id="current-bid" aria-live="polite">1 <small>€</small></div>
+          <div class="fake-currency">EUROS FICTIFS · POUR LE FUN UNIQUEMENT</div>
+          <div class="top-bidder">👑 <span id="leader">Personne n'a encore osé !</span></div>
+        </div>
+        <div class="stats-row">
+          <div><strong id="bids-count">0</strong><span>ENCHÈRES</span></div>
+          <div><strong id="players-count">0</strong><span>ENCHÉRISSEURS</span></div>
+          <div><strong id="last-bid">—</strong><span>DERNIÈRE OFFRE</span></div>
+        </div>
+
+        <form id="bid-form" class="bid-form">
+          <h2>À QUI LE TOUR ?</h2>
+          <label for="nickname">TON PSEUDO DE FLAMBEUR</label>
+          <input id="nickname" type="text" maxlength="24" minlength="2" required autocomplete="nickname" placeholder="Ex. La Reine du PQ">
+          <label for="bid-amount">TA PROCHAINE OFFRE (FICTIVE)</label>
+          <div class="amount-entry"><span>€</span><input id="bid-amount" type="number" min="1" max="99999" step="1" inputmode="numeric" required value="1"></div>
+          <div class="quick-bids" aria-label="Augmenter le montant">
+            <button type="button" data-add="1">+1 €</button>
+            <button type="button" data-add="5">+5 €</button>
+            <button type="button" data-add="10">+10 €</button>
+            <button type="button" data-add="50">+50 €</button>
+          </div>
+          <button class="bid-submit" id="submit-bid" type="submit">🔨 J'ENCHÉRIS !</button>
+          <div class="form-hint">Sans compte, sans carte bancaire, sans facture. <strong>Juste pour humilier le cours de la paillette.</strong></div>
+          <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+        </form>
+
+        <section class="bid-history">
+          <div class="section-heading"><h2>LE DÉFILÉ DES COURAGEUX</h2><span>ACTUALISATION ~3 S</span></div>
+          <ol id="bid-list"><li class="empty-list">Les enchères démarrent à 1 €… qui ose ?</li></ol>
+        </section>
+        <button type="button" class="share-button" id="share">↗ INVITER LES COPAINS À SUR-ENCHÉRIR</button>
+      </aside>
+    </div>
+    <div class="signoff">« Adjugé, vendu… enfin, si quelqu'un en veut. » <span>♥</span></div>
+  </main>
+  <footer class="footer">LE CABARET DE L'IMPOSSIBLE © 2026 · PARODIE ENTRE AMIS · AUCUNE VENTE RÉELLE · AUCUNE DONNÉE BANCAIRE</footer>
+  <div id="confetti" class="confetti-container" aria-hidden="true"></div>
+</body>
+</html>
