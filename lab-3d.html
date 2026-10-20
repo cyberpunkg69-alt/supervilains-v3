@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0a1227">
-<title>SUPERVILAINS — Laboratoire modèles humains 3D V2</title>
+<title>SUPERVILAINS — Labo 3D V2 — GLB local</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
 <style>
 *{box-sizing:border-box}html,body{margin:0;background:#0a1123;color:#f1f6ff;font-family:Inter,system-ui,sans-serif}
@@ -28,7 +29,7 @@ small{font-size:11px;color:#abc1d9}
 </head>
 <body>
 <main>
-<header><div><h1>🦹 Laboratoire 3D — SUPERVILAINS</h1><p>Essai indépendant : vrais modèles humains animés, sans modifier tes captures ni le mini-jeu.</p></div><a href="./">Retour au jeu</a></header>
+<header><div><h1>🦹 Laboratoire 3D V2 — SUPERVILAINS</h1><p>Essai indépendant : vrais modèles humains animés, sans modifier tes captures ni le mini-jeu.</p></div><a href="./">Retour au jeu</a></header>
 <div id="viewer" aria-label="Visualiseur 3D">
 <div id="hud">MODÈLE : —</div>
 <div id="loading">Choisis un modèle ci-dessous. Le téléchargement démarre uniquement après ton clic.</div>
@@ -38,22 +39,20 @@ small{font-size:11px;color:#abc1d9}
 </div>
 <div class="warn" id="download-steps">
 <strong>✅ Harper et Sam : chargement local (sans erreur CORS)</strong>
-<p>1. Télécharge un modèle sur le site officiel ci-dessous. 2. Appuie sur « Ouvrir mon GLB ». 3. Sélectionne le fichier dans Téléchargements. Les fichiers ne sont pas envoyés sur un serveur.</p>
+<p>1. Ouvre la page officielle Harper ou Sam ci-dessous, puis appuie sur « Download GLB » sur le site. 2. Reviens ici et appuie sur « Ouvrir mon GLB ». 3. Sélectionne le fichier dans Téléchargements. Le fichier reste sur ton appareil.</p>
 <div class="actions">
-<a class="download" href="https://www.innerscene.com/api/library/run-harper-3d-person-animated-a726b25c/download" target="_blank" rel="noopener">⬇️ Télécharger Harper (17,8 Mo)</a>
-<a class="download" href="https://www.innerscene.com/api/library/run-sam-3d-person-animated-fa008c06/download" target="_blank" rel="noopener">⬇️ Télécharger Sam (20 Mo)</a>
+<a class="download" href="https://www.innerscene.com/tools/library/3d-parts/run-harper-3d-person-animated-a726b25c" target="_blank" rel="noopener">⬇️ Page de téléchargement Harper (17,8 Mo)</a>
+<a class="download" href="https://www.innerscene.com/tools/library/3d-parts/run-sam-3d-person-animated-fa008c06" target="_blank" rel="noopener">⬇️ Page de téléchargement Sam (20 Mo)</a>
 </div>
 <button id="open-glb">📂 Ouvrir mon GLB téléchargé</button>
 <input id="local-glb" type="file" accept=".glb,model/gltf-binary,application/octet-stream" hidden>
 <small>Fonctionne aussi avec tout autre personnage GLB contenant des textures et animations intégrées.</small>
 </div>
 <div class="actions">
-</div>
-<div class="actions">
 <button id="rotation" aria-pressed="false">🔄 Rotation automatique : NON</button>
 <button id="animation" aria-pressed="true">🏃 Animation : OUI</button>
 </div>
-<div id="status" role="status">Dès qu'un modèle est chargé, tu peux le tourner en glissant ton doigt sur l'image.</div>
+<div id="status" role="status">Version V2 • charge ton GLB avec le bouton ci-dessus, puis fais tourner le personnage avec le doigt.</div>
 <p class="warn">⚠️ Pour les deux modèles humains, passe par « Télécharger » puis « Ouvrir mon GLB ». Le modèle sera lu localement par le navigateur : aucune erreur CORS possible lors de cette lecture. Prévois environ 18 à 20 Mo par modèle et privilégie le Wi-Fi.</p>
 <p><small>Modèles Harper et Sam : Innerscene / MakeHuman, annoncés sous <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">licence CC0</a>. <a target="_blank" rel="noopener" href="https://www.innerscene.com/tools/library/3d-parts/run-harper-3d-person-animated-a726b25c">Source Harper</a> · <a target="_blank" rel="noopener" href="https://www.innerscene.com/tools/library/3d-parts/run-sam-3d-person-animated-fa008c06">Source Sam</a>. Le soldat est celui des exemples Three.js.</small></p>
 </main>
