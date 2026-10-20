@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.22 — LA GRANDE EVASION
+/* SUPERVILAINS V5.0 — LA GRANDE EVASION
    Course arcade en perspective 2.5D, autonome, sans API ni dependance externe.
    Le SOLO reste autoritaire sur l'attribution des recompenses et des captures.
 */
@@ -35,7 +35,7 @@
       '<button type="button" data-pursuit="slide" aria-label="Glisser sous un obstacle">⬇️</button>'+
       '<button type="button" data-pursuit="right" aria-label="Aller à droite">➡️</button></div></section>';
     document.body.append(ui);canvas=$('sv-runner-canvas');ctx=canvas.getContext('2d',{alpha:false});
-    try{renderer3d=window.SUPERVILAINS_PURSUIT_3D?.create(canvas)||null}catch(e){console.warn('Repli poursuite 2D :',e)}
+    try{renderer3d=window.SUPERVILAINS_PURSUIT_REAL3D?.create(canvas)||window.SUPERVILAINS_PURSUIT_3D?.create(canvas)||null}catch(e){console.warn('Repli poursuite 2D :',e)}
     $('sv-runner-exit').addEventListener('click',()=>finish(false,'abandon'));
     ui.querySelectorAll('[data-pursuit]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.pursuit)));
     let touch=null;
