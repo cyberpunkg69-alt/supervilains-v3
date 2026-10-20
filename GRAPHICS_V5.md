@@ -27,3 +27,11 @@
 
 ## Essai
 Ouvrir une partie SOLO, rater une capture, puis démarrer **La Grande Evasion**. Si le bandeau « 3D SEMI-RÉALISTE BÊTA » apparaît et si les coureurs ont des articulations et habits modélisés, le nouveau moteur est chargé. Sinon l'affichage de secours reste jouable.
+
+## V5.3 — Sam et Harper optimises, chargement local sur mobile
+
+- Deux GLB humains fournis par l'utilisateur, verifies : skin avec 1 animation `Run` et 168 canaux chacun. Version mobile avec textures compressees : Sam ~5,8 Mio et Harper ~6,4 Mio (contre 20,0 et 17,8 Mio a l'origine). Les modeles sont conserves sur l'appareil ; ils ne sont **pas commites en binaire dans GitHub**.
+- Le laboratoire `lab-3d-v3.html` peut importer puis enregistrer ces GLB **une seule fois** dans la base IndexedDB `supervilains-pursuit-models-v1` via `pursuit-local-models.js`. Les noms de fichier contenant `sam` et `harper` sont reconnus automatiquement.
+- La poursuite `pursuit-real3d.js` donne priorite au GLB `sam` pour le policier et les hommes, au GLB `harper` pour Lea, Amelie et Morgane. Textures originales preservees, animation de course des fichiers, basculement automatique vers Soldier si aucun modele local n'existe.
+- **Important** : fonctionne seulement dans le navigateur/app d'origine ayant importe les fichiers. IndexedDB ne se synchronise pas avec les autres appareils/utilisateurs ; ne pas effacer les donnees du site. Pour un lancement public, les GLB devront etre publies sur un hebergement approprie, avec autorisation de redistribution validee, puis testes en situation reelle.
+- Limites actuelles : pas d'animations Jump/Slide GLB dediees ; vetements et visages individuels non finalises ; pas de test automatique de FPS sur tous les telephones ; aucune decimation geometrique dans cette optimisation.
