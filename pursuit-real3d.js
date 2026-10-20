@@ -295,7 +295,10 @@ function create(source){
       actor.root.remove(actor.cosmetics);
       // La tenue change uniquement entre deux poursuites, jamais pendant la course.
       actor.cosmetics.traverse(o=>{
-        if(o.isMesh){o.geometry?.dispose?.();if(Array.isArray(o.material))o.material.forEach(m=>m.dispose?.());else o.material?.dispose?.();}
+        if(o.isMesh){ // Geometries partagees avec la ville et le policier : ne jamais les detruire.
+          if(Array.isArray(o.material))o.material.forEach(m=>m.dispose?.());
+          else o.material?.dispose?.();
+        }
       });
     }
     const name=String(info?.name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
