@@ -1,4 +1,4 @@
-/* SUPERVILAINS V5.3 — personnages civils locaux animes pour La Grande Evasion.
+/* SUPERVILAINS V5.4 — import des GLB dans le jeu en direct pour La Grande Evasion.
  * Three.js r180 + GLTFLoader : modeles humains skinnes et animations GLB.
  * Les regles de collision, la progression et la capture restent gerees par pursuit.js.
  * Un repli 2D/ancien WebGL reste disponible si la 3D moderne ne se charge pas.
@@ -212,7 +212,7 @@ function create(source){
   photo.addEventListener('error',()=>photo.style.display='none');
   parent.appendChild(photo);
   const mark=document.createElement('div');
-  mark.textContent='● 3D V5.3 BÊTA';
+  mark.textContent='● 3D V5.4 BÊTA';
   mark.style.cssText='display:none;position:absolute;z-index:4;pointer-events:none;top:9px;left:9px;border-radius:9px;border:1px solid #a9dfe0;background:#132636dc;color:#d4fcff;padding:5px 8px;font:900 10px Arial;';
   parent.appendChild(mark);
 
@@ -425,8 +425,8 @@ function create(source){
         if(!sam&&!harper)actorSources.soldier=await loadSoldier();
         const source=sam||harper||actorSources.soldier;
         mark.textContent=(sam||harper)
-          ?'● 3D V5.3 • GLB CIVILS'
-          :'● 3D V5.3 • SOLDAT DE SECOURS';
+          ?'● 3D V5.4 • GLB CIVILS'
+          :'● 3D V5.4 • SOLDAT DE SECOURS';
         agent=actorFrom(source,source===actorSources.soldier?'#90b5fa':null,!!(sam||harper));
         outfitForPolice(agent);
         switchVillain(villainInfo);
@@ -435,6 +435,37 @@ function create(source){
         failed=true;hide();
         console.warn('[SUPERVILAINS V5.3] Echec du chargement des coureurs, retour 2D',e);
       }).finally(()=>{loading=false;});
+  }
+  async function reloadModels(){
+    // Appelé uniquement après un import explicite. La poursuite est en pause
+    // pendant le rechargement ; on ne touche jamais aux règles du mini-jeu.
+    if(!ready||failed||!agent)return false;
+    const [sam,harper]=await Promise.all([storedGltf('sam'),storedGltf('harper')]);
+    if(!sam&&!harper)return false;
+    const nextSource=sam||harper;
+    const nextAgent=actorFrom(nextSource,null,true);
+    // Préparer le nouveau modèle avant de supprimer l'ancien en cas d'erreur.
+    try{
+      outfitForPolice(nextAgent);
+    }catch(e){
+      nextAgent.mixer.stopAllAction();scene.remove(nextAgent.root);
+      throw e;
+    }
+    const previousAgent=agent,previousVillain=villain;
+    actorSources.sam=sam;actorSources.harper=harper;
+    agent=nextAgent;villain=null;villainModelKey=null;
+    try{
+      switchVillain(villainInfo);
+      if(!villain)throw Error('Le fugitif n’a pas pu être créé');
+    }catch(e){
+      agent=previousAgent;villain=previousVillain;
+      nextAgent.mixer.stopAllAction();scene.remove(nextAgent.root);
+      throw e;
+    }
+    previousAgent?.mixer.stopAllAction();if(previousAgent)scene.remove(previousAgent.root);
+    previousVillain?.mixer.stopAllAction();if(previousVillain)scene.remove(previousVillain.root);
+    mark.textContent='● 3D V5.4 • GLB CIVILS';
+    return true;
   }
   function begin(info){
     active=true;lastTime=0;villainInfo=info||{};
@@ -518,6 +549,6 @@ function create(source){
       return false;
     }
   }
-  return {begin,end,draw,resize,isReady:()=>renderReady&&!failed};
+  return {begin,end,draw,resize,reloadModels,isReady:()=>renderReady&&!failed};
 }
-window.SUPERVILAINS_PURSUIT_REAL3D={create,version:'5.3-beta'};
+window.SUPERVILAINS_PURSUIT_REAL3D={create,version:'5.4-beta'};
