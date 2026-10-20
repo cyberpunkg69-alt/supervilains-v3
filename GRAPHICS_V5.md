@@ -35,3 +35,17 @@ Ouvrir une partie SOLO, rater une capture, puis démarrer **La Grande Evasion**.
 - La poursuite `pursuit-real3d.js` donne priorite au GLB `sam` pour le policier et les hommes, au GLB `harper` pour Lea, Amelie et Morgane. Textures originales preservees, animation de course des fichiers, basculement automatique vers Soldier si aucun modele local n'existe.
 - **Important** : fonctionne seulement dans le navigateur/app d'origine ayant importe les fichiers. IndexedDB ne se synchronise pas avec les autres appareils/utilisateurs ; ne pas effacer les donnees du site. Pour un lancement public, les GLB devront etre publies sur un hebergement approprie, avec autorisation de redistribution validee, puis testes en situation reelle.
 - Limites actuelles : pas d'animations Jump/Slide GLB dediees ; vetements et visages individuels non finalises ; pas de test automatique de FPS sur tous les telephones ; aucune decimation geometrique dans cette optimisation.
+
+## V5.4 — Import des personnages depuis La Grande Evasion
+
+La video utilisateur de la V5.3 montrait bien « SOLDAT DE SECOURS » : les assets GLB n'etaient pas disponibles dans le stockage local du contexte d'execution du jeu. Les donnees IndexedDB d'un onglet navigateur ne sont pas garanties identiques a celles de l'application PWA installee si leurs contextes de stockage sont differents.
+
+- Nouveau bouton `🎭 3D` visible dans l'en-tete du mini-jeu, a cote d'ABANDONNER.
+- La poursuite est mise en pause lors de l'ouverture de l'importateur, avec sauvegarde de son etat de pause d'origine.
+- Deux commandes d'import distinguent Sam/Harper meme lorsque le fichier choisi a ete renomme.
+- Controle du format GLB dans `pursuit-local-models.js`, stockage IndexedDB dans **le meme contexte** que le jeu, puis affichage de l'etat Sam/Harper.
+- Le moteur `pursuit-real3d.js` expose maintenant `reloadModels()` pour actualiser les vrais coureurs au cours d'une partie.
+- Service Worker incremente en `supervilains-v5-4-import-in-game`.
+- Aucun changement de la progression, des collisions, des personnages capturables ni des recompenses.
+
+**Test a faire sur appareil reel** : importer Sam et Harper via la fenetre de poursuite. Verifier les coches pour chaque personnage, voir le badge `3D V5.4 • GLB CIVILS`, puis reprendre la course. Le premier chargement peut prendre plusieurs secondes. Si le badge n'apparait pas ou si un GLB echoue a s'initialiser, relever le message de l'importateur.
