@@ -1,10 +1,11 @@
-/* SUPERVILAINS V5.0 — LA GRANDE EVASION
+/* SUPERVILAINS V5.4 — LA GRANDE EVASION
    Course arcade en perspective 2.5D, autonome, sans API ni dependance externe.
    Le SOLO reste autoritaire sur l'attribution des recompenses et des captures.
 */
 (() => {
   'use strict';
   let ui=null,ctx=null,canvas=null,renderer3d=null,raf=0,game=null,portrait=null,last=0;
+  let modelPickerKey=null,modalPreviousPause=false,modelsBusy=false;
   const $=id=>document.getElementById(id);
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const random=(a,b)=>a+Math.random()*(b-a);
@@ -22,7 +23,8 @@
     ui.innerHTML='<section class="sv-runner-panel">'+
       '<div class="sv-runner-head"><div><div class="sv-runner-title">🚓 LA GRANDE ÉVASION</div>'+
       '<div class="sv-runner-sub" id="sv-runner-target">Le méchant prend la fuite !</div></div>'+
-      '<button type="button" class="sv-runner-exit" id="sv-runner-exit">✕ ABANDONNER</button></div>'+
+      '<div class="sv-runner-head-actions"><button type="button" class="sv-runner-models-btn" id="sv-runner-models-btn" aria-label="Gérer les personnages 3D">🎭 3D</button>'+
+      '<button type="button" class="sv-runner-exit" id="sv-runner-exit">✕ ABANDONNER</button></div></div>'+
       '<div class="sv-runner-hud"><span id="sv-runner-life">🛡️🛡️🛡️</span>'+
       '<div class="sv-runner-meter"><div class="sv-runner-fill" id="sv-runner-fill"></div></div>'+
       '<span id="sv-runner-progress">0 %</span></div>'+
@@ -30,6 +32,16 @@
       '<div class="sv-runner-toast" id="sv-runner-toast" aria-live="polite"></div>'+
       '<div class="sv-runner-pause" id="sv-runner-pause" hidden>⏸️ PAUSE</div></div>'+
       '<div class="sv-runner-help">Glisse pour changer de voie, sauter ou te baisser. Évite 3 collisions !</div>'+
+      '<div class="sv-runner-models-overlay" id="sv-runner-models-overlay" hidden><section class="sv-runner-models-panel" role="dialog" aria-modal="true" aria-label="Personnages 3D">'+
+        '<h3>🎭 PERSONNAGES 3D</h3><p>Importer les modèles une seule fois, directement dans cette application.</p>'+
+        '<div id="sv-runner-models-list" class="sv-runner-models-list">Vérification du stockage…</div>'+
+        '<div class="sv-runner-models-actions"><button type="button" data-glb-key="sam">📂 Importer Sam</button>'+
+        '<button type="button" data-glb-key="harper">📂 Importer Harper</button></div>'+
+        '<input type="file" id="sv-runner-models-input" accept=".glb,model/gltf-binary,application/octet-stream" hidden>'+
+        '<div id="sv-runner-models-status" role="status" class="sv-runner-models-status">Choisis les fichiers GLB depuis ton téléphone.</div>'+
+        '<p class="sv-runner-models-note">Les fichiers restent sur cet appareil et sont propres à cette application. Les données du jeu et les captures ne changent pas.</p>'+
+        '<button type="button" id="sv-runner-models-close" class="sv-runner-models-close">▶ REPRENDRE LA POURSUITE</button>'+
+      '</section></div>'+
       '<div class="sv-runner-controls"><button type="button" data-pursuit="left" aria-label="Aller à gauche">⬅️</button>'+
       '<button type="button" data-pursuit="jump" aria-label="Sauter">⬆️</button>'+
       '<button type="button" data-pursuit="slide" aria-label="Glisser sous un obstacle">⬇️</button>'+
@@ -37,6 +49,14 @@
     document.body.append(ui);canvas=$('sv-runner-canvas');ctx=canvas.getContext('2d',{alpha:false});
     try{renderer3d=window.SUPERVILAINS_PURSUIT_REAL3D?.create(canvas)||window.SUPERVILAINS_PURSUIT_3D?.create(canvas)||null}catch(e){console.warn('Repli poursuite 2D :',e)}
     $('sv-runner-exit').addEventListener('click',()=>finish(false,'abandon'));
+    $('sv-runner-models-btn').addEventListener('click',openModels);
+    $('sv-runner-models-close').addEventListener('click',closeModels);
+    ui.querySelectorAll('[data-glb-key]').forEach(button=>button.addEventListener('click',()=>{
+      if(modelsBusy)return;
+      modelPickerKey=button.dataset.glbKey;
+      $('sv-runner-models-input').click();
+    }));
+    $('sv-runner-models-input').addEventListener('change',importModelFile);
     ui.querySelectorAll('[data-pursuit]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.pursuit)));
     let touch=null;
     canvas.addEventListener('pointerdown',e=>{if(!game||!game.active)return;touch={x:e.clientX,y:e.clientY};},{passive:true});
@@ -55,11 +75,78 @@
     },true);
     document.addEventListener('visibilitychange',()=>{
       if(!game||!game.active)return;
-      game.paused=document.hidden;
-      $('sv-runner-pause').hidden=!game.paused;
+      const modalOpen=!$('sv-runner-models-overlay').hidden;
+      game.paused=document.hidden||modalOpen;
+      $('sv-runner-pause').hidden=!game.paused||modalOpen;
       last=0;
     });
     window.addEventListener('resize',resize);
+  }
+  async function updateModelStatus(){
+    const list=$('sv-runner-models-list');
+    if(!list)return;
+    const api=window.SUPERVILAINS_3D_ASSETS;
+    if(!api){list.textContent='⚠️ Le stockage des modèles 3D n’a pas pu démarrer.';return;}
+    try{
+      const stored=await api.listing();
+      const ids=new Set(stored.map(m=>m.id));
+      list.textContent='Sam : '+(ids.has('sam')?'✅ ENREGISTRÉ':'❌ À IMPORTER')+
+                       '  |  Harper : '+(ids.has('harper')?'✅ ENREGISTRÉ':'❌ À IMPORTER');
+    }catch(e){list.textContent='⚠️ Stockage indisponible : '+(e?.message||e);}
+  }
+  function openModels(){
+    if(!game||!game.active)return;
+    const overlay=$('sv-runner-models-overlay');
+    if(!overlay.hidden)return;
+    modalPreviousPause=game.paused;
+    game.paused=true;overlay.hidden=false;
+    $('sv-runner-pause').hidden=true;
+    $('sv-runner-models-status').textContent='Choisis le modèle à importer depuis les fichiers de ce téléphone.';
+    updateModelStatus();
+    $('sv-runner-models-close').focus({preventScroll:true});
+  }
+  function closeModels(){
+    if(modelsBusy||!ui)return;
+    const overlay=$('sv-runner-models-overlay');
+    if(overlay.hidden)return;
+    overlay.hidden=true;modelPickerKey=null;
+    if(game&&game.active){
+      game.paused=modalPreviousPause||document.hidden;
+      $('sv-runner-pause').hidden=!game.paused;
+      last=0;
+      $('sv-runner-models-btn').focus({preventScroll:true});
+    }
+  }
+  async function importModelFile(){
+    const input=$('sv-runner-models-input');
+    const file=input.files?.[0],key=modelPickerKey;
+    input.value='';
+    if(!file||!key||modelsBusy||!game?.active)return;
+    const status=$('sv-runner-models-status');
+    if(!/\.glb$/i.test(file.name)){status.textContent='❌ Sélectionne un fichier .glb.';return;}
+    if(file.size<20||file.size>100*1024*1024){status.textContent='❌ Taille incorrecte (maximum 100 Mo).';return;}
+    if(!window.SUPERVILAINS_3D_ASSETS){status.textContent='❌ Stockage des personnages indisponible.';return;}
+    modelsBusy=true;
+    $('sv-runner-models-close').disabled=true;
+    ui.querySelectorAll('[data-glb-key]').forEach(b=>b.disabled=true);
+    status.textContent='⏳ Lecture et enregistrement de '+file.name+'…';
+    try{
+      const array=await file.arrayBuffer();
+      await window.SUPERVILAINS_3D_ASSETS.save(key,array,file.name);
+      await updateModelStatus();
+      status.textContent='⏳ Activation du modèle dans le moteur 3D…';
+      const active=await renderer3d?.reloadModels?.();
+      status.textContent=active
+        ?'✅ '+(key==='sam'?'Sam':'Harper')+' enregistré et activé ! Tu peux reprendre la poursuite.'
+        :'✅ Enregistré. Le modèle sera utilisé lors du prochain chargement du moteur 3D.';
+    }catch(e){
+      console.warn('[SUPERVILAINS V5.4] Echec import GLB',e);
+      status.textContent='❌ Erreur pendant l’import : '+(e?.message||e);
+    }finally{
+      modelsBusy=false;
+      $('sv-runner-models-close').disabled=false;
+      ui.querySelectorAll('[data-glb-key]').forEach(b=>b.disabled=false);
+    }
   }
   function resize(){
     if(!canvas||!ctx)return;
@@ -255,6 +342,7 @@
     if(!game||!game.active)return;
     const current=game;game.active=false;
     renderer3d?.end();
+    if(ui){$('sv-runner-models-overlay').hidden=true;modelsBusy=false;}
     cancelAnimationFrame(raf);raf=0;last=0;
     ui.hidden=true;document.documentElement.classList.remove('sv-runner-open');
     $('sv-runner-pause').hidden=true;
