@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a1227">
+<title>SUPERVILAINS — Laboratoire modèles humains 3D</title>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#0a1123;color:#f1f6ff;font-family:Inter,system-ui,sans-serif}
+main{width:min(900px,100%);margin:auto;padding:18px 13px 35px}
+h1{font-size:clamp(19px,5vw,28px);margin:0 0 6px}
+p{font-size:13px;line-height:1.55;color:#b8c8e1}
+header{display:flex;justify-content:space-between;gap:10px;align-items:center}
+a{color:#82e5ff}
+#viewer{height:min(62dvh,520px);min-height:280px;border:1px solid #40577d;border-radius:19px;overflow:hidden;position:relative;background:linear-gradient(175deg,#a6b1c0,#4d637c 72%,#252c40)}
+#viewer canvas{width:100%;height:100%;display:block;touch-action:none}
+#hud{position:absolute;top:12px;left:12px;background:#0c1b30d9;border:1px solid #6694a5;padding:9px;border-radius:11px;font-size:11px;font-weight:850;pointer-events:none}
+#loading{position:absolute;bottom:12px;left:12px;right:12px;min-height:28px;background:#0a1d31ea;padding:8px 11px;border-radius:10px;color:#e4f6ff;font-size:12px}
+button{border:1px solid #556c93;border-radius:12px;background:#182948;color:#f0f7ff;padding:11px 13px;min-height:45px;font-weight:850;font-size:12px;cursor:pointer}
+button[aria-pressed=true]{background:#2a716f;border-color:#9ce3d2}
+button:focus-visible{outline:2px solid #aef9f0}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+#status{color:#ddedf7;font-size:12px;line-height:1.5;margin-top:9px}
+.warn{padding:11px 12px;border:1px solid #73684d;border-radius:12px;background:#42331b50;color:#ffe4a6;font-size:12px}
+small{font-size:11px;color:#abc1d9}
+</style>
+</head>
+<body>
+<main>
+<header><div><h1>🦹 Laboratoire 3D — SUPERVILAINS</h1><p>Essai indépendant : vrais modèles humains animés, sans modifier tes captures ni le mini-jeu.</p></div><a href="./">Retour au jeu</a></header>
+<div id="viewer" aria-label="Visualiseur 3D">
+<div id="hud">MODÈLE : —</div>
+<div id="loading">Choisis un modèle ci-dessous. Le téléchargement démarre uniquement après ton clic.</div>
+</div>
+<div class="actions" id="model-buttons">
+<button data-model="soldier">Soldat actuel (référence)</button>
+<button data-model="harper">Harper — civile animée (17,8 Mo)</button>
+<button data-model="sam">Sam — civil animé (20 Mo)</button>
+</div>
+<div class="actions">
+<button id="rotation" aria-pressed="false">🔄 Rotation automatique : NON</button>
+<button id="animation" aria-pressed="true">🏃 Animation : OUI</button>
+</div>
+<div id="status" role="status">Dès qu'un modèle est chargé, tu peux le tourner en glissant ton doigt sur l'image.</div>
+<p class="warn">⚠️ Test expérimental : Harper et Sam proviennent d'un hébergement externe. Leur téléchargement peut être volumineux, lent ou bloqué par le navigateur (CORS). Cela n'affecte pas le jeu principal. Privilégie le Wi-Fi.</p>
+<p><small>Modèles Harper et Sam : Innerscene / MakeHuman, annoncés sous <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">licence CC0</a>. <a target="_blank" rel="noopener" href="https://www.innerscene.com/tools/library/3d-parts/run-harper-3d-person-animated-a726b25c">Source Harper</a> · <a target="_blank" rel="noopener" href="https://www.innerscene.com/tools/library/3d-parts/run-sam-3d-person-animated-fa008c06">Source Sam</a>. Le soldat est celui des exemples Three.js.</small></p>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const sources={
+ soldier:{name:'Soldat actuel',url:'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r180/examples/models/gltf/Soldier.glb'},
+ harper:{name:'Harper — civile',url:'https://www.innerscene.com/api/library/run-harper-3d-person-animated-a726b25c/download'},
+ sam:{name:'Sam — civil',url:'https://www.innerscene.com/api/library/run-sam-3d-person-animated-fa008c06/download'}
+};
+const viewer=document.getElementById('viewer');
+const status=document.getElementById('status');
+const loading=document.getElementById('loading');
+const hud=document.getElementById('hud');
+let renderer,scene,camera,character=null,mixer=null,motion=true,autoRotate=false,rotation=0,token=0,currentName='—';
+let last=0,lastFps=performance.now(),frames=0;
+function init(){
+ if(renderer)return;
+ renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'low-power'});
+ renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.4));
+ renderer.outputColorSpace=THREE.SRGBColorSpace;
+ renderer.toneMapping=THREE.ACESFilmicToneMapping;
+ renderer.toneMappingExposure=1.30;
+ viewer.insertBefore(renderer.domElement,viewer.firstChild);
+ scene=new THREE.Scene();
+ scene.background=new THREE.Color('#aab3c5');
+ camera=new THREE.PerspectiveCamera(48,1,.1,60);
+ camera.position.set(0,1.65,6.1);camera.lookAt(0,1.38,0);
+ scene.add(new THREE.HemisphereLight('#eaf4ff','#897762',2.1));
+ const light=new THREE.DirectionalLight('#fff0d8',2.1);
+ light.position.set(-4,7,5);scene.add(light);
+ const ground=new THREE.Mesh(new THREE.CircleGeometry(2.15,48),new THREE.MeshStandardMaterial({color:'#758498',roughness:.98}));
+ ground.rotation.x=-Math.PI/2;ground.position.y=-.04;scene.add(ground);
+ const grid=new THREE.GridHelper(6,12,'#7e90a4','#7e90a4');grid.position.y=-.018;scene.add(grid);
+ resize();requestAnimationFrame(tick);
+}
+function resize(){
+ if(!renderer)return;
+ const w=viewer.clientWidth,h=viewer.clientHeight;
+ if(!w||!h)return;
+ renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+}
+window.addEventListener('resize',resize);
+const loader=new GLTFLoader();
+function choose(key){
+ init();
+ const data=sources[key];if(!data)return;
+ const id=++token;currentName=data.name;
+ document.querySelectorAll('[data-model]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.model===key)));
+ loading.textContent='Téléchargement : '+data.name+'…';
+ status.textContent='Connexion au fichier GLB…';
+ loader.load(data.url,(gltf)=>{
+   if(id!==token)return;
+   if(character){scene.remove(character);character=null;}
+   character=gltf.scene;
+   const bounds=new THREE.Box3().setFromObject(character);
+   const height=bounds.getSize(new THREE.Vector3()).y||1;
+   character.scale.multiplyScalar(2.65/height);
+   character.updateMatrixWorld(true);
+   const after=new THREE.Box3().setFromObject(character);
+   const center=after.getCenter(new THREE.Vector3());
+   character.position.x-=center.x;character.position.z-=center.z;
+   character.position.y-=after.min.y;
+   rotation=0;
+   character.rotation.y=0;
+   character.traverse(m=>{if(m.isMesh){m.frustumCulled=false;}});
+   scene.add(character);
+   if(mixer)mixer.stopAllAction();
+   mixer=null;
+   if(gltf.animations.length){
+     mixer=new THREE.AnimationMixer(character);
+     const clip=gltf.animations.find(c=>/run|sprint|jog/i.test(c.name))||gltf.animations[0];
+     mixer.clipAction(clip).reset().setLoop(THREE.LoopRepeat,Infinity).play();
+     status.textContent='Modèle chargé ✓ — '+(gltf.animations.length)+' animation(s), clip : '+clip.name+'. Glisse pour faire tourner le personnage.';
+   }else{
+     status.textContent='Modèle chargé ✓ — aucune animation intégrée.';
+   }
+   loading.textContent='Chargement terminé. Modèle : '+data.name;
+ },(ev)=>{
+   if(id!==token)return;
+   const pct=ev.total?Math.min(100,Math.round(ev.loaded/ev.total*100)):null;
+   loading.textContent='Téléchargement '+data.name+' : '+(pct===null?Math.round(ev.loaded/1048576)+' Mo':pct+' %');
+ },(e)=>{
+   if(id!==token)return;
+   console.warn('Laboratoire GLB',e);
+   loading.textContent='Impossible de charger '+data.name+' (réseau ou accès CORS).';
+   status.textContent='Le jeu principal reste inchangé. Essaie le modèle de référence pour vérifier le WebGL.';
+ });
+}
+document.querySelectorAll('[data-model]').forEach(b=>b.addEventListener('click',()=>choose(b.dataset.model)));
+const btnRotate=document.getElementById('rotation'),btnAnimation=document.getElementById('animation');
+btnRotate.onclick=()=>{autoRotate=!autoRotate;btnRotate.setAttribute('aria-pressed',String(autoRotate));btnRotate.textContent='🔄 Rotation automatique : '+(autoRotate?'OUI':'NON')};
+btnAnimation.onclick=()=>{motion=!motion;btnAnimation.setAttribute('aria-pressed',String(motion));btnAnimation.textContent='🏃 Animation : '+(motion?'OUI':'NON')};
+let down=null;
+viewer.addEventListener('pointerdown',e=>{down={x:e.clientX,rotation};viewer.setPointerCapture(e.pointerId)});
+viewer.addEventListener('pointermove',e=>{if(!down||!character)return;rotation=down.rotation+(e.clientX-down.x)*.012});
+viewer.addEventListener('pointerup',()=>down=null);
+viewer.addEventListener('pointercancel',()=>down=null);
+function tick(now){
+ requestAnimationFrame(tick);
+ if(!renderer)return;
+ const dt=Math.min(.05,(now-(last||now))/1000);last=now;
+ if(document.hidden)return;
+ if(motion&&mixer)mixer.update(dt);
+ if(character){if(autoRotate)rotation+=dt*.55;character.rotation.y=rotation;}
+ renderer.render(scene,camera);
+ frames++;
+ if(now-lastFps>900){
+   hud.textContent=currentName+' · '+Math.round(frames*1000/(now-lastFps))+' FPS';
+   lastFps=now;frames=0;
+ }
+}
+</script>
+</body>
+</html>
