@@ -1,4 +1,4 @@
-/* SUPERVILAINS V4.25.1 — moteur WebGL 3D pour La Grande Evasion.
+/* SUPERVILAINS V4.26 — moteur WebGL 3D pour La Grande Evasion.
  * Sans CDN, sans API, avec retour transparent au Canvas 2D si WebGL est absent.
  * Les portraits des joueurs restent dans leur stockage prive, non telecharges par WebGL.
  */
@@ -366,6 +366,94 @@
      // Coordonnees d'ancrage du mot POLICE, adaptees a la pose.
      return [torsoX,1.73+yShift,chestZ+.49];
    }
+   // V4.26 - modele procedurale de fugitif, independant des photos privees.
+   // Animations de course, evasive sidestep, panique a l'interception.
+   // Les cosmetiques changent selon le personnage sans changer le gameplay.
+   function villainRunner(x,z,g,villain){
+     const name=String(villain?.name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+     const isMorgane=name.includes('morgane'),isEric=name.includes('eric'),
+       isManu=name.includes('manu'),isLea=name.includes('lea'),
+       isNatsu=name.includes('natsu'),isAmelie=name.includes('amelie'),
+       isLudo=name.includes('ludo');
+     const main=typeof villain?.color==='string'&&/^#[\da-f]{6}$/i.test(villain.color)?villain.color:'#ca659a';
+     const trim=isMorgane?'#f9a0d9':isEric?'#78e5e8':isManu?'#92f8e7':
+       isLea?'#c4a0ff':isNatsu?'#f8bd5b':isAmelie?'#ffd38b':
+       isLudo?'#94d2fa':'#b5f6dd';
+     const dark='#342643',pants='#3b3253',skin='#e5b48f',sole='#211e38';
+     const t=g.elapsed*17.7,step=Math.sin(t),secondary=Math.cos(t);
+     const ending=g.winning>0,panic=ending?1:0;
+     const bounce=ending?0:.07*Math.abs(Math.sin(t));
+     const sidestep=.08*Math.sin(g.elapsed*2.3),forward=ending?-.05:-.16;
+     const hipY=1.01+bounce,shoulderY=2.10+bounce;
+     const bx=x+sidestep*.45,bodyZ=z+forward;
+     // Ombre au sol, taille et buste athletique.
+     box(x,.028,z,1.02,.045,.67,'#1c1c37');
+     box(x,hipY,z,.87,.43,.56,pants);
+     box(bx,1.69+bounce,bodyZ,1.10,1.12,.60,main,-.08);
+     box(bx,1.88+bounce,bodyZ+.33,.86,.38,.11,trim,-.09);
+     box(bx,1.43+bounce,bodyZ+.35,.91,.105,.12,dark);
+     // Ceinture et sacoche/chiffre de serie sur le dos.
+     box(bx,1.18+bounce,z+.32,.89,.12,.16,'#201f35');
+     box(bx,1.77+bounce,z+.39,.58,.48,.12,dark);
+     box(bx,1.77+bounce,z+.48,.39,.18,.07,trim);
+     // Veste a pans courts et flaps animes en courant.
+     for(const side of [-1,1]){
+       box(bx+side*.39,1.17+bounce,z+.13+step*side*.10,.23,.51,.44,main,step*side*.08);
+     }
+     // Deux jambes avec articulation au genou, pas deux blocs pivotants.
+     for(const side of [-1,1]){
+       const direction=step*side,legX=x+side*.23;
+       const knee=[legX,hipY-.40,z-.20-.32*direction];
+       const ankle=[legX,hipY-.88+.19*Math.max(0,direction),z-.72*direction+.06];
+       strand([legX,hipY-.07,z],knee,.185,pants);
+       ball(...knee,.20,.21,.21,pants);
+       strand(knee,ankle,.15,pants);
+       box(legX,ankle[1]-.06,ankle[2]-.18,.43,.23,.61,sole,.10*direction);
+       box(legX,ankle[1]-.15,ankle[2]-.17,.43,.06,.57,trim);
+       // Les bras balancent en opposition avec les jambes.
+       const sh=[bx+side*.63,shoulderY-.06,bodyZ];
+       let elbow=[bx+side*.79,shoulderY-.39,bodyZ+.32*direction],
+         hand=[bx+side*.68,shoulderY-.82,bodyZ+.66*direction];
+       if(ending){
+         elbow=[bx+side*.81,shoulderY+.15,bodyZ-.21],
+         hand=[bx+side*.85,shoulderY+.48,bodyZ-.27];
+       }
+       strand(sh,elbow,.16,main);
+       ball(...elbow,.16,.17,.16,main);
+       strand(elbow,hand,.13,main);
+       ball(...hand,.155,.15,.16,skin);
+     }
+     // Tete mobile, nuque et coiffure dirigees vers l'horizon (-Z).
+     const headY=2.61+bounce+Math.abs(secondary)*.024,headZ=bodyZ-.10;
+     ball(bx,2.32+bounce,headZ,.22,.22,.23,skin);
+     ball(bx,headY,headZ,.46,.47,.43,skin);
+     ball(bx,headY+.25,headZ+.16,.48,.27,.45,isEric?'#412f43':isMorgane?'#493354':'#30263e');
+     box(bx,headY+.32,headZ+.38,.67,.18,.16,'#382940');
+     if(isMorgane){
+       // Noeud rose sur la coiffure, sans reutiliser la tenue d'un autre mechant.
+       ball(bx-.27,headY+.39,headZ+.35,.20,.13,.17,'#f06aa8');
+       ball(bx+.27,headY+.39,headZ+.35,.20,.13,.17,'#f06aa8');
+       box(bx,headY+.40,headZ+.38,.13,.15,.14,'#fff0ba');
+     }else if(isEric){
+       // Etiquette turqoise evoquant son objet signature sur la sacoche.
+       box(bx,1.80+bounce,z+.57,.18,.30,.085,'#80f8ee');
+       box(bx,1.98+bounce,z+.57,.13,.09,.10,'#effff7');
+     }else if(isManu){
+       box(bx-.24,1.77+bounce,z+.57,.11,.44,.08,'#eefafa');
+     }else if(isLudo){
+       box(bx,1.82+bounce,z+.55,.43,.30,.09,'#f4ddaa');
+       box(bx-.13,1.82+bounce,z+.61,.035,.24,.03,'#547ca2');
+     }else if(isLea){
+       box(bx-.23,headY+.30,headZ+.47,.24,.08,.12,'#c8b0fa');
+       box(bx+.23,headY+.30,headZ+.47,.24,.08,.12,'#c8b0fa');
+     }else if(isNatsu){
+       box(bx,1.80+bounce,z+.55,.37,.17,.085,'#ffd77c');
+     }else if(isAmelie){
+       box(bx-.20,1.79+bounce,z+.54,.15,.27,.10,'#faf1d9');
+     }
+     // Bulle portrait HTML et nom suivent exactement la nouvelle tete.
+     return [bx,headY,headZ+.48];
+   }
    function character(x,z,police,g,tint){
      const t=g.elapsed*18.5,step=Math.sin(t),bob=Math.abs(step)*.085;
      const jumping=police&&g.jump>0?Math.sin((.88-g.jump)/.88*PI)*1.48:0;
@@ -517,7 +605,7 @@
        world(g);
        // Plus d'obstacle devant les personnages pendant le filet final.
        if(!(g.winning>0))hazards(g);
-       const faceAt=character(vx,vz,false,g,villain.color);
+       const faceAt=villainRunner(vx,vz,g,villain);
        // Maillage volumetrique qui englobe visuellement la cible sans
        // modifier le resultat du dernier tir dans la jauge Solo.
        if(g.winning>0)ionicMesh(vx,vz,g.winning);
