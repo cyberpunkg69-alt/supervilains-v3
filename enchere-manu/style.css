@@ -17,3 +17,10 @@ button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allow
 @keyframes fall{to{top:105vh;transform:translateX(var(--drift)) rotate(850deg);opacity:0}}@keyframes pulse{50%{opacity:.35;transform:scale(.7)}}
 @media(max-width:830px){.columns{grid-template-columns:1fr}.bid-panel{position:static;grid-row:1}.portrait-frame{aspect-ratio:4/5}.intro{padding-top:20px}.lot-body{padding:20px}.curtain{width:30vw}.marquee{font-size:9px}.bid-panel .amount{font-size:76px}}@media(max-width:480px){.wrap{width:calc(100% - 20px)}.masthead{height:70px}.brand{font-size:13px}.brand-star{font-size:27px}.live-status{font-size:9px;padding:7px}.intro h1{font-size:50px}.intro p{font-size:13px}.lot-label{font-size:10px}.bid-form{padding:19px}.stats-row span{font-size:8px}.lot-body h2{font-size:42px}.specs div{grid-template-columns:80px 1fr;font-size:11px}.signoff{font-size:18px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;scroll-behavior:auto!important;transition:none!important}}
+
+/* Version Android/cache : bouton Chrome et affiche JPG */
+.browser-tools{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:-5px 0 23px}
+.browser-tools a,.browser-tools button{display:inline-flex;justify-content:center;align-items:center;padding:12px 17px;min-height:44px;border-radius:9px;text-decoration:none;font-weight:900;letter-spacing:.035em;font-size:11px;border:1px solid #c68d4c;transition:filter .2s;background:#48192a;color:#ffe6ad}
+.browser-tools .chrome-launch{background:linear-gradient(110deg,#ffe4a2,#e9b65c);color:#361422;border-color:#e1b65d}
+.browser-tools a:hover,.browser-tools button:hover{filter:brightness(1.12)}
+@media(max-width:480px){.browser-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px}.browser-tools a,.browser-tools button{font-size:10px;padding:10px 6px}}

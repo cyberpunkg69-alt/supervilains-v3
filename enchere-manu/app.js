@@ -198,6 +198,18 @@
       if (err.name !== "AbortError") setFeedback("Impossible de partager automatiquement. Copie l'adresse de la page.", "error");
     }
   });
+  const copyBrowserLink = document.getElementById("copy-browser-link");
+  if (copyBrowserLink) copyBrowserLink.addEventListener("click", async () => {
+    const freshLink = "https://cyberpunkg69-alt.github.io/supervilains-v3/enchere-manu/live.html";
+    try {
+      await navigator.clipboard.writeText(freshLink);
+      const old = copyBrowserLink.textContent;
+      copyBrowserLink.textContent = "✅ LIEN COPIÉ !";
+      setTimeout(() => { copyBrowserLink.textContent = old; }, 2500);
+    } catch {
+      window.prompt("Copie ce lien et colle-le dans Chrome :", freshLink);
+    }
+  });
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") refresh(); });
   window.addEventListener("online", refresh);
   setInterval(() => {
