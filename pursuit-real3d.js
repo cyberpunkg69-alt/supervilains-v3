@@ -527,10 +527,12 @@ function create(source){
       if(!paused){
         agent.mixer.update(dt*(g.slide>0?.52:1.13));
         villain.mixer.update(dt*(g.winning>0?.20:1.19));
+        // Modifier les articulations une seule fois APRES chaque mise
+        // a jour de l'animation. En pause, ne jamais multiplier les
+        // translations a repetition (sinon les jambes se rapprochent).
+        narrowStride(agent);
+        narrowStride(villain);
       }
-      // Mixer ecrit les poses a chaque frame ; correction sur Sam/Harper.
-      narrowStride(agent);
-      narrowStride(villain);
       // Dalles de rue en mouvement synchrone avec la logique de jeu d'origine.
       const scroll=(g.distance*1.7)%8;
       for(const dash of laneDashes)dash.mesh.position.z=-118+dash.slot*8+scroll;
