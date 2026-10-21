@@ -1,4 +1,4 @@
-/* SUPERVILAINS V5.4 — import des GLB dans le jeu en direct pour La Grande Evasion.
+/* SUPERVILAINS V5.5 — orientation et foulee corrigees des humains GLB pour La Grande Evasion.
  * Three.js r180 + GLTFLoader : modeles humains skinnes et animations GLB.
  * Les regles de collision, la progression et la capture restent gerees par pursuit.js.
  * Un repli 2D/ancien WebGL reste disponible si la 3D moderne ne se charge pas.
@@ -212,7 +212,7 @@ function create(source){
   photo.addEventListener('error',()=>photo.style.display='none');
   parent.appendChild(photo);
   const mark=document.createElement('div');
-  mark.textContent='● 3D V5.4 BÊTA';
+  mark.textContent='● 3D V5.5 BÊTA';
   mark.style.cssText='display:none;position:absolute;z-index:4;pointer-events:none;top:9px;left:9px;border-radius:9px;border:1px solid #a9dfe0;background:#132636dc;color:#d4fcff;padding:5px 8px;font:900 10px Arial;';
   parent.appendChild(mark);
 
@@ -252,9 +252,11 @@ function create(source){
       model.position.y-=box.min.y;
       model.position.z-=center.z;
     }
-    // Le GLB Vanguard est deja oriente vers -Z dans son repere d'origine.
-    // Le retourner de PI le faisait courir face a la camera (course a reculons).
-    model.rotation.y=0;
+    // Les civils MakeHuman et le soldat Three.js n'utilisent pas
+    // le meme axe avant. Sur la video V5.4, Sam et Harper couraient
+    // face au spectateur : retourner uniquement les GLB civils.
+    // Le soldat historique garde son orientation validee en V5.1.
+    model.rotation.y=natural?Math.PI:0;
     model.traverse(o=>{
       if(!o.isMesh)return;
       o.castShadow=true;o.receiveShadow=true;
@@ -273,7 +275,26 @@ function create(source){
     if(!clip)throw Error('Animation de course absente du modele');
     const action=mixer.clipAction(clip);
     action.reset().setLoop(THREE.LoopRepeat,Infinity).play();
-    return {root,model,mixer,action,natural};
+    // Ces articulations sont presentes dans les deux GLB civils.
+    // On les memorise une seule fois pour ne pas chercher les os
+    // a chaque image sur un smartphone.
+    const runnerLegs=natural?['thigh_l','thigh_r','foot_l','foot_r']
+      .map(name=>model.getObjectByName(name))
+      .filter(Boolean):[];
+    return {root,model,mixer,action,natural,runnerLegs};
+  }
+
+  // Corrige l'ecartement exagere des jambes du clip Run des civils :
+  // uniquement les translations horizontales des articulations,
+  // pas les rotations de hanche/genou (pour eviter la deformation).
+  // A appeler APRES AnimationMixer.update, qui remet la pose d'origine.
+  function narrowStride(actor){
+    if(!actor?.natural)return;
+    for(const bone of actor.runnerLegs){
+      // Les clips animent la translation X de ces quatre os.
+      // 0,82 = 18 % de moins en largeur, sans briser l'alternance.
+      bone.position.x*=.82;
+    }
   }
 
   // Des accessoires WebGL legers distinguent les roles sans remplacer
@@ -425,8 +446,8 @@ function create(source){
         if(!sam&&!harper)actorSources.soldier=await loadSoldier();
         const source=sam||harper||actorSources.soldier;
         mark.textContent=(sam||harper)
-          ?'● 3D V5.4 • GLB CIVILS'
-          :'● 3D V5.4 • SOLDAT DE SECOURS';
+          ?'● 3D V5.5 • GLB CIVILS'
+          :'● 3D V5.5 • SOLDAT DE SECOURS';
         agent=actorFrom(source,source===actorSources.soldier?'#90b5fa':null,!!(sam||harper));
         outfitForPolice(agent);
         switchVillain(villainInfo);
@@ -464,7 +485,7 @@ function create(source){
     }
     previousAgent?.mixer.stopAllAction();if(previousAgent)scene.remove(previousAgent.root);
     previousVillain?.mixer.stopAllAction();if(previousVillain)scene.remove(previousVillain.root);
-    mark.textContent='● 3D V5.4 • GLB CIVILS';
+    mark.textContent='● 3D V5.5 • GLB CIVILS';
     return true;
   }
   function begin(info){
@@ -507,6 +528,9 @@ function create(source){
         agent.mixer.update(dt*(g.slide>0?.52:1.13));
         villain.mixer.update(dt*(g.winning>0?.20:1.19));
       }
+      // Mixer ecrit les poses a chaque frame ; correction sur Sam/Harper.
+      narrowStride(agent);
+      narrowStride(villain);
       // Dalles de rue en mouvement synchrone avec la logique de jeu d'origine.
       const scroll=(g.distance*1.7)%8;
       for(const dash of laneDashes)dash.mesh.position.z=-118+dash.slot*8+scroll;
@@ -551,4 +575,4 @@ function create(source){
   }
   return {begin,end,draw,resize,reloadModels,isReady:()=>renderReady&&!failed};
 }
-window.SUPERVILAINS_PURSUIT_REAL3D={create,version:'5.4-beta'};
+window.SUPERVILAINS_PURSUIT_REAL3D={create,version:'5.5-beta'};
