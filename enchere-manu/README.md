@@ -80,3 +80,30 @@ Depuis iOS/iPadOS 16.4, les notifications push fonctionnent après installation 
 comme application web sur l'écran d'accueil. Dans Safari, **Partager → Sur l'écran d'accueil → Ouvrir comme app → Ajouter**, puis ouvrir MANU depuis l'icône créée et toucher **Activer les notifications**. Dans un simple onglet Safari, l'autorisation n'est pas proposée.
 Le manifest `enchere-manu/manifest.webmanifest` active `display:standalone` et déclare les icônes de MANU.
 Sur Android, ouvrir la page dans Chrome et toucher directement **Activer les notifications**.
+
+
+## 💬 Le chat des enchères — sans inscription
+
+Le salon de discussion **Le Chat des Enchères** est intégré à \`live.html\` et à \`index.html\`.
+Accessible directement en cliquant sur **« 💬 Rejoindre le chat »** près du haut de la page.
+
+- Pseudo choisi librement et mémorisé dans le navigateur, sans compte, e-mail ni mot de passe.
+- Texte, emojis (sélecteur), photos JPEG/PNG/WebP (l'appareil convertit/compresse en JPEG, max 2 Mo après compression).
+- Un seul fichier photo par message, un aperçu avant l'envoi, agrandissement d'un clic.
+- Actualisation des messages toutes les ~5 secondes lorsque la page est visible ; historique des messages anciens.
+- Le serveur valide les pseudos, contrôle le type réel des images et refuse les messages trop longs (500 caractères).
+- Anti-spam : au minimum 5 secondes entre deux messages, 45 secondes entre deux photos, plafonds quotidiens.
+- Chaque message dispose d'un bouton **Signaler** ; trois signalements distincts masquent le message.
+- Les photos sont **publiques**. Les participants doivent éviter toute donnée personnelle ou photo qu'ils ne veulent pas rendre publique.
+- Pas de véritable modération humaine/automatique d'images : l'organisateur doit surveiller le salon et retirer rapidement les contenus problématiques.
+
+Architecture : Edge Function Supabase \`manu-chat\` ; tables privées
+\`manu_chat_messages\` et \`manu_chat_reports\` ; bucket public de photos \`manu-chat-photos\`.
+Les clés serveur et les empreintes de session ne sont jamais exposées dans GitHub Pages.
+
+Pour supprimer un message en tant qu'organisateur via Supabase SQL Editor :
+\`\`\`sql
+update public.manu_chat_messages set is_hidden=true where id=NUMERO_DU_MESSAGE;
+\`\`\`
+Pour supprimer aussi une photo signalée, effacer l'objet associé au chemin
+\`photo_path\` dans le bucket \`manu-chat-photos\`.
