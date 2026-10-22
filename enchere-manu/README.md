@@ -121,3 +121,34 @@ Les visiteurs peuvent désormais envoyer des GIF, toujours sans compte ni inscri
 - Les résultats externes peuvent être soumis à des licences différentes et leur disponibilité dépend du fournisseur.
 - GIPHY exige une **clé API développeur** pour afficher son moteur de recherche officiel **directement dans le site**. Sans clé, le bouton GIPHY ouvre la recherche officielle et l'utilisateur colle le lien de partage : aucune clé ni inscription n'est imposée aux participants.
 - Ne pas utiliser l'API Tenor : arrêt officiel au 30 juin 2026.
+
+
+## 🎙️ Messages vocaux (Android et iPhone)
+
+Le salon public MANU dispose d'un bouton **🎙️ Message vocal** sans inscription.
+Le navigateur demande l'autorisation d'utiliser le microphone seulement au moment
+de l'enregistrement. L'utilisateur peut :
+1. Appuyer sur **Message vocal** et enregistrer au maximum **15 secondes**
+   (arrêt automatique à 15 s, ou appuyer à nouveau pour arrêter plus tôt).
+2. Réécouter son vocal dans le lecteur de prévisualisation, recommencer ou le supprimer.
+3. Ajouter du texte si souhaité, puis appuyer sur **Envoyer**.
+4. Écouter les messages vocaux des autres directement dans le fil du chat.
+
+Compatibilité : formats sélectionnés par le navigateur avec MediaRecorder ;
+Safari iOS produit généralement du MP4/AAC (stocké en \`.m4a\`), Chrome Android du
+WebM/Opus ; Ogg également accepté. Pas de réencodage coûteux en serveur.
+
+Sécurité / modération :
+- Fichiers audio validés selon leur signature de conteneur ; taille de **3 Mo maximum**,
+  durée **limitée à 15 secondes par l'interface** et vérifiée d'après la valeur déclarée
+  côté serveur (pas de mesure indépendante du temps réel dans le conteneur).
+- Maximum **12 vocaux sur 24 h par session**, au moins **45 secondes entre deux vocaux** ;
+  limites générales du chat conservées.
+- Un seul média photo ou vocal par message ; le texte est facultatif.
+- Stockage dans le bucket public \`manu-chat-voices\`, qui ne donne pas de droit
+  d'écriture direct aux utilisateurs ; Edge Function \`manu-chat\` uniquement.
+- Les vocaux envoyés sont **publics et écoutables par tous** ; ne jamais enregistrer
+  de secrets, de conversation privée ni des personnes sans consentement.
+- Le signalement déjà présent dans le chat peut masquer les messages vocaux
+  en cas d'abus, mais ne remplace pas une modération humaine. Le fichier dans
+  Storage doit être supprimé séparément si nécessaire.
