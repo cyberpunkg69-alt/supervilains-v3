@@ -107,3 +107,17 @@ update public.manu_chat_messages set is_hidden=true where id=NUMERO_DU_MESSAGE;
 \`\`\`
 Pour supprimer aussi une photo signalée, effacer l'objet associé au chemin
 \`photo_path\` dans le bucket \`manu-chat-photos\`.
+
+
+## 🎞️ GIF animés dans le chat
+
+Les visiteurs peuvent désormais envoyer des GIF, toujours sans compte ni inscription.
+
+- **Bouton 🎞️ GIF** : chercher des GIFs dans des bibliothèques publiques sans clé (GifCities / Wikimedia Commons) et cliquer sur une miniature pour l'insérer.
+- **Catalogue GIPHY** : bouton « Chercher sur GIPHY » ouvrant le très large catalogue officiel. Copier le lien de partage du GIF puis le coller dans le champ de la page et cliquer « Choisir ce GIF ». Le chat transforme le lien en aperçu animé.
+- **GIFs locaux** : bouton « 📷 Photo / GIF local », sélectionner un fichier \`.gif\` (max. 8 Mo). Le fichier GIF est transféré tel quel pour **préserver l'animation** ; seules les photos classiques sont compressées.
+- **Texte + GIF** : saisir éventuellement un texte après avoir sélectionné le GIF, puis envoyer normalement.
+- Fonction Supabase **\`manu-gifs\`** pour la recherche ouverte ; fonction **\`manu-chat\` v2** pour les GIFs locaux.
+- Les résultats externes peuvent être soumis à des licences différentes et leur disponibilité dépend du fournisseur.
+- GIPHY exige une **clé API développeur** pour afficher son moteur de recherche officiel **directement dans le site**. Sans clé, le bouton GIPHY ouvre la recherche officielle et l'utilisateur colle le lien de partage : aucune clé ni inscription n'est imposée aux participants.
+- Ne pas utiliser l'API Tenor : arrêt officiel au 30 juin 2026.
