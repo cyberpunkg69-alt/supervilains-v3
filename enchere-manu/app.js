@@ -77,6 +77,15 @@
   const pushToggle = byId("push-toggle");
   const pushStatus = byId("push-status");
   const bidToast = byId("bid-toast");
+  const isAppleMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches ||
+    navigator.standalone === true;
+  const needsAppleInstall = isAppleMobile && !isStandalone;
+  const iosSetup = byId("ios-setup");
+  if (isAppleMobile) document.body.classList.add("apple-device");
+  if (needsAppleInstall && iosSetup) iosSetup.hidden = false;
+
   const pushSupported = Boolean(
     window.isSecureContext && "serviceWorker" in navigator &&
     "PushManager" in window && "Notification" in window
@@ -87,10 +96,16 @@
   let toastTimeout = null;
   const pushMessage = (message) => { pushStatus.textContent = message; };
   const reflectPushButton = () => {
+    if (needsAppleInstall) {
+      pushToggle.disabled = false;
+      pushToggle.textContent = "🍎 COMMENT ACTIVER SUR IPHONE / IPAD";
+      pushMessage("Sur iPhone, il faut d'abord ajouter le site à l'écran d'accueil.");
+      return;
+    }
     if (!pushSupported) {
       pushToggle.disabled = true;
       pushToggle.textContent = "🔕 NON DISPONIBLE ICI";
-      pushMessage("Ouvre cette page dans Chrome sur Android pour recevoir des alertes.");
+      pushMessage(isAppleMobile ? "Notifications indisponibles : iOS / iPadOS 16.4 ou plus récent requis, et ouverture depuis l’écran d’accueil." : "Ouvre cette page dans Chrome sur Android pour recevoir des alertes.");
       return;
     }
     pushToggle.disabled = pushBusy;
@@ -111,12 +126,12 @@
     return Uint8Array.from(binary, c => c.charCodeAt(0));
   };
   async function getPushRegistration() {
-    const reg = await navigator.serviceWorker.register("./sw.js?v=20261022push1", {scope: "./"});
+    const reg = await navigator.serviceWorker.register("./sw.js?v=20261022ios1", {scope: "./"});
     await navigator.serviceWorker.ready;
     return reg;
   }
   async function updatePushState() {
-    if (!pushSupported) { reflectPushButton(); return; }
+    if (needsAppleInstall || !pushSupported) { reflectPushButton(); return; }
     try {
       const reg = await getPushRegistration();
       const subscription = await reg.pushManager.getSubscription();
@@ -126,18 +141,25 @@
         api("POST", {action: "subscribe", token, subscription: subscription.toJSON()})
           .catch(err => console.warn("réinscription notifications:", err.message));
       }
-      pushMessage(pushOn ? "✅ Alertes activées, même quand la page est fermée (selon Android)."
+      pushMessage(pushOn ? "✅ Alertes activées, même lorsque l’application est fermée (selon les réglages du téléphone)."
         : Notification.permission === "denied"
           ? "Notifications bloquées dans les réglages du navigateur."
           : "Facultatif • tu peux les activer pour suivre l'enchère de MANU.");
     } catch (e) {
-      pushMessage("Notifications indisponibles dans ce navigateur. Utilise Chrome.");
+      pushMessage(isAppleMobile ? "Impossible ici : ouvre l’app MANU depuis son icône sur l’écran d’accueil." : "Notifications indisponibles dans ce navigateur. Utilise Chrome.");
     } finally {
       reflectPushButton();
     }
   }
-  if (pushSupported) pushToggle.addEventListener("click", async () => {
-    if (pushBusy) return;
+  pushToggle.addEventListener("click", async () => {
+    if (needsAppleInstall) {
+      if (iosSetup) {
+        iosSetup.hidden = false;
+        iosSetup.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
+    if (!pushSupported || pushBusy) return;
     pushBusy = true;
     reflectPushButton();
     try {
@@ -145,7 +167,7 @@
       if (!pushOn && Notification.permission !== "granted") {
         const permission = await Notification.requestPermission();
         if (permission !== "granted") {
-          pushMessage("Tu as refusé les notifications. Tu peux les autoriser dans Chrome.");
+          pushMessage("Notifications refusées : vérifie les réglages de notifications de ton navigateur ou de l’app MANU.");
           return;
         }
       }

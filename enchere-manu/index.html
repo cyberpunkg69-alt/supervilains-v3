@@ -4,10 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#20060e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MANU Enchères">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="./manifest.webmanifest?v=20261022ios1">
+  <link rel="apple-touch-icon" href="../icon-192.png">
   <meta name="description" content="L'incroyable vente aux enchères 100 % fictive de MANU, la diva du trône. Enchérissez en direct pour rire !">
   <title>MANU aux enchères | Cabaret de l'impossible</title>
-  <link rel="stylesheet" href="./style.css?v=20261022push1">
-  <script src="./app.js?v=20261022push1" defer></script>
+  <link rel="stylesheet" href="./style.css?v=20261022ios1">
+  <script src="./app.js?v=20261022ios1" defer></script>
 </head>
 <body>
   <div class="curtain curtain-left" aria-hidden="true"></div>
@@ -76,6 +82,17 @@
           <div class="push-head"><span class="push-bell">🔔</span><div><strong>ALERTES DE SURENCHÈRE</strong><span>Préviens-moi quand quelqu'un dépasse la meilleure offre !</span></div></div>
           <button type="button" id="push-toggle" class="push-button">🔔 ACTIVER LES NOTIFICATIONS</button>
           <p id="push-status" class="push-status" role="status">Facultatif • aucune notification sans ton accord.</p>
+          <div id="ios-setup" class="ios-setup" hidden>
+            <strong>🍎 Activer les notifications sur iPhone / iPad</strong>
+            <ol>
+              <li>Ouvre ce site dans <b>Safari</b>. Si tu es dans ChatGPT ou Messenger, utilise « Copier le lien » en haut puis colle-le dans Safari.</li>
+              <li>Touche <b>Partager</b> (carré avec une flèche vers le haut) — selon la version d'iOS, passe par le menu de la page — puis <b>Sur l'écran d'accueil</b>.</li>
+              <li>Active <b>Ouvrir comme app</b> si l'option apparaît, puis touche <b>Ajouter</b>.</li>
+              <li>Ouvre l'icône <b>MANU Enchères</b> depuis ton écran d'accueil et touche <b>Activer les notifications</b>.</li>
+            </ol>
+            <p>Compatible iPhone / iPad avec iOS / iPadOS 16.4 ou plus récent. Le site ouvert simplement dans Safari ne peut pas envoyer de notifications en arrière-plan.</p>
+          </div>
+
         </section>
         <form id="bid-form" class="bid-form">
           <h2>À QUI LE TOUR ?</h2>

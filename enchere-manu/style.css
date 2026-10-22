@@ -37,3 +37,14 @@ button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allow
 .push-status{font-size:11px;line-height:1.5;color:#e5bfd0;text-align:center;margin:9px auto 0}
 .bid-toast{position:fixed;z-index:100;left:50%;bottom:20px;transform:translate(-50%,125%);width:min(470px,calc(100% - 30px));background:#43162d;color:#ffe9b2;border:2px solid #e9b66a;border-radius:14px;padding:16px 17px;font-size:14px;line-height:1.5;box-shadow:0 15px 45px #000b;pointer-events:none;opacity:0;transition:transform .3s ease,opacity .3s ease;text-align:center;font-weight:900}
 .bid-toast.visible{transform:translate(-50%,0);opacity:1}
+
+/* Affichage explicite des étapes Apple iOS : installation sur l'écran d'accueil */
+.apple-device .chrome-launch{display:none!important}
+.apple-device .browser-tools{display:flex;justify-content:center}
+.ios-setup[hidden]{display:none!important}
+.ios-setup{margin-top:14px;padding:16px;background:#220d1c;border:1px solid #d5a749;border-radius:10px;color:#ffe6d0;font-size:12px;line-height:1.6}
+.ios-setup>strong{display:block;font-size:13px;color:#ffe0a0;margin-bottom:10px}
+.ios-setup ol{margin:8px 0 12px;padding-left:19px}
+.ios-setup li{margin-bottom:8px}
+.ios-setup b{color:#fff4ba}
+.ios-setup p{font-size:11px;color:#deb5c2;margin:10px 0 0}

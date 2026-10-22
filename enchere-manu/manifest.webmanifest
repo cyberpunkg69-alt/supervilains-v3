@@ -1,0 +1,31 @@
+{
+  "name": "MANU — Le cabaret des enchères",
+  "short_name": "MANU Enchères",
+  "description": "Vente aux enchères fictive de MANU entre amis. Alertes de surenchère.",
+  "id": "/supervilains-v3/enchere-manu/",
+  "start_url": "/supervilains-v3/enchere-manu/live.html",
+  "scope": "/supervilains-v3/enchere-manu/",
+  "display": "standalone",
+  "background_color": "#20060e",
+  "theme_color": "#20060e",
+  "lang": "fr",
+  "orientation": "any",
+  "categories": [
+    "entertainment",
+    "games"
+  ],
+  "icons": [
+    {
+      "src": "/supervilains-v3/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/supervilains-v3/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
