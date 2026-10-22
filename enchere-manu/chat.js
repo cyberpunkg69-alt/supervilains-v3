@@ -304,7 +304,7 @@
   }catch{return null}
  }
  function line(m){
-  const box=document.createElement("article");box.className="chat-message";
+  const box=document.createElement("article");box.className="chat-message";box.dataset.chatId=String(m.id);
   const avatar=document.createElement("div");avatar.className="chat-avatar";avatar.textContent=String(m.nickname||"?").charAt(0).toUpperCase();
   const pane=document.createElement("div");pane.className="chat-bubble";
   const top=document.createElement("div");top.className="chat-meta";
@@ -361,10 +361,32 @@
   const s=messages.map(m=>m.id).join(",");
   if(s===signature&&!force)return;
   const wasBottom=nearEnd(),oldHeight=wall.scrollHeight,oldTop=wall.scrollTop;
-  const initial=!signature;signature=s;
-  wall.replaceChildren();
-  if(messages.length){for(const m of messages)wall.append(line(m))}
-  else{const p=document.createElement("p");p.className="chat-empty";p.textContent="🎤 Aucun message… Qui va chambrer MANU en premier ? 😂";wall.append(p)}
+  const initial=signature===null;signature=s;
+  // Conserver les lecteurs audio existants pendant les mises à jour du chat.
+  // Recréer le DOM toutes les 5 secondes interromprait la lecture d'un vocal.
+  const existing=new Map([...wall.querySelectorAll("article.chat-message[data-chat-id]")]
+    .map(el=>[el.dataset.chatId,el]));
+  const wanted=new Set(messages.map(m=>String(m.id)));
+  for(const [id,node] of existing){
+   if(!wanted.has(id)){node.remove();existing.delete(id)}
+  }
+  if(!messages.length){
+   wall.replaceChildren();
+   const p=document.createElement("p");p.className="chat-empty";
+   p.textContent="🎤 Aucun message… Qui va chambrer MANU en premier ? 😂";wall.append(p);
+  }else{
+   for(const child of [...wall.children])if(!child.classList.contains("chat-message"))child.remove();
+   messages.forEach((m,i)=>{
+    const id=String(m.id);
+    if(existing.has(id))return;
+    const next=messages.slice(i+1).map(item=>existing.get(String(item.id)))
+      .find(el=>el&&el.isConnected);
+    const element=line(m);
+    if(next)wall.insertBefore(element,next);
+    else wall.append(element);
+    existing.set(id,element);
+   });
+  }
   older.hidden=!canGoBack;
   if(keepTop){wall.scrollTop=wall.scrollHeight-oldHeight+oldTop;}
   else if(initial||wasBottom){wall.scrollTop=wall.scrollHeight;jump.hidden=true;}
