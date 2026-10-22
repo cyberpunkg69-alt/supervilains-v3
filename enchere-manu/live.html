@@ -13,10 +13,10 @@
   <meta name="description" content="L'incroyable vente aux enchères 100 % fictive de MANU, la diva du trône. Enchérissez en direct pour rire !">
   <title>MANU aux enchères | Cabaret de l'impossible</title>
   <link rel="stylesheet" href="./style.css?v=20261022ios1">
-  <link rel="stylesheet" href="./chat.css?v=20261022gif1">
+  <link rel="stylesheet" href="./chat.css?v=20261022voice1">
   <link rel="stylesheet" href="./updates.css?v=20261022updates1">
   <script src="./app.js?v=20261022ios1" defer></script>
-  <script src="./chat.js?v=20261022gif1" defer></script>
+  <script src="./chat.js?v=20261022voice1" defer></script>
   <script src="./updates.js?v=20261022updates1" defer></script>
 </head>
 <body>
@@ -153,7 +153,7 @@
         <div>
           <div class="chat-kicker">✦ LE CABARET DE L’IMPOSSIBLE ✦</div>
           <h2>💬 LE CHAT DES ENCHÈRES</h2>
-          <p>Chambre MANU en direct : messages, smileys et photos, sans inscription !</p>
+          <p>Chambre MANU en direct : messages, smileys, photos et vocaux de 15 secondes, sans inscription !</p>
         </div>
         <span class="chat-live"><i aria-hidden="true"></i> SALON PUBLIC</span>
       </div>
@@ -178,6 +178,7 @@
           <div class="chat-action-row">
             <button type="button" id="chat-emoji-toggle" class="chat-tool-button" aria-controls="chat-emoji-picker" aria-expanded="false">😜 Smileys</button>
             <button type="button" id="chat-gif-toggle" class="chat-tool-button" aria-controls="chat-gif-panel" aria-expanded="false">🎞️ GIF</button>
+            <button type="button" id="chat-voice-toggle" class="chat-tool-button chat-mic-button" aria-controls="chat-voice-panel" aria-expanded="false">🎙️ Message vocal</button>
             <label for="chat-photo" class="chat-tool-button chat-pick-photo">📷 Photo / GIF local</label>
             <input type="file" id="chat-photo" accept="image/*,.gif" class="chat-file-input" aria-label="Choisir une photo">
           </div>
@@ -202,6 +203,19 @@
             <img id="chat-gif-choice-image" alt="GIF animé choisi">
             <button type="button" id="chat-gif-clear">✕ Retirer le GIF</button>
           </div>
+          <div id="chat-voice-panel" class="chat-voice-panel" hidden>
+            <div class="chat-voice-panel-top">
+              <strong>🎙️ Ton message vocal</strong>
+              <span id="chat-voice-timer" class="chat-voice-timer" aria-live="off">00:00 / 00:15</span>
+            </div>
+            <div class="chat-voice-meter" aria-hidden="true"><span id="chat-voice-progress"></span></div>
+            <p id="chat-voice-status" class="chat-voice-status" role="status">Appuie sur « Message vocal » pour enregistrer jusqu'à 15 secondes.</p>
+            <audio id="chat-voice-preview" class="chat-voice-preview" controls preload="metadata" hidden aria-label="Écouter ton message vocal avant envoi"></audio>
+            <div class="chat-voice-actions">
+              <button type="button" id="chat-voice-delete" class="chat-voice-delete">✕ Annuler / supprimer</button>
+            </div>
+            <small>Le micro est utilisé uniquement pendant l'enregistrement. Après l'envoi, le vocal est public dans le chat.</small>
+          </div>
           <div class="chat-photo-preview" id="chat-photo-preview" hidden>
             <img id="chat-preview-image" alt="Photo sélectionnée">
             <button type="button" id="chat-remove-photo">✕ Retirer la photo</button>
@@ -209,7 +223,7 @@
           <div class="chat-char-count"><span id="chat-count">0</span>/500 caractères</div>
           <button type="submit" id="chat-submit" class="chat-submit">🚀 ENVOYER AU CABARET</button>
           <p id="chat-feedback" class="chat-feedback" role="status" aria-live="polite">Choisis ton pseudo et lance-toi !</p>
-          <p class="chat-disclaimer">Sans compte ni mot de passe. Une image par message : photos compressées automatiquement, GIF animé jusqu’à 8 Mo. N’envoie aucune information privée. Les contenus du chat sont publics et peuvent être signalés.</p>
+          <p class="chat-disclaimer">Sans compte ni mot de passe. Une photo ou un vocal par message. Photos compressées, GIF jusqu’à 8 Mo et vocaux jusqu’à 15 s. Les enregistrements envoyés sont publics. N’envoie aucune information privée. Les contenus du chat sont publics et peuvent être signalés.</p>
         </form>
       </div>
     </section>
