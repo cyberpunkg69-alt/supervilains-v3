@@ -180,12 +180,127 @@
   gifSearchTimer=setTimeout(()=>{if(!gifPanel.hidden)searchGif(gifQuery.value)},650);
  });
 
+
+ // Messages vocaux de 15 s : Safari iPhone (MP4/AAC) et Chrome Android (WebM/Opus).
+ const voiceToggle=$("chat-voice-toggle"),voicePanel=$("chat-voice-panel");
+ const voiceTimer=$("chat-voice-timer"),voiceProgress=$("chat-voice-progress");
+ const voiceStatus=$("chat-voice-status"),voicePreview=$("chat-voice-preview");
+ const voiceDelete=$("chat-voice-delete");
+ const voiceSupported=Boolean(window.isSecureContext&&navigator.mediaDevices?.getUserMedia&&window.MediaRecorder);
+ let voiceRecorder=null,voiceStream=null,voiceBlob=null,voicePreviewURL=null,voiceSeconds=0;
+ let voiceStarted=0,voiceInterval=null,voiceTimeout=null,voiceChunks=[],voiceDiscard=false,voiceError=false;
+ const meter=seconds=>{
+  const n=Math.min(15,Math.max(0,seconds));
+  voiceTimer.textContent="00:"+String(Math.floor(n)).padStart(2,"0")+" / 00:15";
+  voiceProgress.style.width=Math.min(100,n/15*100)+"%";
+ };
+ const releaseMicro=()=>{
+  if(voiceInterval){clearInterval(voiceInterval);voiceInterval=null}
+  if(voiceTimeout){clearTimeout(voiceTimeout);voiceTimeout=null}
+  if(voiceStream){voiceStream.getTracks().forEach(t=>t.stop());voiceStream=null}
+  file.disabled=false;
+ };
+ const discardVoice=()=>{
+  if(voicePreviewURL){URL.revokeObjectURL(voicePreviewURL);voicePreviewURL=null}
+  voiceBlob=null;voiceSeconds=0;
+  voicePreview.pause();voicePreview.removeAttribute("src");voicePreview.load();
+  voicePreview.hidden=true;meter(0);
+ };
+ const voiceStatusText=t=>{voiceStatus.textContent=t};
+ function stopVoice(){
+  if(voiceRecorder?.state!=="inactive"){
+   try{voiceRecorder.stop()}catch{}
+  }
+ }
+ function clearVoice(){
+  if(voiceRecorder){voiceDiscard=true;stopVoice()}
+  discardVoice();
+  if(!voiceRecorder){
+   voicePanel.hidden=true;voiceToggle.textContent="🎙️ Message vocal";
+   voiceToggle.classList.remove("is-recording");voiceToggle.setAttribute("aria-expanded","false");
+  }
+ }
+ if(!voiceSupported){
+  voiceToggle.disabled=true;voiceToggle.title="Utilise Safari sur iPhone ou Chrome sur Android et autorise le micro.";
+  voiceStatusText("Enregistrement non disponible dans ce navigateur.");
+ }
+ voiceToggle.addEventListener("click",async()=>{
+  if(!voiceSupported||processing)return;
+  if(voiceRecorder){voiceStatusText("Préparation du vocal…");stopVoice();return}
+  if(file.files?.length){note("Retire d'abord la photo ou le GIF local avant d'enregistrer.","error");return}
+  if(voiceBlob)discardVoice();
+  let stream;
+  try{
+   stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false});
+   if(processing){stream.getTracks().forEach(t=>t.stop());return}
+   const types=["audio/mp4","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus","audio/ogg"];
+   const preferred=types.find(t=>MediaRecorder.isTypeSupported?.(t));
+   const options=preferred?{mimeType:preferred,audioBitsPerSecond:64000}:{audioBitsPerSecond:64000};
+   let rec;try{rec=new MediaRecorder(stream,options)}catch{rec=new MediaRecorder(stream)}
+   voiceStream=stream;voiceRecorder=rec;voiceChunks=[];voiceDiscard=false;voiceError=false;
+   voicePreview.hidden=true;voicePanel.hidden=false;voiceStarted=0;meter(0);
+   voiceToggle.classList.add("is-recording");voiceToggle.textContent="⏹️ Arrêter le vocal";
+   voiceToggle.setAttribute("aria-expanded","true");voiceStatusText("🔴 Enregistrement… parle à MANU !");
+   send.disabled=true;file.disabled=true;
+   rec.ondataavailable=e=>{if(e.data?.size)voiceChunks.push(e.data)};
+   rec.onerror=()=>{voiceError=true;voiceStatusText("Erreur pendant l'enregistrement.");};
+   rec.onstop=()=>{
+    const elapsed=voiceStarted?performance.now()-voiceStarted:0;
+    const parts=voiceChunks.slice(),kind=rec.mimeType||parts[0]?.type||preferred||"";
+    const mime=kind.startsWith("audio/mp4")?"audio/mp4":kind.startsWith("audio/ogg")?"audio/ogg":
+      kind.startsWith("audio/webm")?"audio/webm":"";
+    voiceRecorder=null;releaseMicro();
+    voiceToggle.classList.remove("is-recording");voiceToggle.textContent="🎙️ Refaire un vocal";
+    voiceToggle.setAttribute("aria-expanded","false");
+    if(!processing)send.disabled=false;
+    if(voiceDiscard||voiceError||!parts.length||!mime){
+     discardVoice();
+     if(voiceDiscard){voicePanel.hidden=true;voiceToggle.textContent="🎙️ Message vocal";}
+     else voiceStatusText("Enregistrement impossible. Essaie Chrome ou Safari.");
+     return;
+    }
+    const result=new Blob(parts,{type:mime});
+    if(result.size<512||result.size>3*1024*1024){
+     discardVoice();voiceStatusText("Vocal vide ou supérieur à 3 Mo.");return;
+    }
+    voiceSeconds=Math.min(15,Math.max(1,Math.ceil(elapsed/1000)));
+    voiceBlob=result;voicePreviewURL=URL.createObjectURL(result);
+    voicePreview.src=voicePreviewURL;voicePreview.hidden=false;
+    voiceStatusText("✅ Vocal prêt ("+voiceSeconds+" s). Écoute-le avant d'envoyer !");
+    meter(voiceSeconds);
+   };
+   rec.start();
+   voiceStarted=performance.now();
+   voiceInterval=setInterval(()=>meter((performance.now()-voiceStarted)/1000),200);
+   voiceTimeout=setTimeout(stopVoice,15000);
+  }catch(err){
+   if(stream)stream.getTracks().forEach(t=>t.stop());
+   releaseMicro();voiceRecorder=null;voiceToggle.classList.remove("is-recording");
+   voiceToggle.setAttribute("aria-expanded","false");voiceToggle.textContent="🎙️ Message vocal";
+   if(!processing)send.disabled=false;
+   voicePanel.hidden=false;
+   voiceStatusText("Micro refusé ou indisponible. Autorise-le dans Chrome/Safari.");
+   note("Accès au micro impossible : "+(err?.name==="NotAllowedError"?"autorisation refusée.":"vérifie le navigateur."),"error");
+  }
+ });
+ voiceDelete.addEventListener("click",()=>{clearVoice();note("Vocal annulé.","success")});
+ file.addEventListener("change",()=>{if(file.files?.length&&voiceBlob)clearVoice()});
+
  const nearEnd=()=>wall.scrollHeight-wall.scrollTop-wall.clientHeight<140;
  function photoUrl(str){
   if(typeof str!=="string")return null;
   try{
    const u=new URL(str);return u.protocol==="https:"&&u.hostname==="nhmraocljiugwlgflhfn.supabase.co"&&
      u.pathname.startsWith("/storage/v1/object/public/manu-chat-photos/photos/")?u.href:null;
+  }catch{return null}
+ }
+ function voiceUrl(str){
+  if(typeof str!=="string")return null;
+  try{
+   const u=new URL(str);
+   return u.protocol==="https:"&&u.hostname==="nhmraocljiugwlgflhfn.supabase.co"&&
+     /^\/storage\/v1\/object\/public\/manu-chat-voices\/voices\/[a-f0-9-]{36}\.(webm|ogg|m4a)$/.test(u.pathname)
+     ?u.href:null;
   }catch{return null}
  }
  function line(m){
@@ -231,6 +346,14 @@
    a.className="chat-image-link";a.title="Agrandir la photo";
    const image=document.createElement("img");image.src=url;image.loading="lazy";image.className="chat-image";
    image.alt="Photo envoyée par "+m.nickname;a.append(image);pane.append(a);
+  }
+  const recording=voiceUrl(m.voice_url);
+  if(recording){
+   const container=document.createElement("div");container.className="chat-voice-message";
+   const title=document.createElement("strong");title.textContent="🎙️ Message vocal · 15 s max";
+   const player=document.createElement("audio");player.controls=true;player.preload="none";
+   player.src=recording;player.setAttribute("aria-label","Écouter le vocal de "+m.nickname);
+   container.append(title,player);pane.append(container);
   }
   box.append(avatar,pane);return box;
  }
@@ -282,14 +405,22 @@
   e.preventDefault();if(processing)return;
   const n=nick.value.trim(),t=body.value.trim(),f=file.files?.[0];
   if(!/^[\p{L}\p{N} _.-]{2,24}$/u.test(n)){note("Pseudo invalide : 2 à 24 caractères.","error");nick.focus();return}
-  if(Array.from(t).length>500||(!t&&!f)){note("Écris un message ou sélectionne une photo.","error");return}
+  if(voiceRecorder){note("Arrête l'enregistrement avant d'envoyer.","error");return}
+  if(f&&voiceBlob){note("Choisis une photo ou un message vocal, pas les deux.","error");return}
+  if(Array.from(t).length>500||(!t&&!f&&!voiceBlob)){note("Écris un texte, sélectionne une photo ou enregistre un vocal.","error");return}
   processing=true;send.disabled=true;send.textContent="⏳ ENVOI…";
   try{
    const data=new FormData();data.set("nickname",n);data.set("text",t);data.set("token",token);
    if(f){note(f.type==="image/gif"?"Envoi du GIF animé…":"Compression et envoi de la photo…");data.set("photo",await compress(f))}
+   if(voiceBlob){
+    const ext=voiceBlob.type==="audio/mp4"?"m4a":voiceBlob.type==="audio/ogg"?"ogg":"webm";
+    data.set("voice",new File([voiceBlob],"message-vocal."+ext,{type:voiceBlob.type}));
+    data.set("voice_seconds",String(voiceSeconds));
+    note("Envoi de ton message vocal…");
+   }
    const result=await api("POST",data);set("manu-chat-nickname",n);set("manu-auction-pseudo",n);
    const other=$("nickname");if(other&&!other.value.trim())other.value=n;
-   body.value="";body.dispatchEvent(new Event("input"));clearPhoto();clearGifChoice();
+   body.value="";body.dispatchEvent(new Event("input"));clearPhoto();clearGifChoice();clearVoice();
    messages=Array.isArray(result.messages)?result.messages:messages;canGoBack=messages.length>=60;
    render(true);wall.scrollTop=wall.scrollHeight;jump.hidden=true;
    note("✅ Envoyé ! MANU va adorer 😂","success");
