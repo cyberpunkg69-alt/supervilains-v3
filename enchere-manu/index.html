@@ -13,7 +13,9 @@
   <meta name="description" content="L'incroyable vente aux enchères 100 % fictive de MANU, la diva du trône. Enchérissez en direct pour rire !">
   <title>MANU aux enchères | Cabaret de l'impossible</title>
   <link rel="stylesheet" href="./style.css?v=20261022ios1">
+  <link rel="stylesheet" href="./chat.css?v=20261022chat2">
   <script src="./app.js?v=20261022ios1" defer></script>
+  <script src="./chat.js?v=20261022chat2" defer></script>
 </head>
 <body>
   <div class="curtain curtain-left" aria-hidden="true"></div>
@@ -37,6 +39,8 @@
     </div>
 
     <div class="browser-tools"><a class="chrome-launch" href="intent://cyberpunkg69-alt.github.io/supervilains-v3/enchere-manu/live.html#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fcyberpunkg69-alt.github.io%2Fsupervilains-v3%2Fenchere-manu%2Flive.html;end">🌐 OUVRIR DANS CHROME</a><button type="button" id="copy-browser-link" class="browser-copy">🔗 COPIER LE LIEN</button></div>
+
+    <a href="#salon-chat" class="chat-jump">💬 REJOINDRE LE CHAT : PHOTOS, SMILEYS ET MESSAGES ↓</a>
 
     <div class="columns">
       <article class="lot-panel">
@@ -118,6 +122,51 @@
         <button type="button" class="share-button" id="share">↗ INVITER LES COPAINS À SUR-ENCHÉRIR</button>
       </aside>
     </div>
+
+    <section id="salon-chat" class="chat-shell" aria-label="Salon public de discussion de MANU">
+      <div class="chat-header">
+        <div>
+          <div class="chat-kicker">✦ LE CABARET DE L’IMPOSSIBLE ✦</div>
+          <h2>💬 LE CHAT DES ENCHÈRES</h2>
+          <p>Chambre MANU en direct : messages, smileys et photos, sans inscription !</p>
+        </div>
+        <span class="chat-live"><i aria-hidden="true"></i> SALON PUBLIC</span>
+      </div>
+      <div class="chat-content">
+        <div class="chat-wall">
+          <div class="chat-tools">
+            <strong>🎭 Les coulisses du cabaret</strong>
+            <button type="button" id="chat-older" hidden>↑ Anciens messages</button>
+          </div>
+          <div class="chat-feed" id="chat-feed" role="log" aria-label="Messages publics">
+            <p class="chat-loading">🎪 Ouverture du salon…</p>
+          </div>
+          <button type="button" id="chat-unread" class="chat-unread" hidden>↓ Nouveaux messages</button>
+          <div class="chat-system-note">💡 Salon public : humour autorisé, harcèlement interdit. Photos visibles par tous.</div>
+        </div>
+        <form id="chat-form" class="chat-form">
+          <h3>🎤 À TOI LE MICRO !</h3>
+          <label for="chat-nickname">Ton pseudo</label>
+          <input id="chat-nickname" type="text" minlength="2" maxlength="24" required autocomplete="nickname" placeholder="Ex. Commissaire Paillette">
+          <label for="chat-text">Ton message</label>
+          <textarea id="chat-text" rows="4" maxlength="500" placeholder="MANU, je mise une chasse d’eau en or ! 😂"></textarea>
+          <div class="chat-action-row">
+            <button type="button" id="chat-emoji-toggle" class="chat-tool-button" aria-controls="chat-emoji-picker" aria-expanded="false">😜 Smileys</button>
+            <label for="chat-photo" class="chat-tool-button chat-pick-photo">📷 Ajouter une photo</label>
+            <input type="file" id="chat-photo" accept="image/*" class="chat-file-input" aria-label="Choisir une photo">
+          </div>
+          <div class="chat-emoji-picker" id="chat-emoji-picker" hidden aria-label="Choisir un emoji"></div>
+          <div class="chat-photo-preview" id="chat-photo-preview" hidden>
+            <img id="chat-preview-image" alt="Photo sélectionnée">
+            <button type="button" id="chat-remove-photo">✕ Retirer la photo</button>
+          </div>
+          <div class="chat-char-count"><span id="chat-count">0</span>/500 caractères</div>
+          <button type="submit" id="chat-submit" class="chat-submit">🚀 ENVOYER AU CABARET</button>
+          <p id="chat-feedback" class="chat-feedback" role="status" aria-live="polite">Choisis ton pseudo et lance-toi !</p>
+          <p class="chat-disclaimer">Sans compte ni mot de passe. Une photo maximum par message, compressée automatiquement. N’envoie aucune information privée. Les contenus du chat sont publics et peuvent être signalés.</p>
+        </form>
+      </div>
+    </section>
     <div class="signoff">« Adjugé, vendu… enfin, si quelqu'un en veut. » <span>♥</span></div>
   </main>
   <footer class="footer">LE CABARET DE L'IMPOSSIBLE © 2026 · PARODIE ENTRE AMIS · AUCUNE VENTE RÉELLE · AUCUNE DONNÉE BANCAIRE</footer>
