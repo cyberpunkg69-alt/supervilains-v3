@@ -13,9 +13,9 @@
   <meta name="description" content="L'incroyable vente aux enchères 100 % fictive de MANU, la diva du trône. Enchérissez en direct pour rire !">
   <title>MANU aux enchères | Cabaret de l'impossible</title>
   <link rel="stylesheet" href="./style.css?v=20261022ios1">
-  <link rel="stylesheet" href="./chat.css?v=20261022chat2">
+  <link rel="stylesheet" href="./chat.css?v=20261022gif1">
   <script src="./app.js?v=20261022ios1" defer></script>
-  <script src="./chat.js?v=20261022chat2" defer></script>
+  <script src="./chat.js?v=20261022gif1" defer></script>
 </head>
 <body>
   <div class="curtain curtain-left" aria-hidden="true"></div>
@@ -152,10 +152,31 @@
           <textarea id="chat-text" rows="4" maxlength="500" placeholder="MANU, je mise une chasse d’eau en or ! 😂"></textarea>
           <div class="chat-action-row">
             <button type="button" id="chat-emoji-toggle" class="chat-tool-button" aria-controls="chat-emoji-picker" aria-expanded="false">😜 Smileys</button>
-            <label for="chat-photo" class="chat-tool-button chat-pick-photo">📷 Ajouter une photo</label>
-            <input type="file" id="chat-photo" accept="image/*" class="chat-file-input" aria-label="Choisir une photo">
+            <button type="button" id="chat-gif-toggle" class="chat-tool-button" aria-controls="chat-gif-panel" aria-expanded="false">🎞️ GIF</button>
+            <label for="chat-photo" class="chat-tool-button chat-pick-photo">📷 Photo / GIF local</label>
+            <input type="file" id="chat-photo" accept="image/*,.gif" class="chat-file-input" aria-label="Choisir une photo">
           </div>
           <div class="chat-emoji-picker" id="chat-emoji-picker" hidden aria-label="Choisir un emoji"></div>
+          <div class="chat-gif-panel" id="chat-gif-panel" hidden>
+            <div class="chat-gif-top"><strong>🎞️ Bibliothèque de GIF animés</strong><span>Sans inscription</span></div>
+            <div class="chat-gif-search">
+              <input id="chat-gif-query" type="search" maxlength="50" placeholder="Chat, rire, danse, paillettes…" aria-label="Rechercher un GIF">
+              <button id="chat-gif-search" type="button">🔎</button>
+            </div>
+            <p class="chat-gif-note">GIFs d'archives et Wikimedia Commons, sans clé API. Le catalogue complet de GIPHY nécessite une clé développeur : en attendant, tu peux choisir ton GIF sur GIPHY et coller son lien ici.</p>
+            <div id="chat-gif-results" class="chat-gif-results" aria-label="Résultats de recherche GIF"></div>
+            <div class="chat-giphy-paste">
+              <button type="button" id="chat-giphy-open" class="chat-giphy-open">🌐 Chercher sur GIPHY ↗</button>
+              <label for="chat-gif-url">Colle le lien d'un GIF GIPHY (partager → copier le lien)</label>
+              <input id="chat-gif-url" type="url" placeholder="https://giphy.com/gifs/…">
+              <button id="chat-gif-use-url" type="button">✅ Choisir ce GIF</button>
+            </div>
+          </div>
+          <div id="chat-gif-choice" class="chat-gif-choice" hidden>
+            <strong>🎉 GIF prêt à envoyer</strong>
+            <img id="chat-gif-choice-image" alt="GIF animé choisi">
+            <button type="button" id="chat-gif-clear">✕ Retirer le GIF</button>
+          </div>
           <div class="chat-photo-preview" id="chat-photo-preview" hidden>
             <img id="chat-preview-image" alt="Photo sélectionnée">
             <button type="button" id="chat-remove-photo">✕ Retirer la photo</button>
@@ -163,7 +184,7 @@
           <div class="chat-char-count"><span id="chat-count">0</span>/500 caractères</div>
           <button type="submit" id="chat-submit" class="chat-submit">🚀 ENVOYER AU CABARET</button>
           <p id="chat-feedback" class="chat-feedback" role="status" aria-live="polite">Choisis ton pseudo et lance-toi !</p>
-          <p class="chat-disclaimer">Sans compte ni mot de passe. Une photo maximum par message, compressée automatiquement. N’envoie aucune information privée. Les contenus du chat sont publics et peuvent être signalés.</p>
+          <p class="chat-disclaimer">Sans compte ni mot de passe. Une image par message : photos compressées automatiquement, GIF animé jusqu’à 8 Mo. N’envoie aucune information privée. Les contenus du chat sont publics et peuvent être signalés.</p>
         </form>
       </div>
     </section>
