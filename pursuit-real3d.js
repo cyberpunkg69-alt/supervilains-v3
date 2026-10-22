@@ -1,4 +1,4 @@
-/* SUPERVILAINS V5.6 — foulée anatomique et articulations stables pour La Grande Evasion.
+/* SUPERVILAINS V5.7 — animation Run originale sans distorsion des os pour La Grande Evasion.
  * Three.js r180 + GLTFLoader : modeles humains skinnes et animations GLB.
  * Les regles de collision, la progression et la capture restent gerees par pursuit.js.
  * Un repli 2D/ancien WebGL reste disponible si la 3D moderne ne se charge pas.
@@ -212,7 +212,7 @@ function create(source){
   photo.addEventListener('error',()=>photo.style.display='none');
   parent.appendChild(photo);
   const mark=document.createElement('div');
-  mark.textContent='● 3D V5.6 BÊTA';
+  mark.textContent='● 3D V5.7 BÊTA';
   mark.style.cssText='display:none;position:absolute;z-index:4;pointer-events:none;top:9px;left:9px;border-radius:9px;border:1px solid #a9dfe0;background:#132636dc;color:#d4fcff;padding:5px 8px;font:900 10px Arial;';
   parent.appendChild(mark);
 
@@ -275,43 +275,10 @@ function create(source){
     if(!clip)throw Error('Animation de course absente du modele');
     const action=mixer.clipAction(clip);
     action.reset().setLoop(THREE.LoopRepeat,Infinity).play();
-    // Enregistrer la vraie pose de repos de chaque os AVANT le
-    // premier AnimationMixer.update. En V5.5 on modifiait X, alors
-    // que dans les GLB les cuisses ont un X quasiment CONSTANT :
-    // les grands écarts venaient surtout des translations ANIMÉES des chevilles.
-    const runnerRig=natural?['pelvis','thigh_l','thigh_r',
-      'calf_l','calf_r','foot_l','foot_r'].map(name=>{
-      const bone=model.getObjectByName(name);
-      return bone?{
-        name,bone,
-        restPosition:bone.position.clone(),
-        restQuaternion:bone.quaternion.clone(),
-        translationInfluence:name.startsWith('foot_')?.22:
-                             name==='pelvis'?.65:1,
-        rotationInfluence:name.startsWith('thigh_')?.72:
-                          name.startsWith('calf_')?.67:
-                          name.startsWith('foot_')?.68:1
-      }:null;
-    }).filter(Boolean):[];
-    return {root,model,mixer,action,natural,runnerRig};
-  }
-
-  // Retouche anatomique des animations Run de Sam et Harper.
-  // L'animation d'origine deplace directement les chevilles de +/-0.5 m
-  // par rapport aux mollets en plus des rotations. Ce mouvement allonge
-  // les jambes artificiellement et cree la demarche ridicule observee.
-  // On conserve 22 % de ce deplacement et l'essentiel des rotations.
-  // Chaque operation est relative a la pose de REPOS (jamais cumulative).
-  function stabilizeRunningRig(actor){
-    if(!actor?.natural)return;
-    for(const joint of actor.runnerRig){
-      const {bone,restPosition,restQuaternion,
-        translationInfluence,rotationInfluence}=joint;
-      if(translationInfluence<1)
-        bone.position.lerp(restPosition,1-translationInfluence);
-      if(rotationInfluence<1)
-        bone.quaternion.slerp(restQuaternion,1-rotationInfluence);
-    }
+    // Utiliser la course "Run" telle qu'elle est fournie avec les GLB :
+    // les rotations et translations du squelette sont deja synchronisees.
+    // Les corriger individuellement causait une posture raide en V5.6.
+    return {root,model,mixer,action,natural};
   }
 
   // Des accessoires WebGL legers distinguent les roles sans remplacer
@@ -465,8 +432,8 @@ function create(source){
         if(!sam&&!harper)actorSources.soldier=await loadSoldier();
         const source=sam||harper||actorSources.soldier;
         mark.textContent=(sam||harper)
-          ?'● 3D V5.6 • GLB CIVILS'
-          :'● 3D V5.6 • SOLDAT DE SECOURS';
+          ?'● 3D V5.7 • GLB CIVILS'
+          :'● 3D V5.7 • SOLDAT DE SECOURS';
         agent=actorFrom(source,source===actorSources.soldier?'#90b5fa':null,!!(sam||harper));
         outfitForPolice(agent);
         switchVillain(villainInfo);
@@ -504,7 +471,7 @@ function create(source){
     }
     previousAgent?.mixer.stopAllAction();if(previousAgent)scene.remove(previousAgent.root);
     previousVillain?.mixer.stopAllAction();if(previousVillain)scene.remove(previousVillain.root);
-    mark.textContent='● 3D V5.6 • GLB CIVILS';
+    mark.textContent='● 3D V5.7 • GLB CIVILS';
     return true;
   }
   function begin(info){
@@ -544,12 +511,11 @@ function create(source){
       if(villain.coatFlaps)for(let i=0;i<villain.coatFlaps.length;i++)villain.coatFlaps[i].rotation.x=.12*Math.sin(g.elapsed*12+i*2.6);
       const paused=!!g.paused;
       if(!paused){
-        agent.mixer.update(dt*(g.slide>0?.52:1.13));
-        villain.mixer.update(dt*(g.winning>0?.20:1.19));
-        // Correction des deux squelettes APRÈS AnimationMixer,
-        // jamais en pause et jamais sur le soldat de secours.
-        stabilizeRunningRig(agent);
-        stabilizeRunningRig(villain);
+        // L'animation Run originale controle seule toutes les articulations.
+        // Un cycle legerement plus rapide correspond mieux a la vitesse
+        // du defilement de la ville et evite l'impression de marche lente.
+        agent.mixer.update(dt*(g.slide>0?.52:1.32));
+        villain.mixer.update(dt*(g.winning>0?.20:1.35));
       }
       // Dalles de rue en mouvement synchrone avec la logique de jeu d'origine.
       const scroll=(g.distance*1.7)%8;
@@ -595,4 +561,4 @@ function create(source){
   }
   return {begin,end,draw,resize,reloadModels,isReady:()=>renderReady&&!failed};
 }
-window.SUPERVILAINS_PURSUIT_REAL3D={create,version:'5.6-beta'};
+window.SUPERVILAINS_PURSUIT_REAL3D={create,version:'5.7-beta'};
