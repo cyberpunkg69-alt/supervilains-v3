@@ -47,3 +47,30 @@ Le dossier est servi sur GitHub Pages à l'adresse :
 https://cyberpunkg69-alt.github.io/supervilains-v3/enchere-manu/
 
 Note : le site réalise une **vente fictive et comique entre amis**. Aucun achat, paiement, réservation ni transfert de personne.
+
+
+## 🔔 Notifications de surenchère (Android / Chrome)
+
+La page affiche un bandeau de notification dès qu'une nouvelle meilleure enchère arrive,
+même sans permission de notifications du système.
+
+Pour recevoir aussi des **notifications push** lorsque l'onglet est fermé :
+1. Ouvrir \`https://cyberpunkg69-alt.github.io/supervilains-v3/enchere-manu/live.html\` dans Chrome Android.
+2. Appuyer sur **🔔 ACTIVER LES NOTIFICATIONS**, puis autoriser les notifications du site.
+3. Chaque nouvelle enchère validée par un autre participant déclenche une notification
+   (pseudo + montant fictif) pour les appareils inscrits.
+4. Pour arrêter : retourner sur la page et cliquer sur **🔕 DÉSACTIVER LES NOTIFICATIONS**.
+   On peut aussi retirer la permission du site dans les paramètres de Chrome.
+
+- API : Supabase Edge Function \`manu-encheres\` (actions \`subscribe\`, \`unsubscribe\`, \`bid\`).
+- Notification : Service Worker \`enchere-manu/sw.js\` (Web Push + VAPID), consentement explicite.
+- Stockage : \`manu_auction_push_subscriptions\`, protégé par RLS et réservé au service côté serveur.
+- Les clés VAPID privées ne sont jamais publiées sur GitHub ou envoyées au navigateur.
+- Les alertes sont **facultatives** : les utilisateurs qui ne les activent pas
+  peuvent toujours enchérir normalement.
+- La réception en arrière-plan dépend des permissions du navigateur et de la
+  gestion des applications en arrière-plan sur l'appareil.
+- Le site **ne demande ni téléphone, ni adresse e-mail** pour les alertes.
+- Ce n'est pas un service de messagerie garanti : le site s'actualise régulièrement
+  quand il est ouvert, et les notifications peuvent arriver plus tard ou être bloquées
+  par Android selon ses réglages.
