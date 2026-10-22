@@ -15,8 +15,8 @@ self.addEventListener("push", event => {
       " € fictifs ! À toi de jouer 😂";
     await self.registration.showNotification(title, {
       body,
-      icon: "/supervilains-v3/icon-192.png",
-      badge: "/supervilains-v3/icon-192.png",
+      icon: "/supervilains-v3/enchere-manu/manu-icon-192.png",
+      badge: "/supervilains-v3/enchere-manu/manu-icon-192.png",
       tag: "manu-enchere-" + String(amount),
       renotify: true,
       data: { url: "/supervilains-v3/enchere-manu/live.html" }

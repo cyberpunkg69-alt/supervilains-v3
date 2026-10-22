@@ -74,3 +74,9 @@ Pour recevoir aussi des **notifications push** lorsque l'onglet est fermé :
 - Ce n'est pas un service de messagerie garanti : le site s'actualise régulièrement
   quand il est ouvert, et les notifications peuvent arriver plus tard ou être bloquées
   par Android selon ses réglages.
+
+## iPhone et iPad : ajout à l'écran d'accueil
+Depuis iOS/iPadOS 16.4, les notifications push fonctionnent après installation du site
+comme application web sur l'écran d'accueil. Dans Safari, **Partager → Sur l'écran d'accueil → Ouvrir comme app → Ajouter**, puis ouvrir MANU depuis l'icône créée et toucher **Activer les notifications**. Dans un simple onglet Safari, l'autorisation n'est pas proposée.
+Le manifest `enchere-manu/manifest.webmanifest` active `display:standalone` et déclare les icônes de MANU.
+Sur Android, ouvrir la page dans Chrome et toucher directement **Activer les notifications**.
