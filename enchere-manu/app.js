@@ -72,9 +72,129 @@
       els.amount.value = String(min);
     }
   };
+
+  // Notifications facultatives : les permissions ne sont demandées qu'au clic.
+  const pushToggle = byId("push-toggle");
+  const pushStatus = byId("push-status");
+  const bidToast = byId("bid-toast");
+  const pushSupported = Boolean(
+    window.isSecureContext && "serviceWorker" in navigator &&
+    "PushManager" in window && "Notification" in window
+  );
+  let vapidPublic = "";
+  let pushBusy = false;
+  let pushOn = false;
+  let toastTimeout = null;
+  const pushMessage = (message) => { pushStatus.textContent = message; };
+  const reflectPushButton = () => {
+    if (!pushSupported) {
+      pushToggle.disabled = true;
+      pushToggle.textContent = "🔕 NON DISPONIBLE ICI";
+      pushMessage("Ouvre cette page dans Chrome sur Android pour recevoir des alertes.");
+      return;
+    }
+    pushToggle.disabled = pushBusy;
+    pushToggle.textContent = pushOn ? "🔕 DÉSACTIVER LES NOTIFICATIONS" : "🔔 ACTIVER LES NOTIFICATIONS";
+  };
+  const announceNewBid = (data) => {
+    if (!data.leader || !data.current_bid || !dataLoaded) return;
+    const who = String(data.leader);
+    bidToast.textContent = "🔔 Nouvelle offre ! " + who + " vient de miser " +
+      money(data.current_bid) + " fictifs. À qui le tour ? 😂";
+    bidToast.classList.add("visible");
+    if (toastTimeout) clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => bidToast.classList.remove("visible"), 8000);
+  };
+  const publicKeyBytes = (value) => {
+    const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
+    const binary = atob(base64 + "=".repeat((4 - base64.length % 4) % 4));
+    return Uint8Array.from(binary, c => c.charCodeAt(0));
+  };
+  async function getPushRegistration() {
+    const reg = await navigator.serviceWorker.register("./sw.js?v=20261022push1", {scope: "./"});
+    await navigator.serviceWorker.ready;
+    return reg;
+  }
+  async function updatePushState() {
+    if (!pushSupported) { reflectPushButton(); return; }
+    try {
+      const reg = await getPushRegistration();
+      const subscription = await reg.pushManager.getSubscription();
+      pushOn = Boolean(subscription && Notification.permission === "granted");
+      if (pushOn && subscription) {
+        // Restaure les alertes après un changement de réseau ou d'adresse IP.
+        api("POST", {action: "subscribe", token, subscription: subscription.toJSON()})
+          .catch(err => console.warn("réinscription notifications:", err.message));
+      }
+      pushMessage(pushOn ? "✅ Alertes activées, même quand la page est fermée (selon Android)."
+        : Notification.permission === "denied"
+          ? "Notifications bloquées dans les réglages du navigateur."
+          : "Facultatif • tu peux les activer pour suivre l'enchère de MANU.");
+    } catch (e) {
+      pushMessage("Notifications indisponibles dans ce navigateur. Utilise Chrome.");
+    } finally {
+      reflectPushButton();
+    }
+  }
+  if (pushSupported) pushToggle.addEventListener("click", async () => {
+    if (pushBusy) return;
+    pushBusy = true;
+    reflectPushButton();
+    try {
+      // Requête immédiate depuis le clic : les navigateurs exigent un geste utilisateur.
+      if (!pushOn && Notification.permission !== "granted") {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          pushMessage("Tu as refusé les notifications. Tu peux les autoriser dans Chrome.");
+          return;
+        }
+      }
+      const reg = await getPushRegistration();
+      let subscription = await reg.pushManager.getSubscription();
+      if (pushOn) {
+        if (subscription) {
+          await api("POST", {action: "unsubscribe", token, endpoint: subscription.endpoint});
+          await subscription.unsubscribe();
+        }
+        pushOn = false;
+        pushMessage("🔕 Alertes désactivées. Tu peux les réactiver à tout moment.");
+      } else {
+        if (!vapidPublic) {
+          const state = await api("GET");
+          vapidPublic = state.vapid_public || "";
+        }
+        if (!vapidPublic) throw new Error("Clé de notification indisponible.");
+        if (!subscription) {
+          subscription = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: publicKeyBytes(vapidPublic)
+          });
+        }
+        try {
+          await api("POST", {action: "subscribe", token, subscription: subscription.toJSON()});
+        } catch (e) {
+          // Évite une autorisation locale active qui n'enverrait aucune notification.
+          await subscription.unsubscribe();
+          throw e;
+        }
+        pushOn = true;
+        pushMessage("✅ Tu recevras les surenchères sur ton téléphone. MANU te remercie ! 😂");
+      }
+    } catch (e) {
+      pushMessage("Impossible d'activer les alertes : " + (e.message || "erreur navigateur"));
+    } finally {
+      pushBusy = false;
+      reflectPushButton();
+    }
+  });
+  reflectPushButton();
+  updatePushState();
+
   const render = (data) => {
     if (!data || !Number.isSafeInteger(data.current_bid)) return;
     const changed = previousBid >= 0 && data.current_bid > previousBid;
+    if (changed && !busy) announceNewBid(data);
+    if (typeof data.vapid_public === "string") vapidPublic = data.vapid_public;
     currentBid = data.current_bid;
     previousBid = data.current_bid;
     closed = data.status !== "open";

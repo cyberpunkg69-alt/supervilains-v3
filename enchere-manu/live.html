@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#20060e">
   <meta name="description" content="L'incroyable vente aux enchères 100 % fictive de MANU, la diva du trône. Enchérissez en direct pour rire !">
   <title>MANU aux enchères | Cabaret de l'impossible</title>
-  <link rel="stylesheet" href="./style.css?v=20261021b">
-  <script src="./app.js?v=20261021b" defer></script>
+  <link rel="stylesheet" href="./style.css?v=20261022push1">
+  <script src="./app.js?v=20261022push1" defer></script>
 </head>
 <body>
   <div class="curtain curtain-left" aria-hidden="true"></div>
@@ -72,6 +72,11 @@
           <div><strong id="last-bid">—</strong><span>DERNIÈRE OFFRE</span></div>
         </div>
 
+        <section class="push-box" aria-label="Notifications des enchères">
+          <div class="push-head"><span class="push-bell">🔔</span><div><strong>ALERTES DE SURENCHÈRE</strong><span>Préviens-moi quand quelqu'un dépasse la meilleure offre !</span></div></div>
+          <button type="button" id="push-toggle" class="push-button">🔔 ACTIVER LES NOTIFICATIONS</button>
+          <p id="push-status" class="push-status" role="status">Facultatif • aucune notification sans ton accord.</p>
+        </section>
         <form id="bid-form" class="bid-form">
           <h2>À QUI LE TOUR ?</h2>
           <label for="nickname">TON PSEUDO DE FLAMBEUR</label>
@@ -99,6 +104,7 @@
     <div class="signoff">« Adjugé, vendu… enfin, si quelqu'un en veut. » <span>♥</span></div>
   </main>
   <footer class="footer">LE CABARET DE L'IMPOSSIBLE © 2026 · PARODIE ENTRE AMIS · AUCUNE VENTE RÉELLE · AUCUNE DONNÉE BANCAIRE</footer>
+  <div id="bid-toast" class="bid-toast" role="status" aria-live="polite"></div>
   <div id="confetti" class="confetti-container" aria-hidden="true"></div>
 </body>
 </html>

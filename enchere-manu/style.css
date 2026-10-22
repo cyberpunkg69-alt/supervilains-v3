@@ -24,3 +24,16 @@ button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allow
 .browser-tools .chrome-launch{background:linear-gradient(110deg,#ffe4a2,#e9b65c);color:#361422;border-color:#e1b65d}
 .browser-tools a:hover,.browser-tools button:hover{filter:brightness(1.12)}
 @media(max-width:480px){.browser-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px}.browser-tools a,.browser-tools button{font-size:10px;padding:10px 6px}}
+
+/* Alertes opt-in et messages de surenchère */
+.push-box{padding:19px 23px 22px;background:linear-gradient(125deg,#47203c,#321323);border-top:1px solid #a8795a80;border-bottom:1px solid #a8795a80}
+.push-head{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+.push-head .push-bell{font-size:27px;line-height:1}
+.push-head strong{display:block;font-size:13px;letter-spacing:.08em;color:#ffe1a3}
+.push-head span:not(.push-bell){display:block;font-size:12px;color:#e1b9c8}
+.push-button{width:100%;min-height:44px;border:1px solid #f1b465;border-radius:8px;background:#5d2037;color:#ffdf98;font-weight:900;font-size:12px;letter-spacing:.04em;padding:13px 8px}
+.push-button:hover:not(:disabled){background:#8c2e50}
+.push-button:disabled{opacity:.65}
+.push-status{font-size:11px;line-height:1.5;color:#e5bfd0;text-align:center;margin:9px auto 0}
+.bid-toast{position:fixed;z-index:100;left:50%;bottom:20px;transform:translate(-50%,125%);width:min(470px,calc(100% - 30px));background:#43162d;color:#ffe9b2;border:2px solid #e9b66a;border-radius:14px;padding:16px 17px;font-size:14px;line-height:1.5;box-shadow:0 15px 45px #000b;pointer-events:none;opacity:0;transition:transform .3s ease,opacity .3s ease;text-align:center;font-weight:900}
+.bid-toast.visible{transform:translate(-50%,0);opacity:1}
