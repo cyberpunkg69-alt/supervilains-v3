@@ -27,7 +27,7 @@
   });picker.append(b);
  });
  toggle.addEventListener("click",()=>{picker.hidden=!picker.hidden;toggle.setAttribute("aria-expanded",String(!picker.hidden))});
- let imagePreview=null,processing=false,reading=false,loadingOlder=false,messages=[],signature="",canGoBack=false;
+ let imagePreview=null,processing=false,reading=false,loadingOlder=false,messages=[],signature=null,canGoBack=false;
  const note=(t,type="")=>{feedback.textContent=t;feedback.className="chat-feedback "+type};
  function clearPhoto(){
   if(imagePreview)URL.revokeObjectURL(imagePreview);
