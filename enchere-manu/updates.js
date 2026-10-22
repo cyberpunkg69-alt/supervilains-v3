@@ -22,6 +22,9 @@
     if (/changelog|release.?notes|latest.?updates|update.?widget|nouv[eé]aut[eé]s/.test(m)) {
       return { key: "updates", title: "✨ Nouveau : le widget des mises à jour" };
     }
+    if (/\bvoice|vocal|audio|microphone|record/.test(m)) {
+      return { key: "voice", title: "🎙️ Messages vocaux de 15 secondes dans le chat" };
+    }
     if (/\bgif|giphy|tenor/.test(m)) {
       return { key: "gif", title: "🎞️ GIF animés : recherche, partage et envoi dans le chat" };
     }
