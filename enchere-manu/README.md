@@ -152,3 +152,31 @@ Sécurité / modération :
 - Le signalement déjà présent dans le chat peut masquer les messages vocaux
   en cas d'abus, mais ne remplace pas une modération humaine. Le fichier dans
   Storage doit être supprimé séparément si nécessaire.
+
+
+## 📺 Flash Info MANU — 100 annonces sans répétitions rapprochées
+
+Le journal fictif est présent sur \`index.html\` et \`live.html\`, juste avant les enchères.
+Il affiche exactement **100 textes originaux**, répartis en 10 catégories :
+studio, mode, enquêtes, science, culture, surenchères, public, démarrage,
+pause et records.
+
+- **Branché sur les vraies enchères** : \`app.js\` émet l'événement local
+  \`manu:auction-update\` après la lecture des mises, sans requête API supplémentaire.
+  Le flash remplace \`{name}\`, \`{amount}\`, \`{players}\`, \`{count}\` par les
+  valeurs de la salle, mais tous les montants restent fictifs.
+- **Anti-répétition** : historique roulant des **85 dernières annonces** affichées,
+  enregistré dans \`localStorage\`, partagé entre les onglets d'un même navigateur.
+  Le moteur privilégie les annonces contextuelles non vues, puis des annonces
+  générales non vues. Une réutilisation ne survient qu'après épuisement des
+  possibilités actuellement pertinentes.
+- **Fréquence** : mise à jour automatique après 105 à 160 secondes environ
+  lorsque la page est au premier plan, ou en cas de nouvelle surenchère
+  (espacement minimal 20 secondes entre flashs automatiques).
+- **Contrôles** : son désactivé par défaut, jingle synthétique sans fichier ni droit
+  d'auteur après activation volontaire, pause/reprise, flash suivant.
+- **Compatible Android / iPhone**, sans frais API, sans génération IA ni clé secrète.
+- Ces alertes sont **des parodies**. Elles ne génèrent pas de notifications système :
+  les notifications d'enchères déjà existantes demeurent inchangées.
+
+Source : \`flash-info.js\` et \`flash-info.css\`.

@@ -15,9 +15,11 @@
   <link rel="stylesheet" href="./style.css?v=20261022ios1">
   <link rel="stylesheet" href="./chat.css?v=20261022voice1">
   <link rel="stylesheet" href="./updates.css?v=20261022updates1">
-  <script src="./app.js?v=20261022ios1" defer></script>
+  <link rel="stylesheet" href="./flash-info.css?v=20261023flash1">
+  <script src="./app.js?v=20261023flash1" defer></script>
   <script src="./chat.js?v=20261022voice2" defer></script>
-  <script src="./updates.js?v=20261022voice1" defer></script>
+  <script src="./updates.js?v=20261023flash1" defer></script>
+  <script src="./flash-info.js?v=20261023flash1" defer></script>
 </head>
 <body>
   <div class="curtain curtain-left" aria-hidden="true"></div>
@@ -46,13 +48,14 @@
           <span class="updates-emblem" aria-hidden="true">✨</span>
           <span class="updates-summary-copy">
             <span class="updates-heading">DERNIÈRES MISES À JOUR</span>
-            <span class="updates-headline" id="updates-headline">🎙️ Messages vocaux disponibles</span>
+            <span class="updates-headline" id="updates-headline">📺 100 Flash Info MANU sans répétitions fréquentes</span>
           </span>
-          <span class="updates-date" id="updates-date">22 oct. 2026</span>
+          <span class="updates-date" id="updates-date">23 oct. 2026</span>
           <span class="updates-chevron" aria-hidden="true">⌄</span>
         </summary>
         <div class="updates-body">
           <ul id="updates-list" aria-live="polite">
+            <li><span class="updates-item-info"><strong>📺 Flash Info MANU : 100 alertes humoristiques</strong><small>23 oct. 2026</small></span><a href="#manu-flash-info">Voir ↗</a></li>
             <li><span class="updates-item-info"><strong>🎙️ Messages vocaux de 15 secondes dans le chat</strong><small>22 oct. 2026</small></span><a href="https://github.com/cyberpunkg69-alt/supervilains-v3/commit/4f1115ca3a813c7caf91128efc0eddc34612d2b3" target="_blank" rel="noopener noreferrer">Détails ↗</a></li>
             <li><span class="updates-item-info"><strong>🎞️ GIF animés : recherche, partage et envoi</strong><small>22 oct. 2026</small></span><a href="https://github.com/cyberpunkg69-alt/supervilains-v3/commit/47151bc94b8df15f09a9ae07b5716a55c2876b51" target="_blank" rel="noopener noreferrer">Détails ↗</a></li>
             <li><span class="updates-item-info"><strong>💬 Chat sans inscription : pseudo, photos et emojis</strong><small>22 oct. 2026</small></span><a href="https://github.com/cyberpunkg69-alt/supervilains-v3/commit/cbe24a4f0009c91452875823c3a5b5e780f4c2bd" target="_blank" rel="noopener noreferrer">Détails ↗</a></li>
@@ -62,6 +65,27 @@
           <p class="updates-footnote" id="updates-footnote">Historique des évolutions du cabaret. Source : GitHub.</p>
         </div>
       </details>
+    </section>
+
+    <section class="flash-news" id="manu-flash-info" role="region" aria-label="Flash Info MANU, journal fictif">
+      <div class="flash-bar">
+        <span class="flash-bar-title"><span class="flash-pulse" aria-hidden="true"></span> 📺 FLASH INFO MANU</span>
+        <span class="flash-bar-info" id="flash-stage">ANTENNE DU CABARET · EN DIRECT</span>
+      </div>
+      <div class="flash-inner">
+        <span class="flash-broadcast-mark" aria-hidden="true">🎙️</span>
+        <div class="flash-copy">
+          <span class="flash-type" id="flash-type">🔴 FLASH INFO</span>
+          <p class="flash-headline" id="flash-headline" aria-live="polite" aria-atomic="true">Notre rédaction prépare une édition spéciale sur MANU…</p>
+          <span class="flash-meta" id="flash-meta">ÉDITION SPÉCIALE · PARODIE</span>
+        </div>
+      </div>
+      <div class="flash-controls">
+        <button type="button" id="flash-sound" aria-pressed="false">🔇 Son coupé</button>
+        <button type="button" id="flash-pause" aria-pressed="false">⏸️ Pause</button>
+        <button type="button" id="flash-next">⏭️ Flash suivant</button>
+      </div>
+      <div class="flash-disclaimer">📢 100 annonces humoristiques · Sans IA payante · Sans publicité ni information réelle</div>
     </section>
 
     <div class="browser-tools"><a class="chrome-launch" href="intent://cyberpunkg69-alt.github.io/supervilains-v3/enchere-manu/live.html#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fcyberpunkg69-alt.github.io%2Fsupervilains-v3%2Fenchere-manu%2Flive.html;end">🌐 OUVRIR DANS CHROME</a><button type="button" id="copy-browser-link" class="browser-copy">🔗 COPIER LE LIEN</button></div>

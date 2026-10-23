@@ -22,6 +22,9 @@
     if (/changelog|release.?notes|latest.?updates|update.?widget|nouv[eé]aut[eé]s/.test(m)) {
       return { key: "updates", title: "✨ Nouveau : le widget des mises à jour" };
     }
+    if (/flash.?info|breaking.?news|news.?ticker|100 satirical|bulletin/.test(m)) {
+      return { key: "flash", title: "📺 Flash Info MANU : 100 alertes, annonces contextuelles" };
+    }
     if (/\bvoice|vocal|audio|microphone|record/.test(m)) {
       return { key: "voice", title: "🎙️ Messages vocaux de 15 secondes dans le chat" };
     }
