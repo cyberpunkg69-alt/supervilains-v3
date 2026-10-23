@@ -1,7 +1,7 @@
 {
   "name": "MANU — Le cabaret des enchères",
   "short_name": "MANU Enchères",
-  "description": "Vente aux enchères fictive de MANU entre amis. Alertes de surenchère.",
+  "description": "Vente aux enchères de MANU entre amis. Alertes de surenchère.",
   "id": "/supervilains-v3/enchere-manu/",
   "start_url": "/supervilains-v3/enchere-manu/live.html",
   "scope": "/supervilains-v3/enchere-manu/",

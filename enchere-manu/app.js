@@ -115,7 +115,7 @@
     if (!data.leader || !data.current_bid || !dataLoaded) return;
     const who = String(data.leader);
     bidToast.textContent = "🔔 Nouvelle offre ! " + who + " vient de miser " +
-      money(data.current_bid) + " fictifs. À qui le tour ? 😂";
+      money(data.current_bid) + ". À qui le tour ? 😂";
     bidToast.classList.add("visible");
     if (toastTimeout) clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => bidToast.classList.remove("visible"), 8000);
@@ -139,7 +139,7 @@
       if (pushOn && subscription) {
         // Restaure les alertes après un changement de réseau ou d'adresse IP.
         api("POST", {action: "subscribe", token, subscription: subscription.toJSON()})
-          .catch(err => console.warn("réinscription notifications:", err.message));
+         .catch(err => console.warn("réinscription notifications:", err.message));
       }
       pushMessage(pushOn ? "✅ Alertes activées, même lorsque l’application est fermée (selon les réglages du téléphone)."
         : Notification.permission === "denied"
@@ -291,7 +291,7 @@
       part.className = "confetti-piece";
       part.style.setProperty("--left", (Math.random() * 100) + "vw");
       part.style.setProperty("--duration", (2.5 + Math.random() * 2.8) + "s");
-      part.style.setProperty("--drift", ((Math.random() - .5) * 230) + "px");
+      part.style.setProperty("--drift", ((Math.random() -.5) * 230) + "px");
       part.style.setProperty("--angle", (Math.random() * 360) + "deg");
       part.style.setProperty("--color", colors[i % colors.length]);
       els.confetti.append(part);
@@ -340,7 +340,7 @@
   byId("share").addEventListener("click", async () => {
     const url = location.href.split("#")[0];
     try {
-      if (navigator.share) await navigator.share({ title: "QUI VEUT MANU ? 😂", text: "MANU est aux enchères pour rire ! Mise à prix 1 € fictif. Viens surenchérir 😂", url });
+      if (navigator.share) await navigator.share({ title: "QUI VEUT MANU ? 😂", text: "MANU est aux enchères pour rire ! Mise à prix 1 €. Viens surenchérir 😂", url });
       else if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(url);
         setFeedback("Lien copié ! Balance-le aux copains 😂", "success");

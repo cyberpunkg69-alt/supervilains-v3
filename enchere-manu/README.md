@@ -3,13 +3,13 @@
 Mini-site humoristique public, isolé dans le dossier \`enchere-manu/\` pour ne pas modifier le jeu SUPERVILAINS.
 
 ## Le jeu
-- Mise à prix : **1 € fictif**.
+- Mise à prix : **1 €**.
 - Tous les visiteurs peuvent proposer un pseudo, enchérir et voir la meilleure offre.
 - Les propositions sont enregistrées sur le serveur Supabase et affichées par actualisation automatique toutes les 3 secondes.
 - Historique des 12 dernières offres et nombre de participants uniques (par session).
 - Aucun compte, aucun paiement, aucune valeur monétaire. **Personne n'est réellement à vendre.**
 - Le serveur verrouille la ligne d'enchère lors de chaque proposition pour garantir qu'une seule meilleure offre soit acceptée à la fois.
-- Délai de 3 secondes par session, plafond de +1 000 € fictifs par offre ; maximum global 99 999 € fictifs.
+- Délai de 3 secondes par session, plafond de +1 000 € par offre ; maximum global 99 999 €.
 
 ## Architecture
 - Interface : GitHub Pages, fichiers HTML/CSS/JS statiques.
@@ -46,7 +46,7 @@ commit;
 Le dossier est servi sur GitHub Pages à l'adresse :
 https://cyberpunkg69-alt.github.io/supervilains-v3/enchere-manu/
 
-Note : le site réalise une **vente fictive et comique entre amis**. Aucun achat, paiement, réservation ni transfert de personne.
+Note : le site réalise une **vente comique entre amis**. Aucun achat, paiement, réservation ni transfert de personne.
 
 
 ## 🔔 Notifications de surenchère (Android / Chrome)
@@ -58,7 +58,7 @@ Pour recevoir aussi des **notifications push** lorsque l'onglet est fermé :
 1. Ouvrir \`https://cyberpunkg69-alt.github.io/supervilains-v3/enchere-manu/live.html\` dans Chrome Android.
 2. Appuyer sur **🔔 ACTIVER LES NOTIFICATIONS**, puis autoriser les notifications du site.
 3. Chaque nouvelle enchère validée par un autre participant déclenche une notification
-   (pseudo + montant fictif) pour les appareils inscrits.
+   (pseudo + montant) pour les appareils inscrits.
 4. Pour arrêter : retourner sur la page et cliquer sur **🔕 DÉSACTIVER LES NOTIFICATIONS**.
    On peut aussi retirer la permission du site dans les paramètres de Chrome.
 
@@ -156,7 +156,7 @@ Sécurité / modération :
 
 ## 📺 Flash Info MANU — 100 annonces sans répétitions rapprochées
 
-Le journal fictif est présent sur \`index.html\` et \`live.html\`, juste avant les enchères.
+Le journal est présent sur \`index.html\` et \`live.html\`, juste avant les enchères.
 Il affiche exactement **100 textes originaux**, répartis en 10 catégories :
 studio, mode, enquêtes, science, culture, surenchères, public, démarrage,
 pause et records.
@@ -164,7 +164,7 @@ pause et records.
 - **Branché sur les vraies enchères** : \`app.js\` émet l'événement local
   \`manu:auction-update\` après la lecture des mises, sans requête API supplémentaire.
   Le flash remplace \`{name}\`, \`{amount}\`, \`{players}\`, \`{count}\` par les
-  valeurs de la salle, mais tous les montants restent fictifs.
+  valeurs de la salle, mais tous les montants restent.
 - **Anti-répétition** : historique roulant des **85 dernières annonces** affichées,
   enregistré dans \`localStorage\`, partagé entre les onglets d'un même navigateur.
   Le moteur privilégie les annonces contextuelles non vues, puis des annonces

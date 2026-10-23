@@ -264,57 +264,57 @@
   {
     "id": "bid-01",
     "kind": "bid",
-    "text": "💰 ÉDITION SPÉCIALE : {name} propulse MANU à {amount} fictifs. Le marché cherche une explication."
+    "text": "💰 ÉDITION SPÉCIALE : {name} propulse MANU à {amount}. Le marché cherche une explication."
   },
   {
     "id": "bid-02",
     "kind": "bid",
-    "text": "🔨 DERNIÈRE MINUTE : {name} vient d'offrir {amount} fictifs. Les experts parlent d'un geste inexpliqué."
+    "text": "🔨 DERNIÈRE MINUTE : {name} vient d'offrir {amount}. Les experts parlent d'un geste inexpliqué."
   },
   {
     "id": "bid-03",
     "kind": "bid",
-    "text": "📈 ALERTE BOURSE : MANU grimpe à {amount} fictifs. Aucun économiste n'ose commenter."
+    "text": "📈 ALERTE BOURSE : MANU grimpe à {amount}. Aucun économiste n'ose commenter."
   },
   {
     "id": "bid-04",
     "kind": "bid",
-    "text": "🏦 FINANCE : après l'offre de {name}, la valeur fictive de MANU atteint {amount}. Même la banque rit."
+    "text": "🏦 FINANCE : après l'offre de {name}, la valeur de MANU atteint {amount}. Même la banque rit."
   },
   {
     "id": "bid-05",
     "kind": "bid",
-    "text": "⚠️ VIGILANCE ENCHÈRES : {name} a misé {amount} fictifs. Le bon sens reste introuvable."
+    "text": "⚠️ VIGILANCE ENCHÈRES : {name} a misé {amount}. Le bon sens reste introuvable."
   },
   {
     "id": "bid-06",
     "kind": "bid",
-    "text": "🎙️ CONFÉRENCE DE PRESSE : {name} assume son offre de {amount} fictifs. La salle retient son souffle."
+    "text": "🎙️ CONFÉRENCE DE PRESSE : {name} assume son offre de {amount}. La salle retient son souffle."
   },
   {
     "id": "bid-07",
     "kind": "bid",
-    "text": "🧮 CALCUL : {amount} fictifs pour MANU. Nos comptables réclament une seconde vérification."
+    "text": "🧮 CALCUL : {amount} pour MANU. Nos comptables réclament une seconde vérification."
   },
   {
     "id": "bid-08",
     "kind": "bid",
-    "text": "📊 BAROMÈTRE : l'audace de {name} vient de franchir un nouveau seuil à {amount} fictifs."
+    "text": "📊 BAROMÈTRE : l'audace de {name} vient de franchir un nouveau seuil à {amount}."
   },
   {
     "id": "bid-09",
     "kind": "bid",
-    "text": "🚨 SURENCHÈRE : {name} frappe fort avec {amount} fictifs. La perruque de MANU applaudit."
+    "text": "🚨 SURENCHÈRE : {name} frappe fort avec {amount}. La perruque de MANU applaudit."
   },
   {
     "id": "bid-10",
     "kind": "bid",
-    "text": "🎬 REBONDISSEMENT : la meilleure offre atteint {amount} fictifs. MANU prépare déjà son discours."
+    "text": "🎬 REBONDISSEMENT : la meilleure offre atteint {amount}. MANU prépare déjà son discours."
   },
   {
     "id": "crowd-01",
     "kind": "crowd",
-    "text": "📣 LE PUBLIC S'EMBALLE : {name} mène actuellement la danse avec {amount} fictifs."
+    "text": "📣 LE PUBLIC S'EMBALLE : {name} mène actuellement la danse avec {amount}."
   },
   {
     "id": "crowd-02",
@@ -339,12 +339,12 @@
   {
     "id": "crowd-06",
     "kind": "crowd",
-    "text": "🏁 COURSE EN TÊTE : {name} possède provisoirement l'offre de {amount} fictifs."
+    "text": "🏁 COURSE EN TÊTE : {name} possède provisoirement l'offre de {amount}."
   },
   {
     "id": "crowd-07",
     "kind": "crowd",
-    "text": "🗞️ TITRE DU JOUR : {count} mise(s) fictive(s) et toujours aucune livraison de MANU prévue."
+    "text": "🗞️ TITRE DU JOUR : {count} mise(s) et toujours aucune livraison de MANU prévue."
   },
   {
     "id": "crowd-08",
@@ -354,7 +354,7 @@
   {
     "id": "crowd-09",
     "kind": "crowd",
-    "text": "🔔 LE CABARET RETIENT SON SOUFFLE : la dernière offre est de {amount} fictifs."
+    "text": "🔔 LE CABARET RETIENT SON SOUFFLE : la dernière offre est de {amount}."
   },
   {
     "id": "crowd-10",
@@ -379,7 +379,7 @@
   {
     "id": "first-04",
     "kind": "first",
-    "text": "🎟️ URGENT : première offre recherchée. Récompense : la gloire fictive et des confettis."
+    "text": "🎟️ URGENT : première offre recherchée. Récompense : la gloire et des confettis."
   },
   {
     "id": "first-05",
@@ -389,7 +389,7 @@
   {
     "id": "first-06",
     "kind": "first",
-    "text": "📣 APPEL AU PEUPLE : un euro fictif suffirait à lancer l'aventure. MANU se recoiffe."
+    "text": "📣 APPEL AU PEUPLE : un euro suffirait à lancer l'aventure. MANU se recoiffe."
   },
   {
     "id": "first-07",
@@ -409,7 +409,7 @@
   {
     "id": "first-10",
     "kind": "first",
-    "text": "🏷️ MISE À PRIX : MANU commence à 1 € fictif. Personne ne vérifie ses poches."
+    "text": "🏷️ MISE À PRIX : MANU commence à 1 €. Personne ne vérifie ses poches."
   },
   {
     "id": "pause-01",
@@ -429,7 +429,7 @@
   {
     "id": "pause-04",
     "kind": "pause",
-    "text": "☕ PAUSE CAFÉ : le marché fictif de MANU observe une mystérieuse accalmie."
+    "text": "☕ PAUSE CAFÉ : le marché de MANU observe une mystérieuse accalmie."
   },
   {
     "id": "pause-05",
@@ -439,7 +439,7 @@
   {
     "id": "pause-06",
     "kind": "pause",
-    "text": "🚦 CIRCULATION FLUIDE : aucun embouteillage au guichet des enchères fictives."
+    "text": "🚦 CIRCULATION FLUIDE : aucun embouteillage au guichet des enchères."
   },
   {
     "id": "pause-07",
@@ -464,52 +464,52 @@
   {
     "id": "milestone-01",
     "kind": "milestone",
-    "text": "💎 SEUIL SYMBOLIQUE : {amount} fictifs ! MANU exige désormais une loge avec baignoire à paillettes."
+    "text": "💎 SEUIL SYMBOLIQUE : {amount} ! MANU exige désormais une loge avec baignoire à paillettes."
   },
   {
     "id": "milestone-02",
     "kind": "milestone",
-    "text": "📈 RECORD DU CABARET : {amount} fictifs. La direction demande si l'on peut assurer une perruque."
+    "text": "📈 RECORD DU CABARET : {amount}. La direction demande si l'on peut assurer une perruque."
   },
   {
     "id": "milestone-03",
     "kind": "milestone",
-    "text": "🛑 ALERTE VALEUR : MANU atteint {amount} fictifs. Le service comptable appelle sa mère."
+    "text": "🛑 ALERTE VALEUR : MANU atteint {amount}. Le service comptable appelle sa mère."
   },
   {
     "id": "milestone-04",
     "kind": "milestone",
-    "text": "🏆 PALIER FRANCHI : {name} porte la légende de MANU jusqu'à {amount} fictifs."
+    "text": "🏆 PALIER FRANCHI : {name} porte la légende de MANU jusqu'à {amount}."
   },
   {
     "id": "milestone-05",
     "kind": "milestone",
-    "text": "🚀 DÉCOLLAGE : la cote fictive de MANU grimpe à {amount}. Houston, nous avons un problème de glamour."
+    "text": "🚀 DÉCOLLAGE : la cote de MANU grimpe à {amount}. Houston, nous avons un problème de glamour."
   },
   {
     "id": "milestone-06",
     "kind": "milestone",
-    "text": "👑 NIVEAU DIVA SUPÉRIEUR : à {amount} fictifs, MANU réclame une couronne plus grande."
+    "text": "👑 NIVEAU DIVA SUPÉRIEUR : à {amount}, MANU réclame une couronne plus grande."
   },
   {
     "id": "milestone-07",
     "kind": "milestone",
-    "text": "🎯 OBJECTIF DÉPASSÉ : {amount} fictifs pour une star qui n'était même pas sur le catalogue."
+    "text": "🎯 OBJECTIF DÉPASSÉ : {amount} pour une star qui n'était même pas sur le catalogue."
   },
   {
     "id": "milestone-08",
     "kind": "milestone",
-    "text": "💄 BUDGET MAQUILLAGE : MANU réclame une augmentation après avoir découvert l'offre de {amount} fictifs."
+    "text": "💄 BUDGET MAQUILLAGE : MANU réclame une augmentation après avoir découvert l'offre de {amount}."
   },
   {
     "id": "milestone-09",
     "kind": "milestone",
-    "text": "📰 DERNIÈRE MINUTE : {name} met {amount} fictifs. Le trône de MANU demande une expertise."
+    "text": "📰 DERNIÈRE MINUTE : {name} met {amount}. Le trône de MANU demande une expertise."
   },
   {
     "id": "milestone-10",
     "kind": "milestone",
-    "text": "🎺 FANFARE : le seuil de {amount} fictifs déclenche une ovation complètement injustifiée."
+    "text": "🎺 FANFARE : le seuil de {amount} déclenche une ovation complètement injustifiée."
   }
 ];
   const safeGet=(key)=>{try{return localStorage.getItem(key)}catch{return null}};

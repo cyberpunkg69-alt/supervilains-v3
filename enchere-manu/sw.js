@@ -12,7 +12,7 @@ self.addEventListener("push", event => {
     const safeNick = String(data.nickname || "Un enchérisseur").slice(0, 24);
     const title = "🔨 MANU : nouvelle enchère !";
     const body = safeNick + " vient de miser " + amount.toLocaleString("fr-FR") +
-      " € fictifs ! À toi de jouer 😂";
+      " € ! À toi de jouer 😂";
     await self.registration.showNotification(title, {
       body,
       icon: "/supervilains-v3/enchere-manu/manu-icon-192.png",
