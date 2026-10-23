@@ -259,6 +259,17 @@
         { transform: "scale(1)", filter: "brightness(1)" }
       ], { duration: 650, easing: "ease-out" });
     }
+    // Annonce d'état public pour le module Flash Info : aucun appel API supplémentaire.
+    window.dispatchEvent(new CustomEvent("manu:auction-update", {
+      detail: {
+        current_bid: currentBid,
+        leader: String(data.leader || ""),
+        bid_count: Number(data.bid_count) || 0,
+        participant_count: Number(data.participant_count) || 0,
+        status: String(data.status || "open"),
+        updated_at: data.updated_at || null
+      }
+    }));
     dataLoaded = true;
   };
   const refresh = async () => {
