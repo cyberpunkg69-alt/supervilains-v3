@@ -176,7 +176,7 @@ pause et records.
 - **Contrôles** : son désactivé par défaut, jingle synthétique sans fichier ni droit
   d'auteur après activation volontaire, pause/reprise, flash suivant.
 - **Compatible Android / iPhone**, sans frais API, sans génération IA ni clé secrète.
-- Ces alertes sont **des parodies**. Elles ne génèrent pas de notifications système :
+- Ces alertes sont humoristiques. Elles ne génèrent pas de notifications système :
   les notifications d'enchères déjà existantes demeurent inchangées.
 
 Source : \`flash-info.js\` et \`flash-info.css\`.

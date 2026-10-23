@@ -589,7 +589,7 @@
     const values=context();
     const line=choice.text.replace(/\{(name|amount|players|count)\}/g,(_,key)=>values[key]);
     headline.textContent=line;
-    meta.textContent="ÉDITION SPÉCIALE · "+dateText()+" · PARODIE";
+    meta.textContent="ÉDITION SPÉCIALE · "+dateText();
     tag.textContent=preferred.includes("bid")?"🔨 SURENCHÈRE":preferred.includes("milestone")?"💎 RECORD":"🔴 FLASH INFO";
     current=choice;
     lastIds.push(choice.id);lastIds=lastIds.slice(-90);

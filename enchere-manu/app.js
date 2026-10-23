@@ -126,7 +126,7 @@
     return Uint8Array.from(binary, c => c.charCodeAt(0));
   };
   async function getPushRegistration() {
-    const reg = await navigator.serviceWorker.register("./sw.js?v=20261022ios1", {scope: "./"});
+    const reg = await navigator.serviceWorker.register("./sw.js?v=20261023clean2", {scope: "./"});
     await navigator.serviceWorker.ready;
     return reg;
   }
