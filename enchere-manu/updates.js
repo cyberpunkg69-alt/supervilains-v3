@@ -68,8 +68,8 @@
   // Les anciennes mises à jour restent consultables dans le HTML si le réseau échoue.
   const confirmedReleases = [{
     key:"tiktok_live",title:"🔴 Suivre MANU en LIVE sur ses 4 comptes TikTok",
-    date:"2026-10-24T19:30:00Z",
-    sha:"c6685423668ccfd090ca28294ae70b2a79331bcb"
+    date:"2026-10-24T19:31:02Z",
+    sha:"fbefb8637c14d20a7ef9d8af410740eb9dec579f"
   },{
     key: "voice_setup",
     title: "🎙️ Choisir la voix avant de commencer l'enregistrement",

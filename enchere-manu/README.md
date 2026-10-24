@@ -297,3 +297,6 @@ dans le fichier envoyé. L'envoi et le stockage Supabase restent inchangés.
   avant d'annoncer la détection automatique.
 - Service worker \`sw.js\` mis à jour pour ouvrir directement TikTok lors
   d'une notification LIVE, en n'acceptant que les 4 URLs prédéfinies.
+
+### Mise à jour technique du service worker
+La page référence maintenant `sw.js?v=20261024tiktok1` pour assurer la prise en compte des notifications TikTok par les appareils ayant déjà activé les notifications d'enchères.
