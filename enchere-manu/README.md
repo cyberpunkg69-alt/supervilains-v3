@@ -208,3 +208,30 @@ Source : \`flash-info.js\` et \`flash-info.css\`.
   n'est pas une identité vérifiée. Le mécanisme limite les répétitions
   accidentelles, sans prétendre empêcher tout contournement.
 - Aucun changement des flux d'enchères, des photos, GIF, vocaux ou notifications.
+
+
+## 🎭 Modificateur de voix — gratuit et sans inscription
+
+Après avoir enregistré un vocal dans le salon MANU, choisir dans « Transforme ta voix » :
+**voix normale**, **robot métallique**, **monstre des cavernes**,
+**écureuil surexcité** ou **voix ultra grave**.
+
+- Effet appliqué localement par le navigateur avec Web Audio et un traitement
+  de hauteur par grains à fenêtres superposées ; aucun prestataire externe et
+  aucune API de génération IA.
+- Écoute du **résultat transformé** dans le lecteur avant envoi, possibilité
+  de changer plusieurs fois de préréglage ou de recommencer.
+- Le fichier envoyé est **déjà modifié**, en WAV PCM mono 16 kHz (environ
+  480 Ko pour 15 s) ; les autres invités entendent donc la voix transformée.
+- Le vocal normal garde son format original (WebM, Ogg, M4A), sans conversion.
+- Maximum 15 secondes, fichier 3 Mo maximum, toujours une photo **ou** un
+  vocal par message, même système de signalement et de réactions.
+- Modules \`voice-fx.js\`, \`chat.js\`, \`chat.css\`, \`index.html\`,
+  \`live.html\`. La fonction Edge \`manu-chat\` reconnaît aussi les
+  WAV PCM et Storage \`manu-chat-voices\` autorise \`audio/wav\`.
+- Safari iPhone et Chrome Android avec Web Audio sont ciblés ; certains
+  navigateurs intégrés peuvent refuser l'accès micro ou le décodage audio.
+  Dans ce cas la voix normale reste disponible. Tester sur appareils réels.
+
+Les effets sont ludiques et synthétiques, pas une imitation vocale d'une
+personne précise.

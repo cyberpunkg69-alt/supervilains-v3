@@ -13,12 +13,13 @@
   <meta name="description" content="L'incroyable vente aux enchères pour rire de MANU, la diva du trône. Enchérissez en direct pour rire !">
   <title>MANU aux enchères | Cabaret de l'impossible</title>
   <link rel="stylesheet" href="./style.css?v=20261022ios1">
-  <link rel="stylesheet" href="./chat.css?v=20261024react1">
+  <link rel="stylesheet" href="./chat.css?v=20261024fx1">
   <link rel="stylesheet" href="./updates.css?v=20261022updates1">
   <link rel="stylesheet" href="./flash-info.css?v=20261023flash1">
   <script src="./app.js?v=20261023clean2" defer></script>
-  <script src="./chat.js?v=20261024react1" defer></script>
-  <script src="./updates.js?v=20261024react-fix2" defer></script>
+  <script src="./voice-fx.js?v=20261024fx1" defer></script>
+  <script src="./chat.js?v=20261024fx1" defer></script>
+  <script src="./updates.js?v=20261024fx1" defer></script>
   <script src="./flash-info.js?v=20261024react1" defer></script>
 </head>
 <body>
@@ -48,13 +49,14 @@
           <span class="updates-emblem" aria-hidden="true">✨</span>
           <span class="updates-summary-copy">
             <span class="updates-heading">DERNIÈRES MISES À JOUR</span>
-            <span class="updates-headline" id="updates-headline">❤️ Réactions et Flash Info dès 5 votes</span>
+            <span class="updates-headline" id="updates-headline">🎭 Modificateur de voix disponible dans le chat</span>
           </span>
           <span class="updates-date" id="updates-date">24 oct. 2026</span>
           <span class="updates-chevron" aria-hidden="true">⌄</span>
         </summary>
         <div class="updates-body">
           <ul id="updates-list" aria-live="polite">
+            <li><span class="updates-item-info"><strong>🎭 Modificateur de voix : robot, monstre, écureuil et grave</strong><small>24 oct. 2026</small></span><a href="#salon-chat">Essayer ↗</a></li>
             <li><span class="updates-item-info"><strong>❤️ Réactions aux commentaires, Top 3 et Flash Info dès 5 votes</strong><small>24 oct. 2026</small></span><a href="#salon-chat">Voir ↗</a></li>
             <li><span class="updates-item-info"><strong>📺 Flash Info MANU : 100 alertes humoristiques</strong><small>23 oct. 2026</small></span><a href="#manu-flash-info">Voir ↗</a></li>
             <li><span class="updates-item-info"><strong>🎙️ Messages vocaux de 15 secondes dans le chat</strong><small>22 oct. 2026</small></span><a href="https://github.com/cyberpunkg69-alt/supervilains-v3/commit/4f1115ca3a813c7caf91128efc0eddc34612d2b3" target="_blank" rel="noopener noreferrer">Détails ↗</a></li>
@@ -235,6 +237,16 @@
               <span id="chat-voice-timer" class="chat-voice-timer" aria-live="off">00:00 / 00:15</span>
             </div>
             <div class="chat-voice-meter" aria-hidden="true"><span id="chat-voice-progress"></span></div>
+            <label for="chat-voice-effect" class="voice-fx-label">🎭 Transforme ta voix</label>
+            <select id="chat-voice-effect" class="voice-fx-select" aria-label="Choisir un modificateur de voix">
+              <option value="normal">🎙️ Voix normale</option>
+              <option value="robot">🤖 Robot métallique</option>
+              <option value="monster">👹 Monstre des cavernes</option>
+              <option value="squirrel">🐿️ Écureuil surexcité</option>
+              <option value="deep">🦇 Voix ultra grave</option>
+            </select>
+            <p id="chat-voice-fx-status" class="voice-fx-status" role="status">Enregistre puis choisis un effet. Tu peux comparer les voix avant d'envoyer.</p>
+
             <p id="chat-voice-status" class="chat-voice-status" role="status">Appuie sur « Message vocal » pour enregistrer jusqu'à 15 secondes.</p>
             <audio id="chat-voice-preview" class="chat-voice-preview" controls preload="metadata" hidden aria-label="Écouter ton message vocal avant envoi"></audio>
             <div class="chat-voice-actions">
@@ -249,7 +261,7 @@
           <div class="chat-char-count"><span id="chat-count">0</span>/500 caractères</div>
           <button type="submit" id="chat-submit" class="chat-submit">🚀 ENVOYER AU CABARET</button>
           <p id="chat-feedback" class="chat-feedback" role="status" aria-live="polite">Choisis ton pseudo et lance-toi !</p>
-          <p class="chat-disclaimer">Sans compte ni mot de passe. Une photo ou un vocal par message. Photos compressées, GIF jusqu’à 8 Mo et vocaux jusqu’à 15 s. Les enregistrements envoyés sont publics. N’envoie aucune information privée. Les contenus du chat sont publics et peuvent être signalés.</p>
+          <p class="chat-disclaimer">Sans compte ni mot de passe. Une photo ou un vocal par message. GIF jusqu’à 8 Mo ; vocaux jusqu’à 15 s, avec ou sans effet vocal. Les enregistrements envoyés sont publics. N’envoie aucune information privée. Les contenus du chat sont publics et peuvent être signalés.</p>
         </form>
       </div>
     </section>

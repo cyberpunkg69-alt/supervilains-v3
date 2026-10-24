@@ -29,6 +29,9 @@
     if (/flash.?info|breaking.?news|news.?ticker|100 satirical|bulletin/.test(m)) {
       return { key: "flash", title: "📺 Flash Info MANU : 100 alertes, annonces contextuelles" };
     }
+    if (/voice.?changer|voice.?effects?|voice.?filters?|voice.?fx|modificat|transform|robot|squirrel|chipmunk/.test(m)) {
+      return { key: "voice_fx", title: "🎭 Nouveau modificateur de voix : robot, monstre, écureuil, grave" };
+    }
     if (/\bvoice|vocal|audio|microphone|record/.test(m)) {
       return { key: "voice", title: "🎙️ Messages vocaux de 15 secondes dans le chat" };
     }
@@ -55,6 +58,11 @@
   // Les annonces de version connues ne dépendent pas du quota ou du cache GitHub.
   // Les anciennes mises à jour restent consultables dans le HTML si le réseau échoue.
   const confirmedReleases = [{
+    key: "voice_fx",
+    title: "🎭 Modificateur de voix : robot, monstre, écureuil et voix grave",
+    date: "2026-10-24T17:39:39Z",
+    sha: "2b4965736e80b1406ff605e26b10a4c706ea1e5a"
+  },{
     key: "reactions",
     title: "❤️ Réactions aux commentaires, Top 3 et Flash Info dès 5 votes",
     date: "2026-10-24T10:58:44Z",
