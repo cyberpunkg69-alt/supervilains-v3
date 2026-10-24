@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="robots" content="noindex,nofollow">
+ <meta name="theme-color" content="#200916">
+ <title>MANU — Commandes privées TikTok LIVE</title>
+ <link rel="stylesheet" href="./tiktok-live.css?v=20261024tiktok1">
+ <script src="./tiktok-admin.js?v=20261024tiktok1" defer></script>
+</head>
+<body class="tiktok-admin-page">
+ <main class="tiktok-admin-wrap">
+  <p><a href="./live.html" style="color:#f5c778">← Retour à MANU Enchères</a></p>
+  <h1>👑 TikTok LIVE — Commandes privées</h1>
+  <p>Choisis le compte TikTok qui est réellement en direct. Le bandeau s'affiche immédiatement sur MANU Enchères pour tous les visiteurs. Une notification est demandée aux abonnés lors du passage de OFF à LIVE.</p>
+  <label for="admin-tiktok-code">🔐 Code privé de MANU</label>
+  <input type="password" id="admin-tiktok-code" autocomplete="off" spellcheck="false" placeholder="Coller le code privé ici">
+  <p class="tiktok-admin-small">Ce code reste dans cette page. Ne le publie pas dans le chat, et ne partage ce panneau qu'avec les personnes autorisées. Chaque compte a un bouton indépendant.</p>
+  <div id="admin-tiktok-accounts" class="tiktok-admin-accounts" aria-label="État des quatre comptes TikTok"></div>
+  <button class="tiktok-admin-refresh" id="admin-tiktok-refresh" type="button">🔄 Actualiser les statuts</button>
+  <p id="admin-tiktok-feedback" class="tiktok-admin-note" role="status" aria-live="polite"></p>
+  <p class="tiktok-admin-small">Un LIVE activé manuellement expire au bout de 8 heures par sécurité, sauf si tu l'arrêtes avant. Si le direct dure plus longtemps, réactive-le. La détection automatique externe n'est pas encore connectée.</p>
+ </main>
+</body>
+</html>

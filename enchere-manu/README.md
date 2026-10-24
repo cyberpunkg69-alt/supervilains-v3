@@ -269,3 +269,31 @@ Il ne demande plus immédiatement l'accès au microphone.
 
 La transformation est appliquée à l'audio **après** l'enregistrement et conservée
 dans le fichier envoyé. L'envoi et le stockage Supabase restent inchangés.
+
+
+## 🔴 TikTok LIVE — 4 comptes et panneau de commande privé
+
+- Comptes : @le.monde.du.cabar, @miss.jazz.artiste, @lemondeducabaret et
+  @sullypapillon1.
+- Dès qu'un LIVE est marqué actif et confirmé côté Supabase, la page montre
+  un bandeau avec un lien direct vers le compte concerné. Deux comptes en
+  direct simultanément donnent deux liens.
+- Les visiteurs actualisent le statut environ toutes les 20 secondes ; pas
+  de statut LIVE inventé en cas d'erreur réseau.
+- Panneau de commande : \`enchere-manu/tiktok-admin.html\`. Le mot de passe
+  est nécessaire pour toute modification ; son hash bcrypt est stocké
+  uniquement côté Supabase. Ne jamais commiter le mot de passe en clair.
+- L'activation déclenche une tentative d'envoi de notification push aux
+  appareils déjà abonnés. La transaction SQL empêche tout nouvel envoi
+  quand le statut est déjà LIVE.
+- Un LIVE manuel expire au bout de 8 heures pour éviter un bandeau périmé.
+  L'arrêt est manuel ; il n'y a pas encore de détecteur automatique connecté.
+- API : Edge Function \`manu-tiktok-live\`. GET public en lecture seule ; POST
+  authentifié par un code aléatoire fort. Paramètre \`source="monitor"\`
+  réservé à un connecteur externe qui aurait déjà la même autorisation.
+- Un contrôle TikTok officiel général de présence LIVE n'est pas publié pour
+  les comptes arbitraires ; ne pas activer automatiquement sur des résultats
+  HTML non confirmés. Prévoir un connecteur tiers fiable, et des tests réels,
+  avant d'annoncer la détection automatique.
+- Service worker \`sw.js\` mis à jour pour ouvrir directement TikTok lors
+  d'une notification LIVE, en n'acceptant que les 4 URLs prédéfinies.

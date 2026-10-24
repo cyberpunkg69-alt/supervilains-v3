@@ -626,6 +626,22 @@
     root.classList.remove("flash-pop");void root.offsetWidth;root.classList.add("flash-pop");
     playSting();schedule();
   });
+  const tiktokLines=[
+    username=>"🚨 ALERTE CABARET : MANU EST EN DIRECT SUR TIKTOK @"+username+" ! LES TROLLS SONT APPELÉS EN RENFORT ! 👹",
+    username=>"🔴 FLASH INFO : LE CABARET DE MANU EST EN LIVE SUR @"+username+" ! VENEZ METTRE LE FEU AUX PAILLETTES !",
+    username=>"👑 DERNIÈRE MINUTE : MANU VIENT DE LANCER SON LIVE @"+username+" ! LA COURONNE EST SOUS SURVEILLANCE !"
+  ];
+  window.addEventListener("manu:tiktok-live-start",event=>{
+    if(paused||document.visibilityState!=="visible")return;
+    const username=String(event.detail?.username||"");
+    if(!/^[a-z0-9._]{2,40}$/.test(username))return;
+    headline.textContent=tiktokLines[Math.floor(Math.random()*tiktokLines.length)](username);
+    meta.textContent="ÉDITION SPÉCIALE · "+dateText();
+    tag.textContent="🔴 MANU SUR TIKTOK";
+    lastFlash=Date.now();
+    root.classList.remove("flash-pop");void root.offsetWidth;root.classList.add("flash-pop");
+    playSting();schedule();
+  });
   const paintButtons=()=>{
     mute.textContent=soundOn?"🔊 Son activé":"🔇 Son coupé";
     mute.setAttribute("aria-pressed",String(soundOn));

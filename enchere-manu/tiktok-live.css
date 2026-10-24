@@ -1,0 +1,30 @@
+/* Bandeau MANU TikTok LIVE : uniquement sur confirmation du backend */
+.manu-tiktok-live[hidden]{display:none!important}
+.manu-tiktok-live{margin:0 0 21px;border:2px solid #ff4668;border-radius:15px;background:linear-gradient(112deg,#5f1534,#200814);box-shadow:0 0 23px #ff46682c;overflow:hidden}
+.manu-tiktok-heading{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:13px 16px;background:linear-gradient(105deg,#af2044,#67203a)}
+.manu-tiktok-heading strong{font-size:clamp(13px,2.5vw,18px);letter-spacing:.03em;color:#fff4e6;line-height:1.4}
+.manu-tiktok-pill{font-size:11px;color:#fff;font-weight:900;white-space:nowrap;background:#dc1642;padding:5px 10px;border-radius:99px}
+.manu-tiktok-links{display:flex;flex-wrap:wrap;gap:9px;padding:14px 16px}
+.tiktok-live-link{display:inline-flex;align-items:center;justify-content:center;min-height:42px;flex:1 1 200px;padding:8px 13px;background:#fae5b7;border:1px solid #ffecc9;border-radius:9px;color:#381027;font-size:12px;font-weight:900;text-decoration:none}
+.tiktok-live-link:hover{background:#fff3d5}
+.manu-tiktok-live p{padding:0 16px 13px;margin:0;color:#ecc3cb;font-size:11px}
+@media(max-width:550px){.manu-tiktok-heading{padding:11px}.manu-tiktok-links{padding:10px;gap:7px}.tiktok-live-link{flex-basis:100%;font-size:12px}}
+/* Espace de commande privé */
+.tiktok-admin-page{min-height:100vh;background:#200916;color:#fff0df;font-family:system-ui,-apple-system,sans-serif}
+.tiktok-admin-wrap{max-width:760px;margin:25px auto;padding:20px}
+.tiktok-admin-wrap h1{font-size:clamp(24px,4vw,34px);color:#ffdf9a}
+.tiktok-admin-wrap p{line-height:1.65;color:#e7c2cc}
+.tiktok-admin-wrap label{display:block;font-weight:800;margin:20px 0 8px}
+.tiktok-admin-wrap input{display:block;width:100%;padding:13px;border:1px solid #d8ad86;border-radius:9px;background:#311527;color:white;font-size:16px;box-sizing:border-box}
+.tiktok-admin-accounts{display:grid;gap:10px;margin:20px 0}
+.tiktok-admin-item{display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between;border:1px solid #895a73;border-radius:11px;padding:13px;background:#3a1830}
+.tiktok-admin-item div{display:grid;gap:6px;flex:1 1 170px;min-width:0}
+.tiktok-admin-item strong{overflow-wrap:anywhere;color:#ffe0a8}
+.tiktok-admin-item small{font-size:11px;color:#d5c2c7}
+.tiktok-admin-item small.is-online{color:#a1f0bb;font-weight:900}
+.tiktok-admin-item a{color:#ffe2a6}
+.tiktok-admin-item button,.tiktok-admin-refresh{border:1px solid #fbe1ad;background:#b92c51;color:white;min-height:42px;border-radius:8px;padding:9px 12px;font-size:12px;font-weight:900;cursor:pointer}
+.tiktok-admin-item button:disabled{opacity:.5}
+.tiktok-admin-refresh{background:#5d3548}
+.tiktok-admin-note{min-height:24px;color:#aaf0bb!important;font-weight:700}.tiktok-admin-note.is-error{color:#ffb1bb!important}
+.tiktok-admin-small{font-size:12px}

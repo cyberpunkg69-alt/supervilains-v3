@@ -19,6 +19,9 @@
   };
   const classify = message => {
     const m = message.toLowerCase();
+    if (/tiktok|live.*four|live.*four.*accounts|stream.*banner|stream.*status/.test(m)) {
+      return { key:"tiktok_live", title:"🔴 Suivre MANU en LIVE sur ses 4 comptes TikTok" };
+    }
     if (/changelog|release.?notes|latest.?updates|update.?widget|nouv[eé]aut[eé]s/.test(m)) {
       return { key: "updates", title: "✨ Nouveau : le widget des mises à jour" };
     }
@@ -64,6 +67,10 @@
   // Les annonces de version connues ne dépendent pas du quota ou du cache GitHub.
   // Les anciennes mises à jour restent consultables dans le HTML si le réseau échoue.
   const confirmedReleases = [{
+    key:"tiktok_live",title:"🔴 Suivre MANU en LIVE sur ses 4 comptes TikTok",
+    date:"2026-10-24T19:30:00Z",
+    sha:"c6685423668ccfd090ca28294ae70b2a79331bcb"
+  },{
     key: "voice_setup",
     title: "🎙️ Choisir la voix avant de commencer l'enregistrement",
     date: "2026-10-24T18:22:16Z",
