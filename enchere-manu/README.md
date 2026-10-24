@@ -180,3 +180,31 @@ pause et records.
   les notifications d'enchères déjà existantes demeurent inchangées.
 
 Source : \`flash-info.js\` et \`flash-info.css\`.
+
+
+## ❤️ Réactions aux commentaires — Flash Info dès 5 réactions
+
+- Cinq réactions : ❤️ J'aime, 😂 Mort de rire, 😱 Choqué, 👑 Royal, 💩 Troll.
+- Une réaction maximum par session anonyme et par message ; un deuxième clic sur
+  la même réaction l'enlève, et un clic sur un autre emoji la remplace.
+- Les compteurs sont synchronisés entre Android, iPhone et ordinateur à
+  l'actualisation du chat (environ toutes les 5 secondes).
+- **Déclencheur à 5 réactions distinctes** : au cinquième vote, le serveur
+  marque définitivement le commentaire comme ayant atteint ce palier. Même si
+  des votes sont ensuite retirés, le Flash Info ne se répète pas pour ce
+  commentaire. Aucun jingle sans accord explicite.
+- Le **Top 3 des meilleures vannes** classe les commentaires publics par nombre
+  de réactions.
+- Les messages texte, photos, GIF et vocaux reçoivent les mêmes boutons.
+- Supabase : table \`manu_chat_reactions\`, colonnes \`reaction_count\`,
+  \`reaction_counts\` et \`reaction_milestone_at\` sur
+  \`manu_chat_messages\`, fonction \`manu_chat_react\` invoker transactionnelle,
+  actions Edge \`react\` et \`sync\` sur \`manu-chat\`.
+- Le navigateur reçoit les événements de palier via
+  \`manu:chat-reaction-milestone\`, et le module \`flash-info.js\` affiche un
+  bulletin exclusif. Les événements récents sont partagés à la prochaine
+  synchronisation pour les visiteurs ayant la page ouverte.
+- Les sessions sont pseudonymes, sans inscription : le vote par appareil
+  n'est pas une identité vérifiée. Le mécanisme limite les répétitions
+  accidentelles, sans prétendre empêcher tout contournement.
+- Aucun changement des flux d'enchères, des photos, GIF, vocaux ou notifications.
