@@ -29,6 +29,9 @@
     if (/flash.?info|breaking.?news|news.?ticker|100 satirical|bulletin/.test(m)) {
       return { key: "flash", title: "📺 Flash Info MANU : 100 alertes, annonces contextuelles" };
     }
+    if (/wav|vocal.?invalid|voice.?upload|voice.?wav|audio.?reject|audio.?format/.test(m)) {
+      return { key: "voice_wav_fix", title: "🔧 Envoi des messages vocaux transformés corrigé" };
+    }
     if (/voice.?changer|voice.?effects?|voice.?filters?|voice.?fx|modificat|transform|robot|squirrel|chipmunk/.test(m)) {
       return { key: "voice_fx", title: "🎭 Nouveau modificateur de voix : robot, monstre, écureuil, grave" };
     }

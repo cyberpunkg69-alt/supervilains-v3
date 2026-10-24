@@ -235,3 +235,22 @@ Après avoir enregistré un vocal dans le salon MANU, choisir dans « Transforme
 
 Les effets sont ludiques et synthétiques, pas une imitation vocale d'une
 personne précise.
+
+
+### Correctif d'envoi WAV — 24 octobre 2026
+
+**Cause :** le moteur client, la fonction Edge et Storage acceptaient les vocaux
+transformés au format WAV, mais la fonction SQL
+\`public.manu_chat_post_voice\` autorisait encore uniquement les extensions
+\`webm|ogg|m4a\`. Elle renvoyait donc « Fichier vocal invalide » après
+l'upload du WAV.
+
+**Correction :** mise à jour de la liste SQL des extensions autorisées vers
+\`webm|ogg|m4a|wav\`. Le contrôle des chemins et des durées reste inchangé.
+Le script de référence \`voice-wav-validation.sql\` conserve la définition
+SQL appliquée à Supabase. La fonction Edge \`manu-chat\` n'a pas eu besoin d'un
+nouveau déploiement.
+
+**Test transactionnel** : un envoi via la fonction SQL a été accepté pour
+WebM, Ogg, M4A et WAV ; une extension non autorisée a été rejetée ; tous
+les messages d'essai ont été annulés sans affecter le chat existant.
