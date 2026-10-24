@@ -22,11 +22,12 @@
     if (/changelog|release.?notes|latest.?updates|update.?widget|nouv[eé]aut[eé]s/.test(m)) {
       return { key: "updates", title: "✨ Nouveau : le widget des mises à jour" };
     }
+    // Les réactions priment sur « Flash Info » lorsque les deux sont cités.
+    if (/react|réaction|reaction|5.reactions|leaderboard|comment.*top|five.reactions/.test(m)) {
+      return { key: "reactions", title: "❤️ Réactions aux commentaires, Top 3 et Flash Info dès 5 votes" };
+    }
     if (/flash.?info|breaking.?news|news.?ticker|100 satirical|bulletin/.test(m)) {
       return { key: "flash", title: "📺 Flash Info MANU : 100 alertes, annonces contextuelles" };
-    }
-    if (/react|réaction|reaction|5.reactions|leaderboard|comment.*top/.test(m)) {
-      return { key: "reactions", title: "❤️ Réactions aux commentaires et Flash Info dès 5 votes" };
     }
     if (/\bvoice|vocal|audio|microphone|record/.test(m)) {
       return { key: "voice", title: "🎙️ Messages vocaux de 15 secondes dans le chat" };
@@ -51,9 +52,17 @@
     }
     return null;
   };
+  // Les annonces de version connues ne dépendent pas du quota ou du cache GitHub.
+  // Les anciennes mises à jour restent consultables dans le HTML si le réseau échoue.
+  const confirmedReleases = [{
+    key: "reactions",
+    title: "❤️ Réactions aux commentaires, Top 3 et Flash Info dès 5 votes",
+    date: "2026-10-24T10:58:44Z",
+    sha: "967cdcfab6960f0fa67ab42c2dd08d4ea8619cac"
+  }];
   const extract = commits => {
-    const seen = new Set();
-    const entries = [];
+    const seen = new Set(confirmedReleases.map(r => r.key));
+    const entries = confirmedReleases.map(r => ({...r}));
     for (const record of commits) {
       if (!record || !/^[a-f0-9]{40}$/.test(String(record.sha || ""))) continue;
       const message = String(record.commit?.message || "").split("\n")[0].trim();
@@ -66,10 +75,10 @@
       const date = record.commit?.committer?.date || record.commit?.author?.date;
       if (!formatDate(date)) continue;
       seen.add(key);
-      entries.push({ title: title.slice(0, 165), date, sha: record.sha });
-      if (entries.length >= 5) break;
+      entries.push({ key, title: title.slice(0, 165), date, sha: record.sha });
+      if (entries.length >= 15) break;
     }
-    return entries;
+    return entries.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
   };
   const render = entries => {
     if (!entries.length) return;
