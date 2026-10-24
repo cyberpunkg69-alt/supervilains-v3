@@ -98,3 +98,10 @@
 .chat-top-three li span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e7bfd0}
 .chat-top-three li small{white-space:nowrap;font-size:11px;color:#fbdca7;font-weight:900}
 @media(max-width:460px){.chat-reactions{gap:4px}.chat-reaction{min-height:33px;padding:5px 7px}.chat-reaction-total{width:100%}.chat-top-three li b{font-size:10px;max-width:34%;overflow:hidden;text-overflow:ellipsis}}
+
+/* Réglages Voice FX, compatibles Safari iOS et Chrome Android */
+.chat-voice-panel .voice-fx-label{display:block;margin:13px 0 7px;font-size:12px;font-weight:900;letter-spacing:.03em;color:#ffe2aa}
+.voice-fx-select{display:block;width:100%;min-height:45px;padding:10px 35px 10px 11px;border:1px solid #e5b47c;border-radius:8px;color:#ffefda;background:#24111e;font-size:14px;font-weight:700;appearance:auto}
+.voice-fx-select:focus-visible{outline:2px solid #fff0b4;outline-offset:2px}
+.voice-fx-select:disabled{opacity:.6}
+.voice-fx-status{font-size:11px;line-height:1.55;color:#f2c9d4;margin:8px 0}
