@@ -207,6 +207,8 @@
  const voiceTimer=$("chat-voice-timer"),voiceProgress=$("chat-voice-progress");
  const voiceStatus=$("chat-voice-status"),voicePreview=$("chat-voice-preview");
  const voiceDelete=$("chat-voice-delete");
+ const voiceEffect=$("chat-voice-effect"),voiceFxStatus=$("chat-voice-fx-status");
+ let voiceOriginalBlob=null,voiceFxTicket=0,voiceFxBusy=false;
  const voiceSupported=Boolean(window.isSecureContext&&navigator.mediaDevices?.getUserMedia&&window.MediaRecorder);
  let voiceRecorder=null,voiceStream=null,voiceBlob=null,voicePreviewURL=null,voiceSeconds=0;
  let voiceStarted=0,voiceInterval=null,voiceTimeout=null,voiceChunks=[],voiceDiscard=false,voiceError=false;
@@ -222,12 +224,52 @@
   file.disabled=false;
  };
  const discardVoice=()=>{
+  voiceFxTicket++;
+  voiceFxBusy=false;voiceOriginalBlob=null;
+  if(voiceEffect)voiceEffect.disabled=false;
+  if(voiceFxStatus)voiceFxStatus.textContent="Tu peux enregistrer un nouveau vocal et choisir un effet.";
   if(voicePreviewURL){URL.revokeObjectURL(voicePreviewURL);voicePreviewURL=null}
   voiceBlob=null;voiceSeconds=0;
   voicePreview.pause();voicePreview.removeAttribute("src");voicePreview.load();
   voicePreview.hidden=true;meter(0);
  };
  const voiceStatusText=t=>{voiceStatus.textContent=t};
+ function displayVoice(blob){
+  voicePreview.pause();
+  if(voicePreviewURL)URL.revokeObjectURL(voicePreviewURL);
+  voiceBlob=blob;
+  voicePreviewURL=URL.createObjectURL(blob);
+  voicePreview.src=voicePreviewURL;
+  voicePreview.hidden=false;voicePreview.load();
+ }
+ async function applyVoiceEffect(){
+  if(!voiceOriginalBlob)return;
+  const ticket=++voiceFxTicket,original=voiceOriginalBlob,mode=voiceEffect.value;
+  voiceFxBusy=true;send.disabled=true;voiceEffect.disabled=true;
+  voiceFxStatus.textContent=mode==="normal"?"Préparation du vocal…":"🎛️ Transformation de ta voix en cours…";
+  voicePreview.pause();
+  try {
+   if(mode!=="normal" && !window.ManuVoiceFX?.supported())
+     throw Error("Effets indisponibles sur ce navigateur : essaie Safari ou Chrome.");
+   const result=mode==="normal"?original:await window.ManuVoiceFX.transform(original,mode);
+   if(ticket!==voiceFxTicket||voiceOriginalBlob!==original)return;
+   displayVoice(result);
+   const labels={normal:"🎙️ Voix normale",robot:"🤖 Robot",monster:"👹 Monstre",squirrel:"🐿️ Écureuil",deep:"🦇 Voix grave"};
+   voiceFxStatus.textContent="✅ "+labels[mode]+" : écoute le résultat, puis envoie !";
+   voiceStatusText("✅ Vocal prêt ("+voiceSeconds+" s). Tu peux changer d'effet avant l'envoi.");
+  } catch(err){
+   if(ticket!==voiceFxTicket||voiceOriginalBlob!==original)return;
+   voiceEffect.value="normal";displayVoice(original);
+   voiceFxStatus.textContent="⚠️ "+(err.message||"Effet indisponible")+". Vocal original conservé.";
+   note("Le vocal original est disponible ; essaie un autre effet.","error");
+  } finally {
+   if(ticket===voiceFxTicket){
+    voiceFxBusy=false;voiceEffect.disabled=false;
+    if(!processing&&!voiceRecorder)send.disabled=false;
+   }
+  }
+ }
+ voiceEffect.addEventListener("change",()=>{if(voiceOriginalBlob&&!voiceRecorder&&!processing)applyVoiceEffect()});
  function stopVoice(){
   if(voiceRecorder?.state!=="inactive"){
    try{voiceRecorder.stop()}catch{}
@@ -246,7 +288,7 @@
   voiceStatusText("Enregistrement non disponible dans ce navigateur.");
  }
  voiceToggle.addEventListener("click",async()=>{
-  if(!voiceSupported||processing)return;
+  if(!voiceSupported||processing||voiceFxBusy)return;
   if(voiceRecorder){voiceStatusText("Préparation du vocal…");stopVoice();return}
   if(file.files?.length){note("Retire d'abord la photo ou le GIF local avant d'enregistrer.","error");return}
   if(voiceBlob)discardVoice();
@@ -259,6 +301,7 @@
    const options=preferred?{mimeType:preferred,audioBitsPerSecond:64000}:{audioBitsPerSecond:64000};
    let rec;try{rec=new MediaRecorder(stream,options)}catch{rec=new MediaRecorder(stream)}
    voiceStream=stream;voiceRecorder=rec;voiceChunks=[];voiceDiscard=false;voiceError=false;
+   voiceEffect.disabled=true;
    voicePreview.hidden=true;voicePanel.hidden=false;voiceStarted=0;meter(0);
    voiceToggle.classList.add("is-recording");voiceToggle.textContent="⏹️ Arrêter le vocal";
    voiceToggle.setAttribute("aria-expanded","true");voiceStatusText("🔴 Enregistrement… parle à MANU !");
@@ -270,7 +313,7 @@
     const parts=voiceChunks.slice(),kind=rec.mimeType||parts[0]?.type||preferred||"";
     const mime=kind.startsWith("audio/mp4")?"audio/mp4":kind.startsWith("audio/ogg")?"audio/ogg":
       kind.startsWith("audio/webm")?"audio/webm":"";
-    voiceRecorder=null;releaseMicro();
+    voiceRecorder=null;releaseMicro();voiceEffect.disabled=false;
     voiceToggle.classList.remove("is-recording");voiceToggle.textContent="🎙️ Refaire un vocal";
     voiceToggle.setAttribute("aria-expanded","false");
     if(!processing)send.disabled=false;
@@ -285,10 +328,10 @@
      discardVoice();voiceStatusText("Vocal vide ou supérieur à 3 Mo.");return;
     }
     voiceSeconds=Math.min(15,Math.max(1,Math.ceil(elapsed/1000)));
-    voiceBlob=result;voicePreviewURL=URL.createObjectURL(result);
-    voicePreview.src=voicePreviewURL;voicePreview.hidden=false;
-    voiceStatusText("✅ Vocal prêt ("+voiceSeconds+" s). Écoute-le avant d'envoyer !");
+    voiceOriginalBlob=result;
+    voiceStatusText("✅ Vocal enregistré ! Préparation de ton effet vocal…");
     meter(voiceSeconds);
+    applyVoiceEffect();
    };
    rec.start();
    voiceStarted=performance.now();
@@ -296,7 +339,7 @@
    voiceTimeout=setTimeout(stopVoice,15000);
   }catch(err){
    if(stream)stream.getTracks().forEach(t=>t.stop());
-   releaseMicro();voiceRecorder=null;voiceToggle.classList.remove("is-recording");
+   releaseMicro();voiceRecorder=null;voiceEffect.disabled=false;voiceToggle.classList.remove("is-recording");
    voiceToggle.setAttribute("aria-expanded","false");voiceToggle.textContent="🎙️ Message vocal";
    if(!processing)send.disabled=false;
    voicePanel.hidden=false;
@@ -320,7 +363,7 @@
   try{
    const u=new URL(str);
    return u.protocol==="https:"&&u.hostname==="nhmraocljiugwlgflhfn.supabase.co"&&
-     /^\/storage\/v1\/object\/public\/manu-chat-voices\/voices\/[a-f0-9-]{36}\.(webm|ogg|m4a)$/.test(u.pathname)
+     /^\/storage\/v1\/object\/public\/manu-chat-voices\/voices\/[a-f0-9-]{36}\.(webm|ogg|m4a|wav)$/.test(u.pathname)
      ?u.href:null;
   }catch{return null}
  }
@@ -539,7 +582,7 @@
   e.preventDefault();if(processing)return;
   const n=nick.value.trim(),t=body.value.trim(),f=file.files?.[0];
   if(!/^[\p{L}\p{N} _.-]{2,24}$/u.test(n)){note("Pseudo invalide : 2 à 24 caractères.","error");nick.focus();return}
-  if(voiceRecorder){note("Arrête l'enregistrement avant d'envoyer.","error");return}
+  if(voiceRecorder||voiceFxBusy){note("Termine la préparation du vocal avant d'envoyer.","error");return}
   if(f&&voiceBlob){note("Choisis une photo ou un message vocal, pas les deux.","error");return}
   if(Array.from(t).length>500||(!t&&!f&&!voiceBlob)){note("Écris un texte, sélectionne une photo ou enregistre un vocal.","error");return}
   processing=true;send.disabled=true;send.textContent="⏳ ENVOI…";
@@ -547,7 +590,7 @@
    const data=new FormData();data.set("nickname",n);data.set("text",t);data.set("token",token);
    if(f){note(f.type==="image/gif"?"Envoi du GIF animé…":"Compression et envoi de la photo…");data.set("photo",await compress(f))}
    if(voiceBlob){
-    const ext=voiceBlob.type==="audio/mp4"?"m4a":voiceBlob.type==="audio/ogg"?"ogg":"webm";
+    const ext=voiceBlob.type==="audio/wav"?"wav":voiceBlob.type==="audio/mp4"?"m4a":voiceBlob.type==="audio/ogg"?"ogg":"webm";
     data.set("voice",new File([voiceBlob],"message-vocal."+ext,{type:voiceBlob.type}));
     data.set("voice_seconds",String(voiceSeconds));
     note("Envoi de ton message vocal…");
