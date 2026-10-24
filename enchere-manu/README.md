@@ -254,3 +254,18 @@ nouveau déploiement.
 **Test transactionnel** : un envoi via la fonction SQL a été accepté pour
 WebM, Ogg, M4A et WAV ; une extension non autorisée a été rejetée ; tous
 les messages d'essai ont été annulés sans affecter le chat existant.
+
+
+### Utilisation du bouton vocal (correctif du 24 octobre 2026)
+
+Le bouton « Message vocal » ouvre désormais **uniquement le panneau des réglages**.
+Il ne demande plus immédiatement l'accès au microphone.
+
+1. Ouvrir « Message vocal ».
+2. Sélectionner la voix normale, robot, monstre, écureuil ou voix grave.
+3. Cliquer « Démarrer l'enregistrement » : l'accès micro est demandé à ce moment.
+4. Cliquer « Arrêter l'enregistrement », ou attendre l'arrêt automatique à 15 s.
+5. Réécouter, changer d'effet si souhaité, puis envoyer ou recommencer.
+
+La transformation est appliquée à l'audio **après** l'enregistrement et conservée
+dans le fichier envoyé. L'envoi et le stockage Supabase restent inchangés.

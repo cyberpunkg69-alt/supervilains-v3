@@ -206,7 +206,7 @@
  const voiceToggle=$("chat-voice-toggle"),voicePanel=$("chat-voice-panel");
  const voiceTimer=$("chat-voice-timer"),voiceProgress=$("chat-voice-progress");
  const voiceStatus=$("chat-voice-status"),voicePreview=$("chat-voice-preview");
- const voiceDelete=$("chat-voice-delete");
+ const voiceDelete=$("chat-voice-delete"),voiceRecord=$("chat-voice-record");
  const voiceEffect=$("chat-voice-effect"),voiceFxStatus=$("chat-voice-fx-status");
  let voiceOriginalBlob=null,voiceFxTicket=0,voiceFxBusy=false;
  const voiceSupported=Boolean(window.isSecureContext&&navigator.mediaDevices?.getUserMedia&&window.MediaRecorder);
@@ -226,6 +226,9 @@
  const discardVoice=()=>{
   voiceFxTicket++;
   voiceFxBusy=false;voiceOriginalBlob=null;
+  voiceRecord.disabled=false;
+  voiceRecord.classList.remove("is-recording");
+  voiceRecord.textContent="🔴 Démarrer l'enregistrement";
   if(voiceEffect)voiceEffect.disabled=false;
   if(!voiceRecorder)file.disabled=false;
   if(voiceFxStatus)voiceFxStatus.textContent="Tu peux enregistrer un nouveau vocal et choisir un effet.";
@@ -270,7 +273,12 @@
    }
   }
  }
- voiceEffect.addEventListener("change",()=>{if(voiceOriginalBlob&&!voiceRecorder&&!processing)applyVoiceEffect()});
+ voiceEffect.addEventListener("change",()=>{
+  if(voiceOriginalBlob&&!voiceRecorder&&!processing){applyVoiceEffect();return}
+  if(!voiceRecorder&&!processing){
+   voiceFxStatus.textContent="✅ "+voiceEffect.options[voiceEffect.selectedIndex].textContent.trim()+" sélectionnée. Tu peux maintenant démarrer l'enregistrement.";
+  }
+ });
  function stopVoice(){
   if(voiceRecorder?.state!=="inactive"){
    try{voiceRecorder.stop()}catch{}
@@ -286,10 +294,22 @@
   }
  }
  if(!voiceSupported){
-  voiceToggle.disabled=true;voiceToggle.title="Utilise Safari sur iPhone ou Chrome sur Android et autorise le micro.";
+  voiceRecord.disabled=true;voiceToggle.title="Utilise Safari sur iPhone ou Chrome sur Android et autorise le micro.";
   voiceStatusText("Enregistrement non disponible dans ce navigateur.");
  }
- voiceToggle.addEventListener("click",async()=>{
+ voiceToggle.addEventListener("click",()=>{
+  if(processing)return;
+  // Le micro ne s'active JAMAIS lorsqu'on ouvre les réglages.
+  if(voiceRecorder||voiceFxBusy){voicePanel.hidden=false;return}
+  voicePanel.hidden=!voicePanel.hidden;
+  const open=!voicePanel.hidden;
+  voiceToggle.textContent=open?"🎙️ Masquer le vocal":"🎙️ Message vocal";
+  voiceToggle.setAttribute("aria-expanded",String(open));
+  if(open&&!voiceOriginalBlob){
+   voiceStatusText("Choisis ta voix, puis appuie sur Démarrer l'enregistrement.");
+  }
+ });
+ voiceRecord.addEventListener("click",async()=>{
   if(!voiceSupported||processing||voiceFxBusy)return;
   if(voiceRecorder){voiceStatusText("Préparation du vocal…");stopVoice();return}
   if(file.files?.length){note("Retire d'abord la photo ou le GIF local avant d'enregistrer.","error");return}
@@ -305,7 +325,8 @@
    voiceStream=stream;voiceRecorder=rec;voiceChunks=[];voiceDiscard=false;voiceError=false;
    voiceEffect.disabled=true;
    voicePreview.hidden=true;voicePanel.hidden=false;voiceStarted=0;meter(0);
-   voiceToggle.classList.add("is-recording");voiceToggle.textContent="⏹️ Arrêter le vocal";
+   voiceRecord.classList.add("is-recording");voiceRecord.textContent="⏹️ Arrêter l'enregistrement";
+   voiceToggle.textContent="🎙️ Masquer le vocal";
    voiceToggle.setAttribute("aria-expanded","true");voiceStatusText("🔴 Enregistrement… parle à MANU !");
    send.disabled=true;file.disabled=true;
    rec.ondataavailable=e=>{if(e.data?.size)voiceChunks.push(e.data)};
@@ -316,8 +337,9 @@
     const mime=kind.startsWith("audio/mp4")?"audio/mp4":kind.startsWith("audio/ogg")?"audio/ogg":
       kind.startsWith("audio/webm")?"audio/webm":"";
     voiceRecorder=null;releaseMicro();voiceEffect.disabled=false;
-    voiceToggle.classList.remove("is-recording");voiceToggle.textContent="🎙️ Refaire un vocal";
-    voiceToggle.setAttribute("aria-expanded","false");
+    voiceRecord.classList.remove("is-recording");voiceRecord.textContent="🔁 Refaire un vocal";
+    voiceToggle.textContent="🎙️ Masquer le vocal";
+    voiceToggle.setAttribute("aria-expanded","true");
     if(!processing)send.disabled=false;
     if(voiceDiscard||voiceError||!parts.length||!mime){
      discardVoice();
@@ -341,8 +363,9 @@
    voiceTimeout=setTimeout(stopVoice,15000);
   }catch(err){
    if(stream)stream.getTracks().forEach(t=>t.stop());
-   releaseMicro();voiceRecorder=null;voiceEffect.disabled=false;voiceToggle.classList.remove("is-recording");
-   voiceToggle.setAttribute("aria-expanded","false");voiceToggle.textContent="🎙️ Message vocal";
+   releaseMicro();voiceRecorder=null;voiceEffect.disabled=false;voiceRecord.classList.remove("is-recording");
+   voiceRecord.textContent="🔴 Réessayer l'enregistrement";
+   voiceToggle.setAttribute("aria-expanded","true");voiceToggle.textContent="🎙️ Masquer le vocal";
    if(!processing)send.disabled=false;
    voicePanel.hidden=false;
    voiceStatusText("Micro refusé ou indisponible. Autorise-le dans Chrome/Safari.");

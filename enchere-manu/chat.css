@@ -105,3 +105,10 @@
 .voice-fx-select:focus-visible{outline:2px solid #fff0b4;outline-offset:2px}
 .voice-fx-select:disabled{opacity:.6}
 .voice-fx-status{font-size:11px;line-height:1.55;color:#f2c9d4;margin:8px 0}
+
+/* Parcours vocal : choisir l'effet AVANT d'ouvrir le micro */
+.chat-voice-record{display:block;width:100%;min-height:48px;margin:12px 0;padding:11px 15px;border:1px solid #fff0be;border-radius:9px;background:linear-gradient(105deg,#ffe19e,#d7a15c);color:#43152b;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 3px 0 #8a583f}
+.chat-voice-record.is-recording{background:#ad294e;color:white;border-color:#ffd4df;box-shadow:0 0 0 3px #ca486f45;animation:manuMicPulse 1.1s ease-in-out infinite}
+.chat-voice-record:disabled{opacity:.58;cursor:not-allowed}
+.chat-voice-record:focus-visible{outline:2px solid white;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.chat-voice-record.is-recording{animation:none}}

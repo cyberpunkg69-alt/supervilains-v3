@@ -13,12 +13,12 @@
   <meta name="description" content="L'incroyable vente aux enchères pour rire de MANU, la diva du trône. Enchérissez en direct pour rire !">
   <title>MANU aux enchères | Cabaret de l'impossible</title>
   <link rel="stylesheet" href="./style.css?v=20261022ios1">
-  <link rel="stylesheet" href="./chat.css?v=20261024fx1">
+  <link rel="stylesheet" href="./chat.css?v=20261024record1">
   <link rel="stylesheet" href="./updates.css?v=20261022updates1">
   <link rel="stylesheet" href="./flash-info.css?v=20261023flash1">
   <script src="./app.js?v=20261023clean2" defer></script>
   <script src="./voice-fx.js?v=20261024fx1" defer></script>
-  <script src="./chat.js?v=20261024fx2" defer></script>
+  <script src="./chat.js?v=20261024record1" defer></script>
   <script src="./updates.js?v=20261024wavfix1" defer></script>
   <script src="./flash-info.js?v=20261024react1" defer></script>
 </head>
@@ -246,9 +246,9 @@
               <option value="squirrel">🐿️ Écureuil surexcité</option>
               <option value="deep">🦇 Voix ultra grave</option>
             </select>
-            <p id="chat-voice-fx-status" class="voice-fx-status" role="status">Enregistre puis choisis un effet. Tu peux comparer les voix avant d'envoyer.</p>
-
-            <p id="chat-voice-status" class="chat-voice-status" role="status">Appuie sur « Message vocal » pour enregistrer jusqu'à 15 secondes.</p>
+            <p id="chat-voice-fx-status" class="voice-fx-status" role="status">Choisis un effet avant d'enregistrer. Tu pourras aussi le changer après.</p>
+            <button type="button" id="chat-voice-record" class="chat-voice-record">🔴 Démarrer l'enregistrement</button>
+            <p id="chat-voice-status" class="chat-voice-status" role="status">Le micro est arrêté. Enregistrement limité à 15 secondes.</p>
             <audio id="chat-voice-preview" class="chat-voice-preview" controls preload="metadata" hidden aria-label="Écouter ton message vocal avant envoi"></audio>
             <div class="chat-voice-actions">
               <button type="button" id="chat-voice-delete" class="chat-voice-delete">✕ Annuler / supprimer</button>
