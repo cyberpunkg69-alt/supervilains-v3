@@ -227,6 +227,7 @@
   voiceFxTicket++;
   voiceFxBusy=false;voiceOriginalBlob=null;
   if(voiceEffect)voiceEffect.disabled=false;
+  if(!voiceRecorder)file.disabled=false;
   if(voiceFxStatus)voiceFxStatus.textContent="Tu peux enregistrer un nouveau vocal et choisir un effet.";
   if(voicePreviewURL){URL.revokeObjectURL(voicePreviewURL);voicePreviewURL=null}
   voiceBlob=null;voiceSeconds=0;
@@ -245,7 +246,7 @@
  async function applyVoiceEffect(){
   if(!voiceOriginalBlob)return;
   const ticket=++voiceFxTicket,original=voiceOriginalBlob,mode=voiceEffect.value;
-  voiceFxBusy=true;send.disabled=true;voiceEffect.disabled=true;
+  voiceFxBusy=true;send.disabled=true;voiceEffect.disabled=true;file.disabled=true;
   voiceFxStatus.textContent=mode==="normal"?"Préparation du vocal…":"🎛️ Transformation de ta voix en cours…";
   voicePreview.pause();
   try {
@@ -264,7 +265,7 @@
    note("Le vocal original est disponible ; essaie un autre effet.","error");
   } finally {
    if(ticket===voiceFxTicket){
-    voiceFxBusy=false;voiceEffect.disabled=false;
+    voiceFxBusy=false;voiceEffect.disabled=false;file.disabled=false;
     if(!processing&&!voiceRecorder)send.disabled=false;
    }
   }
