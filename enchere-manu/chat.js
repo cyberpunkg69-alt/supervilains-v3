@@ -281,6 +281,7 @@
   if(!voiceRecorder){
    voicePanel.hidden=true;voiceToggle.textContent="🎙️ Message vocal";
    voiceToggle.classList.remove("is-recording");voiceToggle.setAttribute("aria-expanded","false");
+   if(!processing)send.disabled=false;
   }
  }
  if(!voiceSupported){
