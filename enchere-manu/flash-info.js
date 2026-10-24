@@ -604,6 +604,28 @@
     const delay=105000+Math.floor(Math.random()*55000);
     timerId=setTimeout(()=>flash(),delay);
   }
+  const milestoneLines=[
+    name => "🚨 FLASH INFO : la vanne de "+name+" atteint 5 réactions ! MANU convoque une réunion d'urgence.",
+    name => "😂 ALERTE CABARET : 5 réactions pour "+name+" ! Le service de communication de MANU est en panique.",
+    name => "👑 ÉDITION SPÉCIALE : "+name+" déclenche 5 réactions. MANU exige le droit de réponse.",
+    name => "📺 COUP DE THÉÂTRE : 5 personnes réagissent à "+name+" ! MANU consulte ses avocats du rire.",
+    name => "🎙️ FLASH : le commentaire de "+name+" passe le cap des 5 réactions. La couronne de MANU vacille.",
+    name => "📰 INFO EXCLUSIVE : "+name+" atteint 5 réactions. MANU réfute les accusations de mauvais goût.",
+    name => "💥 TROLL ALERT : 5 réactions pour "+name+" ! Une équipe cherche MANU derrière les rideaux.",
+    name => "🔴 DERNIÈRE MINUTE : "+name+" décroche 5 réactions. MANU réclame une pause coiffure."
+  ];
+  window.addEventListener("manu:chat-reaction-milestone",event=>{
+    if(paused||document.visibilityState!=="visible")return;
+    const data=event.detail||{};
+    const name=String(data.nickname||"un troll").slice(0,24);
+    const choice=milestoneLines[Math.floor(Math.random()*milestoneLines.length)];
+    headline.textContent=choice(name);
+    meta.textContent="ÉDITION SPÉCIALE · "+dateText();
+    tag.textContent="😂 TROLL ALERT · 5 RÉACTIONS";
+    lastFlash=Date.now();
+    root.classList.remove("flash-pop");void root.offsetWidth;root.classList.add("flash-pop");
+    playSting();schedule();
+  });
   const paintButtons=()=>{
     mute.textContent=soundOn?"🔊 Son activé":"🔇 Son coupé";
     mute.setAttribute("aria-pressed",String(soundOn));

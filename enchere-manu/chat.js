@@ -10,6 +10,27 @@
  const gifResults=$("chat-gif-results"),gifUrlInput=$("chat-gif-url"),gifUseLink=$("chat-gif-use-url");
  const gifChoice=$("chat-gif-choice"),gifChoiceImage=$("chat-gif-choice-image"),gifClear=$("chat-gif-clear");
  const GIF_API="https://nhmraocljiugwlgflhfn.supabase.co/functions/v1/manu-gifs";
+ const reactEmojis=["❤️","😂","😱","👑","💩"];
+ const topThree=$("chat-top-three");
+ let reactionMilestonesReady=false;
+ let seenMilestones=new Set();
+ const milestoneStorageKey="manu-chat-milestones-v1";
+ try {
+  const saved=JSON.parse(localStorage.getItem(milestoneStorageKey)||"[]");
+  if(Array.isArray(saved))seenMilestones=new Set(saved.filter(x=>Number.isSafeInteger(x)).slice(-120));
+ }catch{}
+ function markMilestone(id){
+  seenMilestones.add(Number(id));
+  if(seenMilestones.size>120)seenMilestones=new Set([...seenMilestones].slice(-120));
+  try{localStorage.setItem(milestoneStorageKey,JSON.stringify([...seenMilestones]));}catch{}
+ }
+ function showMilestone(m){
+  if(!m||!Number.isSafeInteger(Number(m.id))||seenMilestones.has(Number(m.id)))return;
+  markMilestone(m.id);
+  window.dispatchEvent(new CustomEvent("manu:chat-reaction-milestone",{
+   detail:{id:Number(m.id),nickname:String(m.nickname||"Un troll").slice(0,24),text:String(m.body||"").slice(0,110),total:5}
+  }));
+ }
  const get=k=>{try{return localStorage.getItem(k)}catch{return null}};
  const set=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
  let token=get("manu-auction-token");
@@ -303,6 +324,50 @@
      ?u.href:null;
   }catch{return null}
  }
+ function updateReactionBar(article,m){
+  const bar=article.querySelector(".chat-reactions");
+  if(!bar)return;
+  for(const button of bar.querySelectorAll("button[data-reaction]")){
+   const emoji=button.dataset.reaction;
+   const number=Number(m.reaction_counts?.[emoji])||0;
+   const count=button.querySelector(".chat-reaction-count");
+   if(count)count.textContent=String(number);
+   const selected=m.my_reaction===emoji;
+   button.classList.toggle("is-selected",selected);
+   button.setAttribute("aria-pressed",String(selected));
+   button.setAttribute("aria-label",emoji+" : "+number+" réactions"+(selected?", ta réaction":""));
+  }
+  const total=bar.querySelector(".chat-reaction-total");
+  if(total)total.textContent=(m.reaction_count||0)+" réaction"+((m.reaction_count||0)===1?"":"s");
+ }
+ function drawTopThree(items){
+  if(!topThree)return;
+  const arr=Array.isArray(items)?items:[];
+  if(!arr.length){
+    topThree.hidden=true;topThree.replaceChildren();return;
+  }
+  topThree.hidden=false;
+  topThree.replaceChildren();
+  const header=document.createElement("strong");header.textContent="🏆 TOP 3 DES MEILLEURES VANNES";
+  topThree.append(header);
+  const list=document.createElement("ol");
+  for(const [i,v] of arr.entries()){
+   const li=document.createElement("li");
+   const btn=document.createElement("button");btn.type="button";
+   const n=document.createElement("b");n.textContent=["🥇","🥈","🥉"][i]+" "+String(v.nickname||"Troll").slice(0,24);
+   const snippet=document.createElement("span");
+   snippet.textContent=String(v.body||"📸 Un média qui fait réagir !").slice(0,80);
+   const score=document.createElement("small");score.textContent="❤️ "+Number(v.reaction_count||0);
+   btn.append(n,snippet,score);
+   btn.addEventListener("click",()=>{
+     const msg=wall.querySelector('[data-chat-id="'+String(v.id)+'"]');
+     if(msg)msg.scrollIntoView({behavior:"smooth",block:"center"});
+     else note("Cette vanne est dans les messages plus anciens : utilise « Anciens messages ».","success");
+   });
+   li.append(btn);list.append(li);
+  }
+  topThree.append(list);
+ }
  function line(m){
   const box=document.createElement("article");box.className="chat-message";box.dataset.chatId=String(m.id);
   const avatar=document.createElement("div");avatar.className="chat-avatar";avatar.textContent=String(m.nickname||"?").charAt(0).toUpperCase();
@@ -355,7 +420,39 @@
    player.src=recording;player.setAttribute("aria-label","Écouter le vocal de "+m.nickname);
    container.append(title,player);pane.append(container);
   }
-  box.append(avatar,pane);return box;
+  const reactions=document.createElement("div");reactions.className="chat-reactions";
+  reactions.setAttribute("aria-label","Réagir au commentaire");
+  for(const emoji of reactEmojis){
+    const vote=document.createElement("button");
+    vote.type="button";vote.className="chat-reaction";vote.dataset.reaction=emoji;
+    const sign=document.createElement("span");sign.textContent=emoji;sign.className="chat-reaction-icon";
+    const score=document.createElement("span");score.className="chat-reaction-count";score.textContent="0";
+    vote.append(sign,score);
+    vote.addEventListener("click",async()=>{
+      if(vote.disabled)return;
+      for(const el of reactions.querySelectorAll("button"))el.disabled=true;
+      try{
+        const result=await api("POST",{action:"react",token,message_id:m.id,reaction:emoji});
+        const fresh=messages.find(x=>x.id===m.id);
+        if(fresh){
+          fresh.reaction_count=Number(result.total)||0;
+          fresh.reaction_counts=result.counts||{};
+          fresh.my_reaction=result.mine||null;
+          updateReactionBar(box,fresh);
+        }
+        if(result.milestone&&result.milestone_message)showMilestone(result.milestone_message);
+        // Les classements sont mis à jour au prochain rafraîchissement.
+        refresh(true);
+      }catch(err){note(err.message||"Impossible d'enregistrer ta réaction.","error")}
+      finally{for(const el of reactions.querySelectorAll("button"))el.disabled=false}
+    });
+    reactions.append(vote);
+  }
+  const total=document.createElement("small");total.className="chat-reaction-total";
+  reactions.append(total);pane.append(reactions);
+  box.append(avatar,pane);
+  updateReactionBar(box,m);
+  return box;
  }
  function render(force=false,keepTop=false){
   const s=messages.map(m=>m.id).join(",");
@@ -397,7 +494,7 @@
   if(processing||reading||(document.visibilityState==="hidden"&&!force))return;
   reading=true;
   try{
-   const j=await api("GET"),latest=Array.isArray(j.messages)?j.messages:[];
+   const j=await api("POST",{action:"sync",token}),latest=Array.isArray(j.messages)?j.messages:[];
    canGoBack=canGoBack||latest.length>=60;
    const map=new Map(messages.map(m=>[m.id,m]));
    for(const m of latest)map.set(m.id,m);
@@ -407,6 +504,21 @@
     for(const id of map.keys())if(id>=first&&id<=last&&!live.has(id))map.delete(id);
    }else map.clear();
    messages=[...map.values()].sort((a,b)=>a.id-b.id).slice(-180);render(force);
+   for(const m of latest){
+    const item=wall.querySelector('[data-chat-id="'+String(m.id)+'"]');
+    if(item)updateReactionBar(item,m);
+   }
+   drawTopThree(j.top);
+   if(Array.isArray(j.milestones)){
+    const milestones=j.milestones.slice().reverse();
+    for(const m of milestones){
+      const id=Number(m.id);
+      if(!Number.isSafeInteger(id))continue;
+      if(reactionMilestonesReady)showMilestone(m);
+      else markMilestone(id); // Pas d'anciennes alertes à la première ouverture.
+    }
+    reactionMilestonesReady=true;
+   }
   }catch(e){if(!messages.length)note("Impossible de charger le chat : "+e.message,"error")}
   finally{reading=false}
  }

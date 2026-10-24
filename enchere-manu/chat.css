@@ -77,3 +77,24 @@
 .chat-voice-message strong{display:block;color:#ffddaa;font-size:11px;margin-bottom:8px}
 .chat-voice-message audio{display:block;width:min(100%,350px);height:45px;accent-color:#ac416b}
 @media(prefers-reduced-motion:reduce){.chat-mic-button.is-recording{animation:none}.chat-voice-meter span{transition:none}}
+
+/* Réactions synchronisées et podium des meilleures vannes. */
+.chat-reactions{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0 2px;padding:4px 0 2px}
+.chat-reaction{display:flex;align-items:center;justify-content:center;gap:5px;min-height:33px;padding:5px 9px;border:1px solid #aa6c78;border-radius:20px;background:#451b30;color:#ffe6d7;font-size:12px;font-weight:900;transition:background .15s,border-color .15s}
+.chat-reaction-icon{font-size:16px;line-height:1}
+.chat-reaction:hover{background:#6b2a47}
+.chat-reaction.is-selected{background:#7b294b;border-color:#ffde99;box-shadow:inset 0 0 0 1px #dca15f;color:white}
+.chat-reaction:disabled{opacity:.55}
+.chat-reaction-count{font-variant-numeric:tabular-nums}
+.chat-reaction-total{font-size:10px;color:#d2afbc;margin-left:4px;white-space:nowrap}
+.chat-top-three[hidden]{display:none!important}
+.chat-top-three{padding:11px 13px;background:linear-gradient(95deg,#4c1b2e,#31111f);border-bottom:1px solid #d6a06280}
+.chat-top-three>strong{display:block;font-size:11px;letter-spacing:.07em;color:#ffe2a8;margin-bottom:8px}
+.chat-top-three ol{padding:0;margin:0;list-style:none;display:grid;gap:4px}
+.chat-top-three li{min-width:0}
+.chat-top-three li button{display:flex;align-items:center;text-align:left;gap:8px;width:100%;padding:7px 9px;border:1px solid #98546c66;border-radius:7px;background:#27101c;color:#ffe8da;font-size:11px}
+.chat-top-three li button:hover{background:#5d2440}
+.chat-top-three li b{white-space:nowrap;color:#ffe0a0}
+.chat-top-three li span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e7bfd0}
+.chat-top-three li small{white-space:nowrap;font-size:11px;color:#fbdca7;font-weight:900}
+@media(max-width:460px){.chat-reactions{gap:4px}.chat-reaction{min-height:33px;padding:5px 7px}.chat-reaction-total{width:100%}.chat-top-three li b{font-size:10px;max-width:34%;overflow:hidden;text-overflow:ellipsis}}

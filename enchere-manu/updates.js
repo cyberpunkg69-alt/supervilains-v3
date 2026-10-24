@@ -25,6 +25,9 @@
     if (/flash.?info|breaking.?news|news.?ticker|100 satirical|bulletin/.test(m)) {
       return { key: "flash", title: "📺 Flash Info MANU : 100 alertes, annonces contextuelles" };
     }
+    if (/react|réaction|reaction|5.reactions|leaderboard|comment.*top/.test(m)) {
+      return { key: "reactions", title: "❤️ Réactions aux commentaires et Flash Info dès 5 votes" };
+    }
     if (/\bvoice|vocal|audio|microphone|record/.test(m)) {
       return { key: "voice", title: "🎙️ Messages vocaux de 15 secondes dans le chat" };
     }

@@ -13,13 +13,13 @@
   <meta name="description" content="L'incroyable vente aux enchères pour rire de MANU, la diva du trône. Enchérissez en direct pour rire !">
   <title>MANU aux enchères | Cabaret de l'impossible</title>
   <link rel="stylesheet" href="./style.css?v=20261022ios1">
-  <link rel="stylesheet" href="./chat.css?v=20261022voice1">
+  <link rel="stylesheet" href="./chat.css?v=20261024react1">
   <link rel="stylesheet" href="./updates.css?v=20261022updates1">
   <link rel="stylesheet" href="./flash-info.css?v=20261023flash1">
   <script src="./app.js?v=20261023clean2" defer></script>
-  <script src="./chat.js?v=20261022voice2" defer></script>
-  <script src="./updates.js?v=20261023flash1" defer></script>
-  <script src="./flash-info.js?v=20261023clean2" defer></script>
+  <script src="./chat.js?v=20261024react1" defer></script>
+  <script src="./updates.js?v=20261024react1" defer></script>
+  <script src="./flash-info.js?v=20261024react1" defer></script>
 </head>
 <body>
   <div class="curtain curtain-left" aria-hidden="true"></div>
@@ -177,7 +177,7 @@
         <div>
           <div class="chat-kicker">✦ LE CABARET DE L’IMPOSSIBLE ✦</div>
           <h2>💬 LE CHAT DES ENCHÈRES</h2>
-          <p>Chambre MANU en direct : messages, smileys, photos et vocaux de 15 secondes, sans inscription !</p>
+          <p>Chambre MANU en direct : texte, photos, GIF, vocaux et réactions ❤️ 😂 😱 👑 💩, sans inscription !</p>
         </div>
         <span class="chat-live"><i aria-hidden="true"></i> SALON PUBLIC</span>
       </div>
@@ -187,6 +187,7 @@
             <strong>🎭 Les coulisses du cabaret</strong>
             <button type="button" id="chat-older" hidden>↑ Anciens messages</button>
           </div>
+          <div id="chat-top-three" class="chat-top-three" hidden aria-label="Les commentaires les plus appréciés"></div>
           <div class="chat-feed" id="chat-feed" role="log" aria-label="Messages publics">
             <p class="chat-loading">🎪 Ouverture du salon…</p>
           </div>
