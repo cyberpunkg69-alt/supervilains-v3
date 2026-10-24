@@ -13,11 +13,12 @@
   <meta name="description" content="L'incroyable vente aux enchères pour rire de MANU, la diva du trône. Enchérissez en direct pour rire !">
   <title>MANU aux enchères | Cabaret de l'impossible</title>
   <link rel="stylesheet" href="./style.css?v=20261022ios1">
-  <link rel="stylesheet" href="./chat.css?v=20261024react1">
+  <link rel="stylesheet" href="./chat.css?v=20261024fx1">
   <link rel="stylesheet" href="./updates.css?v=20261022updates1">
   <link rel="stylesheet" href="./flash-info.css?v=20261023flash1">
   <script src="./app.js?v=20261023clean2" defer></script>
-  <script src="./chat.js?v=20261024react1" defer></script>
+  <script src="./voice-fx.js?v=20261024fx1" defer></script>
+  <script src="./chat.js?v=20261024fx1" defer></script>
   <script src="./updates.js?v=20261024react-fix2" defer></script>
   <script src="./flash-info.js?v=20261024react1" defer></script>
 </head>
@@ -235,6 +236,16 @@
               <span id="chat-voice-timer" class="chat-voice-timer" aria-live="off">00:00 / 00:15</span>
             </div>
             <div class="chat-voice-meter" aria-hidden="true"><span id="chat-voice-progress"></span></div>
+            <label for="chat-voice-effect" class="voice-fx-label">🎭 Transforme ta voix</label>
+            <select id="chat-voice-effect" class="voice-fx-select" aria-label="Choisir un modificateur de voix">
+              <option value="normal">🎙️ Voix normale</option>
+              <option value="robot">🤖 Robot métallique</option>
+              <option value="monster">👹 Monstre des cavernes</option>
+              <option value="squirrel">🐿️ Écureuil surexcité</option>
+              <option value="deep">🦇 Voix ultra grave</option>
+            </select>
+            <p id="chat-voice-fx-status" class="voice-fx-status" role="status">Enregistre puis choisis un effet. Tu peux comparer les voix avant d'envoyer.</p>
+
             <p id="chat-voice-status" class="chat-voice-status" role="status">Appuie sur « Message vocal » pour enregistrer jusqu'à 15 secondes.</p>
             <audio id="chat-voice-preview" class="chat-voice-preview" controls preload="metadata" hidden aria-label="Écouter ton message vocal avant envoi"></audio>
             <div class="chat-voice-actions">
@@ -249,7 +260,7 @@
           <div class="chat-char-count"><span id="chat-count">0</span>/500 caractères</div>
           <button type="submit" id="chat-submit" class="chat-submit">🚀 ENVOYER AU CABARET</button>
           <p id="chat-feedback" class="chat-feedback" role="status" aria-live="polite">Choisis ton pseudo et lance-toi !</p>
-          <p class="chat-disclaimer">Sans compte ni mot de passe. Une photo ou un vocal par message. Photos compressées, GIF jusqu’à 8 Mo et vocaux jusqu’à 15 s. Les enregistrements envoyés sont publics. N’envoie aucune information privée. Les contenus du chat sont publics et peuvent être signalés.</p>
+          <p class="chat-disclaimer">Sans compte ni mot de passe. Une photo ou un vocal par message. GIF jusqu’à 8 Mo ; vocaux jusqu’à 15 s, avec ou sans effet vocal. Les enregistrements envoyés sont publics. N’envoie aucune information privée. Les contenus du chat sont publics et peuvent être signalés.</p>
         </form>
       </div>
     </section>
