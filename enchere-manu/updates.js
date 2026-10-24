@@ -32,6 +32,9 @@
     if (/wav|vocal.?invalid|voice.?upload|voice.?wav|audio.?reject|audio.?format/.test(m)) {
       return { key: "voice_wav_fix", title: "🔧 Envoi des messages vocaux transformés corrigé" };
     }
+    if (/before.*record|choose.*before|start.*record|mic.*start|sélection.*avant.*enregistr/.test(m)) {
+      return { key: "voice_setup", title: "🎙️ Choisir la voix avant de commencer l'enregistrement" };
+    }
     if (/voice.?changer|voice.?effects?|voice.?filters?|voice.?fx|modificat|transform|robot|squirrel|chipmunk/.test(m)) {
       return { key: "voice_fx", title: "🎭 Nouveau modificateur de voix : robot, monstre, écureuil, grave" };
     }
@@ -61,6 +64,11 @@
   // Les annonces de version connues ne dépendent pas du quota ou du cache GitHub.
   // Les anciennes mises à jour restent consultables dans le HTML si le réseau échoue.
   const confirmedReleases = [{
+    key: "voice_setup",
+    title: "🎙️ Choisir la voix avant de commencer l'enregistrement",
+    date: "2026-10-24T18:22:16Z",
+    sha: "ab7dc0e7a4673fbaaccec771e98171313d76c4ab"
+  },{
     key: "voice_fx",
     title: "🎭 Modificateur de voix : robot, monstre, écureuil et voix grave",
     date: "2026-10-24T17:39:39Z",

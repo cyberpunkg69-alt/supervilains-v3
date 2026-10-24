@@ -343,8 +343,10 @@
     if(!processing)send.disabled=false;
     if(voiceDiscard||voiceError||!parts.length||!mime){
      discardVoice();
-     if(voiceDiscard){voicePanel.hidden=true;voiceToggle.textContent="🎙️ Message vocal";}
-     else voiceStatusText("Enregistrement impossible. Essaie Chrome ou Safari.");
+     if(voiceDiscard){
+      voicePanel.hidden=true;voiceToggle.textContent="🎙️ Message vocal";
+      voiceToggle.setAttribute("aria-expanded","false");
+     } else voiceStatusText("Enregistrement impossible. Essaie Chrome ou Safari.");
      return;
     }
     const result=new Blob(parts,{type:mime});
