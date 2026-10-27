@@ -4,6 +4,10 @@
  const list=document.getElementById("admin-tiktok-accounts");
  const code=document.getElementById("admin-tiktok-code");
  const note=document.getElementById("admin-tiktok-feedback");
+ const rotateBtn=document.getElementById("admin-tiktok-rotate");
+ const codeBox=document.getElementById("admin-tiktok-new-code-box");
+ const generatedCode=document.getElementById("admin-tiktok-new-code");
+ const copyBtn=document.getElementById("admin-tiktok-copy-code");
  const handles=["le.monde.du.cabar","miss.jazz.artiste","lemondeducabaret","sullypapillon1"];
  let accounts=[],busy=false;
  const notice=(s,err=false)=>{note.textContent=s;note.className="tiktok-admin-note"+(err?" is-error":"")};
@@ -58,6 +62,38 @@
   }catch(e){notice("Commande refusée : "+e.message,true)}
   finally{busy=false;draw()}
  }
+ rotateBtn.addEventListener("click",async()=>{
+  const previous=code.value.trim();
+  if(previous.length<18){
+   notice("Saisis d'abord ton code privé actuel dans le champ au-dessus.",true);
+   code.focus();return;
+  }
+  if(!confirm("Remplacer immédiatement ton code privé actuel ? L'ancien cessera de fonctionner. Le nouveau sera affiché une seule fois."))return;
+  busy=true;rotateBtn.disabled=true;draw();
+  try{
+   const result=await request("POST",{action:"rotate_code",code:previous});
+   if(typeof result.new_code!=="string"||!/^[a-f0-9]{64}$/.test(result.new_code))
+    throw Error("Réponse du serveur inattendue : vérifie les commandes privées.");
+   generatedCode.value=result.new_code;
+   code.value=result.new_code;
+   codeBox.hidden=false;
+   notice("✅ Nouveau code activé ! Copie-le et sauvegarde-le maintenant. L'ancien est désactivé.");
+   generatedCode.focus();generatedCode.select();
+  }catch(e){
+   notice("Changement du code impossible : "+e.message,true);
+  }finally{busy=false;rotateBtn.disabled=false;draw()}
+ });
+ copyBtn.addEventListener("click",async()=>{
+  if(!generatedCode.value)return;
+  try{
+   if(!navigator.clipboard||!window.isSecureContext)throw Error("no-clipboard");
+   await navigator.clipboard.writeText(generatedCode.value);
+   notice("✅ Nouveau code copié ! Sauvegarde-le dans un gestionnaire de mots de passe.");
+  }catch{
+   generatedCode.focus();generatedCode.select();
+   notice("Sélectionne le texte du code et utilise Copier pour le conserver.");
+  }
+ });
  document.getElementById("admin-tiktok-refresh").addEventListener("click",refresh);
  setInterval(()=>{if(!busy&&document.visibilityState==="visible")refresh()},30000);
  refresh();

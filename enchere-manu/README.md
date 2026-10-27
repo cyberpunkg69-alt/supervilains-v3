@@ -300,3 +300,23 @@ dans le fichier envoyé. L'envoi et le stockage Supabase restent inchangés.
 
 ### Mise à jour technique du service worker
 La page référence maintenant `sw.js?v=20261024tiktok1` pour assurer la prise en compte des notifications TikTok par les appareils ayant déjà activé les notifications d'enchères.
+
+
+### Renouveler le code privé TikTok LIVE (27 octobre 2026)
+
+Sur `tiktok-admin.html`, saisir le code actuel et cliquer « Générer un nouveau
+code privé ». Le serveur génère un code cryptographiquement aléatoire de
+256 bits (64 caractères hexadécimaux). Supabase vérifie le code actuel dans
+une transaction, puis ne conserve que le hash bcrypt du nouveau code.
+Le précédent code est immédiatement désactivé.
+
+La réponse contient le nouveau code **une seule fois**. Le navigateur l'affiche
+avec « Copier le nouveau code » et le place dans le champ de commande actuel,
+sans stockage local. Après le rechargement, le code n'est pas récupérable :
+le conserver dans un gestionnaire de mots de passe.
+
+Implémentation : action `rotate_code` dans la fonction Edge
+`manu-tiktok-live`, RPC SQL `manu_tiktok_rotate_code` limité au `service_role`.
+La rotation ne modifie aucun statut LIVE ni abonnement push et n'expose jamais
+le hash ni la clé service_role. Si le code actuel est perdu, il faut passer
+par une réinitialisation administrateur contrôlée, jamais anonyme.

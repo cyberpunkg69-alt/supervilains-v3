@@ -28,3 +28,17 @@
 .tiktok-admin-refresh{background:#5d3548}
 .tiktok-admin-note{min-height:24px;color:#aaf0bb!important;font-weight:700}.tiktok-admin-note.is-error{color:#ffb1bb!important}
 .tiktok-admin-small{font-size:12px}
+/* Renouvellement du code d'administration, sans conserver le secret en local */
+.tiktok-admin-security{margin:24px 0;padding:16px;border:1px solid #b7895b;background:#2a101e;border-radius:12px}
+.tiktok-admin-security h2{font-size:19px;color:#ffe4ab;margin:0 0 10px}
+.tiktok-admin-security p{font-size:13px}
+.tiktok-admin-security strong{color:#fff4c9}
+.tiktok-admin-rotate,.tiktok-admin-copy{display:inline-flex;align-items:center;justify-content:center;min-height:44px;background:#bf2e57;border:1px solid #ffe1ba;color:#fff;padding:10px 15px;border-radius:9px;font-weight:900;cursor:pointer;font-size:13px;max-width:100%}
+.tiktok-admin-rotate:disabled,.tiktok-admin-copy:disabled{opacity:.6;cursor:not-allowed}
+.tiktok-admin-rotate:focus-visible,.tiktok-admin-copy:focus-visible{outline:2px solid white;outline-offset:3px}
+.tiktok-admin-new-code[hidden]{display:none!important}
+.tiktok-admin-new-code{margin-top:18px;padding:14px;background:#3d1d30;border:1px solid #e5b776;border-radius:10px}
+.tiktok-admin-new-code label{margin:0 0 10px}
+.tiktok-admin-new-code input{font-size:13px;overflow-x:auto;font-family:ui-monospace,Consolas,monospace;letter-spacing:0.02em}
+.tiktok-admin-copy{margin-top:11px;background:#6a3552}
+.tiktok-admin-new-code p{font-size:12px}

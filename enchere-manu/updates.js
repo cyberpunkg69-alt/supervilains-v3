@@ -22,6 +22,9 @@
     if (/tiktok|live.*four|live.*four.*accounts|stream.*banner|stream.*status/.test(m)) {
       return { key:"tiktok_live", title:"🔴 Suivre MANU en LIVE sur ses 4 comptes TikTok" };
     }
+    if (/rotat.*code|new.*admin.*code|code.*priv|code.*admin|renew.*code|credential.*rotat/.test(m)) {
+      return {key:"tiktok_admin_code",title:"🔐 TikTok LIVE : générez et copiez un nouveau code privé"};
+    }
     if (/changelog|release.?notes|latest.?updates|update.?widget|nouv[eé]aut[eé]s/.test(m)) {
       return { key: "updates", title: "✨ Nouveau : le widget des mises à jour" };
     }

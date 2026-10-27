@@ -6,8 +6,8 @@
  <meta name="robots" content="noindex,nofollow">
  <meta name="theme-color" content="#200916">
  <title>MANU — Commandes privées TikTok LIVE</title>
- <link rel="stylesheet" href="./tiktok-live.css?v=20261024tiktok1">
- <script src="./tiktok-admin.js?v=20261024tiktok1" defer></script>
+ <link rel="stylesheet" href="./tiktok-live.css?v=20261027code1">
+ <script src="./tiktok-admin.js?v=20261027code1" defer></script>
 </head>
 <body class="tiktok-admin-page">
  <main class="tiktok-admin-wrap">
@@ -20,6 +20,18 @@
   <div id="admin-tiktok-accounts" class="tiktok-admin-accounts" aria-label="État des quatre comptes TikTok"></div>
   <button class="tiktok-admin-refresh" id="admin-tiktok-refresh" type="button">🔄 Actualiser les statuts</button>
   <p id="admin-tiktok-feedback" class="tiktok-admin-note" role="status" aria-live="polite"></p>
+  <section class="tiktok-admin-security" aria-labelledby="tiktok-admin-security-title">
+    <h2 id="tiktok-admin-security-title">🔐 Sécurité du panneau LIVE</h2>
+    <p>Tu peux remplacer ton code privé à tout moment. <strong>Entre d'abord le code actuel</strong> dans le champ ci-dessus : il est nécessaire pour autoriser le changement.</p>
+    <button id="admin-tiktok-rotate" class="tiktok-admin-rotate" type="button">🎲 Générer un nouveau code privé</button>
+    <div id="admin-tiktok-new-code-box" class="tiktok-admin-new-code" hidden>
+      <label for="admin-tiktok-new-code">✅ Ton nouveau code privé</label>
+      <input type="text" id="admin-tiktok-new-code" readonly autocomplete="off" spellcheck="false" aria-describedby="admin-tiktok-save-tip">
+      <button type="button" id="admin-tiktok-copy-code" class="tiktok-admin-copy">📋 Copier le nouveau code</button>
+      <p id="admin-tiktok-save-tip"><strong>Enregistre-le dans ton gestionnaire de mots de passe.</strong> Le précédent code ne fonctionne plus. Celui-ci ne sera plus affiché après avoir quitté ou rechargé la page.</p>
+    </div>
+    <p class="tiktok-admin-small">Si tu perds ton code et n'as aucune copie, ce bouton ne pourra pas le récupérer : une réinitialisation côté administrateur sera nécessaire.</p>
+  </section>
   <p class="tiktok-admin-small">Un LIVE activé manuellement expire au bout de 8 heures par sécurité, sauf si tu l'arrêtes avant. Si le direct dure plus longtemps, réactive-le. La détection automatique externe n'est pas encore connectée.</p>
  </main>
 </body>
