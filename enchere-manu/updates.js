@@ -70,6 +70,11 @@
   // Les annonces de version connues ne dépendent pas du quota ou du cache GitHub.
   // Les anciennes mises à jour restent consultables dans le HTML si le réseau échoue.
   const confirmedReleases = [{
+    key:"tiktok_admin_code",
+    title:"🔐 TikTok LIVE : générez et copiez un nouveau code privé",
+    date:"2026-10-27T20:32:37Z",
+    sha:"2e906cbf21c41fba7bdc051ccc5df52d8ed2d43f"
+  },{
     key:"tiktok_live",title:"🔴 Suivre MANU en LIVE sur ses 4 comptes TikTok",
     date:"2026-10-24T19:31:02Z",
     sha:"fbefb8637c14d20a7ef9d8af410740eb9dec579f"
