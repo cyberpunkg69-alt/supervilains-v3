@@ -1,0 +1,6 @@
+fastapi==0.128.2
+uvicorn[standard]==0.38.0
+streamlink>=7.0,<9.0
+opencv-python-headless>=4.9,<5.0
+numpy>=1.26,<3.0
+pytesseract>=0.3.13,<1.0
