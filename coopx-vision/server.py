@@ -17,6 +17,7 @@ import numpy as np
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from detector import read_text, StableMatcher
+from cinema import router as cinema_router
 
 logging.basicConfig(level=logging.INFO)
 log=logging.getLogger('coopx')
@@ -164,6 +165,7 @@ async def lifespan(app:FastAPI):
     state.running=False
 
 app=FastAPI(title='COOP X VISION',lifespan=lifespan)
+app.include_router(cinema_router)
 app.add_middleware(CORSMiddleware,allow_origins=ORIGINS,
                    allow_methods=['GET'],allow_headers=['x-coopx-token'],
                    allow_credentials=False)
@@ -174,7 +176,7 @@ def verify(token:str|None):
 
 @app.get('/health')
 def health():
-    return {'app':'COOP X LIVE','version':'0.3.1','ok':True}
+    return {'app':'COOP X LIVE','version':'0.4.0','ok':True}
 
 @app.get('/api/status')
 def status(x_coopx_token:str|None=Header(default=None)):
