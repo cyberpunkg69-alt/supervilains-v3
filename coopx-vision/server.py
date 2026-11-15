@@ -176,7 +176,7 @@ def verify(token:str|None):
 
 @app.get('/health')
 def health():
-    return {'app':'COOP X LIVE','version':'0.5.0','ok':True}
+    return {'app':'COOP X LIVE','version':'0.6.0','ok':True}
 
 @app.get('/api/status')
 def status(x_coopx_token:str|None=Header(default=None)):
