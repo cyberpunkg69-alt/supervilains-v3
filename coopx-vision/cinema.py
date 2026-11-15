@@ -50,9 +50,9 @@ def vod_id(value:str)->str:
     parsed=urlparse(value)
     if parsed.scheme!='https' or parsed.hostname not in ('twitch.tv','www.twitch.tv','m.twitch.tv'):
         raise ValueError('Donne le lien HTTPS d’une rediffusion Twitch.')
-    match=re.search(r'(?:^|/)videos/(\d{5,20})(?:/|$)',parsed.path)
+    match=re.search(r'(?:^|/)(?:videos|v)/(\d{5,20})(?:/|$)',parsed.path)
     if not match:
-        raise ValueError('Lien attendu : https://www.twitch.tv/videos/123456789')
+        raise ValueError('Lien Twitch attendu : /videos/123456789 ou /c1truc2ouf/v/123456789')
     return match.group(1)
 
 def run(args:list[str],timeout:int=60)->str:
