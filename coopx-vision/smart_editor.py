@@ -150,7 +150,7 @@ def make_original_beat(path:Path,seconds:float,seed:int=7,bpm:int=120):
         f.writeframes(pcm.tobytes())
 
 def transcode_original(playlist,offset,length,dest:Path,
-                       width:int,height:int,style:str,index:int):
+                       width:int,height:int,style:str,index:int,has_audio:bool=True):
     # Clean footage; every 0.5s is a keyframe for accurate trims.
     look=('eq=contrast=1.11:saturation=1.16:brightness=-0.012'
           if style=='cinema' else
@@ -171,6 +171,8 @@ def transcode_original(playlist,offset,length,dest:Path,
           '-movflags','+faststart',str(dest)]
     # Source missing audio: retry with generated silent track.
     try:
+        if not has_audio:
+            raise RuntimeError('Audio Twitch absent : générer une piste silencieuse')
         run_command(args,timeout=160)
     except Exception:
         args=['ffmpeg','-nostdin','-hide_banner','-loglevel','error','-y',
