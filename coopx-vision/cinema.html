@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>COOP X CINEMA AI — Test v0.4</title>
+<title>COOP X CINEMA AI — Test v0.5</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#070913;color:#f0f4ff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#20204b 0%,#070913 55%);min-height:100vh}
@@ -17,13 +17,13 @@ button:disabled{cursor:not-allowed;opacity:.55}.muted{color:#9eaaca;font-size:12
 .bar{background:#29324a;height:11px;overflow:hidden;border-radius:100px;margin:12px 0}.fill{height:100%;width:0;background:linear-gradient(90deg,#22d3ee,#818cf8);transition:width .35s}
 a{color:#7dd3fc}.steps{font-size:14px;color:#d0d7ed;line-height:1.75;padding-left:20px}
 .pill{padding:5px 9px;color:#80eed7;border:1px solid #218e76;border-radius:30px;font-size:11px;display:inline-block}
-.small{font-size:12px;color:#a3aac5;line-height:1.55}.hidden{display:none}
+.small{font-size:12px;color:#a3aac5;line-height:1.55}.hidden{display:none}.toggles{margin:17px 0 0;padding:6px 11px;background:#0b1020;border:1px solid #29324a;border-radius:12px}.toggles label{display:flex;align-items:flex-start;gap:9px;font-weight:500;font-size:12px;line-height:1.45;margin:10px 0}.toggles input[type=checkbox]{width:20px;height:20px;flex:none;margin:0;accent-color:#818cf8}
 </style></head>
 <body><main>
 <div class="logo">COOP X // CINEMA AI</div>
 <h1>TA PARTIE.<br><span class="accent">TON FILM.</span></h1>
-<p class="sub">Transforme une rediffusion Twitch de tes parties Xbox en un montage MP4 de 1 à 2 minutes. Extraits sélectionnés automatiquement et effets de montage, sans PC chez toi.</p>
-<div class="pill">BÊTA v0.4 — VERSION EXPÉRIMENTALE</div>
+<p class="sub">Transforme une rediffusion Twitch de tes parties Xbox en un montage MP4 de 1 à 2 minutes. Détection de scènes dynamiques, transitions fondues, zooms progressifs et musique originale. Toujours sans PC chez toi.</p>
+<div class="pill">BÊTA v0.5 — SMART EDITION</div>
 <div class="card">
 <strong>🎮 SOLDAT ALPHA — C1truc2ouf</strong>
 <p class="small">Le serveur Render effectue le montage. La version de test utilise le flux d'une rediffusion (VOD) Twitch publique ; elle ne capture pas encore automatiquement le direct dès son lancement.</p>
@@ -37,8 +37,9 @@ a{color:#7dd3fc}.steps{font-size:14px;color:#d0d7ed;line-height:1.75;padding-lef
 <div><label for="orientation">Format</label><select id="orientation"><option value="landscape">Horizontal 16:9</option><option value="portrait">Vertical 9:16</option></select></div>
 </div>
 <label for="style">Ambiance visuelle</label><select id="style"><option value="cinema">Cinéma — sombre et contrasté</option><option value="arcade">Arcade — couleurs intenses</option></select>
+<div class="toggles"><label><input type="checkbox" id="smart" checked> 🎯 Choix intelligent des scènes (analyse mouvement + exclusion de menus)</label><label><input type="checkbox" id="soundtrack" checked> 🎵 Ajouter le rythme original 120 BPM (son du jeu conservé)</label></div>
 <button id="start">🎬 CRÉER MON MONTAGE</button>
-<p class="muted">Rendu de test : 540p (ou 540×960), 24 ips, audio du jeu. Extraits d'environ 5–10 s avec fondus, coupes et étalonnage. Pas encore de musique IA ni d'effets vidéo génératifs.</p>
+<p class="muted">Rendu bêta : horizontal 960×540 ou vertical 540×960, 24 ips. Extraits de 7,5 à 8 s, fondus croisés de 0,5 s, zoom subtil, couleur retravaillée et rythme original optionnel. Sélection heuristique, sans modèle IA génératif.</p>
 </div>
 <div class="card hidden" id="report">
 <strong id="head">Préparation</strong>
@@ -47,7 +48,7 @@ a{color:#7dd3fc}.steps{font-size:14px;color:#d0d7ed;line-height:1.75;padding-lef
 <button class="hidden" id="download">⬇ TÉLÉCHARGER LE MP4</button>
 <p class="small">Les vidéos sont conservées temporairement sur Render. Télécharge-les dès que le rendu est terminé ; un redémarrage du serveur peut les effacer.</p>
 </div>
-<p class="small" style="margin-top:26px">⚠️ Le montage exige une rediffusion publique accessible par le serveur. Utilise seulement tes propres images ou celles que tu es autorisé à monter. Render Free peut être trop limité pour des vidéos longues ; en cas d'échec, le diagnostic apparaît ici.</p>
+<p class="small" style="margin-top:26px">⚠️ Le montage exige une rediffusion publique accessible par le serveur. Utilise seulement tes propres images ou celles que tu es autorisé à monter. Les effets reposent sur des algorithmes CPU, pas une IA générative. Render Free peut manquer de ressources ou de temps pour les longs montages ; le diagnostic apparaît ici.</p>
 </main>
 <script>
 (()=>{'use strict';
@@ -62,7 +63,7 @@ try{
 const data=await readJSON('/api/cinema/jobs/'+currentId,{headers:headers()});
 report.classList.remove('hidden');
 $('fill').style.width=Math.min(100,Math.max(0,data.progress||0))+'%';
-$('head').textContent=({queued:'En file',connecting:'Connexion à Twitch',processing:'Montage vidéo',ready:'🎉 Vidéo prête',failed:'Échec du rendu'})[data.status]||data.status;
+$('head').textContent=({queued:'En file',connecting:'Connexion à Twitch',analyzing:'Analyse des scènes',processing:'Montage vidéo',ready:'🎉 Vidéo prête',failed:'Échec du rendu'})[data.status]||data.status;
 msg.textContent=(data.detail||'')+(data.status==='processing'?' — '+data.progress+' %':'');
 if(data.status==='ready'||data.status==='failed'){
 clearInterval(poll);poll=null;start.disabled=false;
@@ -76,7 +77,7 @@ if(key.length<24)return fail('Colle d’abord ton code privé COOP X (24 caract�
 if(!vod)return fail('Colle une adresse de rediffusion Twitch.');
 start.disabled=true;report.classList.remove('hidden');dl.classList.add('hidden');$('head').textContent='Création du montage';msg.textContent='Envoi de la demande...';$('fill').style.width='0%';
 try{
-const data=await readJSON('/api/cinema/jobs',{method:'POST',headers:headers(),body:JSON.stringify({vod_url:vod,target_seconds:Number($('seconds').value),orientation:$('orientation').value,style:$('style').value})});
+const data=await readJSON('/api/cinema/jobs',{method:'POST',headers:headers(),body:JSON.stringify({vod_url:vod,target_seconds:Number($('seconds').value),orientation:$('orientation').value,style:$('style').value,smart:$('smart').checked,soundtrack:$('soundtrack').checked})});
 currentId=data.job_id;clearInterval(poll);poll=setInterval(check,5000);await check();
 }catch(e){fail(e.message)}
 });
