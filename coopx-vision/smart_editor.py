@@ -156,12 +156,18 @@ def transcode_original(playlist,offset,length,dest:Path,
           if style=='cinema' else
           'eq=contrast=1.09:saturation=1.25:brightness=0.008')
     # Gentle motion zoom over the shot; fast zooms distract from gameplay.
-    zoom=("zoompan=z='min(1.025+on*0.00015,1.06)':"
+    # Alternate push-ins and pull-backs so edits are not visually identical.
+    zoom_curve=("min(1.035+on*0.00048,1.12)" if index%3==0
+                else "max(1.10-on*0.00040,1.018)" if index%3==1
+                else "min(1.012+on*0.00028,1.085)")
+    zoom=(f"zoompan=z='{zoom_curve}':"
           "x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:"
           f"s={width}x{height}:fps={FPS}")
+    grading=("vignette=PI/5,unsharp=3:3:0.35" if style=='cinema'
+             else "unsharp=3:3:0.45")
     vf=(f'scale={width}:{height}:force_original_aspect_ratio=increase,'
         f'crop={width}:{height},fps={FPS},'
-        f'{zoom},{look},format=yuv420p')
+        f'{zoom},{look},{grading},format=yuv420p')
     args=['ffmpeg','-nostdin','-hide_banner','-loglevel','error','-y',
           '-ss',f'{offset:.2f}','-i',playlist,'-t',f'{length:.2f}',
           '-vf',vf,'-c:v','libx264','-preset','ultrafast','-crf','27',
@@ -189,7 +195,8 @@ def transcode_original(playlist,offset,length,dest:Path,
         raise RuntimeError('Extraction vidéo incomplète.')
 
 def crossfade_pairs(parts:list[Path],work:Path,output:Path,
-                    target_seconds:int,enable_music:bool,progress):
+                    target_seconds:int,enable_music:bool,progress,
+                    fx_style:str='intense'):
     """True 0.5s per-boundary crossfade via FFmpeg blend and audio acrossfade.
 
     Only two short clips are decoded at once to fit Render Free RAM.
@@ -209,10 +216,20 @@ def crossfade_pairs(parts:list[Path],work:Path,output:Path,
         if idx==len(parts)-1:continue
         right=parts[idx+1]
         fade=work/f'fade-{idx:02d}.mp4'
+        # Alternate gentle flash, chromatic glitch, and motion blur effects.
+        # The 'subtle' option uses plain crossfades without flashes.
+        if fx_style=='subtle':
+            transition_effect='format=yuv420p'
+        elif idx%3==0:
+            transition_effect="eq=brightness=0.14:enable='between(t,0.16,0.28)',format=yuv420p"
+        elif idx%3==1:
+            transition_effect="chromashift=cbh=6:crh=-6:edge=smear:enable='between(t,0.07,0.30)',format=yuv420p"
+        else:
+            transition_effect="gblur=sigma=1.6:enable='between(t,0.16,0.29)',format=yuv420p"
         filtergraph=(
           '[0:v]fps=24,setpts=PTS-STARTPTS,format=yuv420p[v0];'
           '[1:v]fps=24,setpts=PTS-STARTPTS,format=yuv420p[v1];'
-          "[v0][v1]blend=all_expr='A*(1-T/0.5)+B*T/0.5':shortest=1[v];"
+          f"[v0][v1]blend=all_expr='A*(1-T/0.5)+B*T/0.5':shortest=1,{transition_effect}[v];"
           '[0:a]aresample=44100,asetpts=PTS-STARTPTS[a0];'
           '[1:a]aresample=44100,asetpts=PTS-STARTPTS[a1];'
           '[a0][a1]acrossfade=d=0.5[a]')
