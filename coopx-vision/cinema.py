@@ -138,7 +138,7 @@ def produce(job_id:str,req:MontageRequest,video_id:str):
         for idx,scene in enumerate(scenes):
             segment=work/f'clip-{idx:02d}.mp4'
             transcode_original(playlist,scene['offset'],scene['seconds'],segment,
-                               width,height,req.style,idx)
+                               width,height,req.style,idx,has_audio=has_audio)
             parts.append(segment)
             update(job_id,progress=round(23+52*(idx+1)/len(scenes)),
                    detail=f'Séquence {idx+1}/{len(scenes)} encodée')
