@@ -23,7 +23,7 @@ from fastapi import APIRouter, Header, HTTPException
 from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel, Field
 from smart_editor import select_scenes, transcode_original, crossfade_pairs
-from audio_v06 import master
+from audio_v07 import master
 
 ROOT=Path('/tmp/coopx-cinema')
 ROOT.mkdir(exist_ok=True)
@@ -42,9 +42,10 @@ class MontageRequest(BaseModel):
     style:str=Field(default='cinema',pattern='^(cinema|arcade)$')
     smart:bool=True
     soundtrack:bool=True
-    music_level:int=Field(default=80,ge=0,le=100)
+    music_level:int=Field(default=85,ge=0,le=100)
     score_style:str=Field(default='epic',pattern='^(epic|dark)$')
-    fx_style:str=Field(default='intense',pattern='^(intense|subtle)$')
+    fx_style:str=Field(default='intense',pattern='^(intense|subtle|extreme)$')
+    edit_mode:str=Field(default='trailer',pattern='^(trailer|chronological)$')
 
 def verify(token:str|None):
     if not token or not secrets.compare_digest(token,TOKEN):
@@ -108,7 +109,7 @@ def update(job_id,**fields):
 def cleanup():
     now=time.time()
     with lock:
-        old=[key for key,val in jobs.items() if now-val['created_at']>TTL and val['status'] not in ('processing','connecting')]
+        old=[key for key,val in jobs.items() if now-val['created_at']>TTL and val['status'] not in ('processing','connecting','analyzing','queued')]
         for key in old:
             jobs.pop(key,None)
             shutil.rmtree(ROOT/key,ignore_errors=True)
@@ -134,6 +135,15 @@ def produce(job_id:str,req:MontageRequest,video_id:str):
                      'seconds':7.5 if i==n-1 else 8.0,'score':None}
                     for i in range(n)]
             report={'selection':'balanced','sampled':0,'valid_samples':0}
+        # Trailer mode builds toward the strongest detected motion moments.
+        # If no samples worked, keep original chronological order.
+        if req.edit_mode=='trailer' and report.get('valid_samples',0)>=2:
+            valid=[scene for scene in scenes if isinstance(scene.get('score'),(int,float))]
+            invalid=[scene for scene in scenes if scene not in valid]
+            scenes=sorted(valid,key=lambda x:x['score'])+invalid
+            report['ordering']='crescendo (heuristique)'
+        else:
+            report['ordering']='chronologique'
         update(job_id,status='processing',detail='Séquences sélectionnées, début du rendu',
                progress=22,vod_duration=round(duration),analysis=report,
                clips=scenes,has_game_audio=has_audio)
@@ -163,7 +173,7 @@ def produce(job_id:str,req:MontageRequest,video_id:str):
             raise RuntimeError('La vidéo finale est vide.')
         update(job_id,status='ready',progress=100,detail='Montage terminé',
                size_bytes=output.stat().st_size,
-               music=('Bande-son originale renforcée et mastering' if req.soundtrack
+               music=('Bande-son v0.7 synchronisée aux coupes et mastering' if req.soundtrack
                       else 'Son du jeu normalisé'),
                transitions=('Transitions dynamiques + fondus 0,5 seconde'
                             if req.fx_style=='intense' else 'Fondus discrets 0,5 seconde'))
