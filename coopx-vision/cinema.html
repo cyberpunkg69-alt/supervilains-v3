@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>COOP X CINEMA AI — Test v0.6</title>
+<title>COOP X CINEMA AI — Test v0.7</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#070913;color:#f0f4ff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#20204b 0%,#070913 55%);min-height:100vh}
@@ -22,8 +22,8 @@ a{color:#7dd3fc}.steps{font-size:14px;color:#d0d7ed;line-height:1.75;padding-lef
 <body><main>
 <div class="logo">COOP X // CINEMA AI</div>
 <h1>TA PARTIE.<br><span class="accent">TON FILM.</span></h1>
-<p class="sub">Transforme une rediffusion Twitch de tes parties Xbox en un montage MP4 de 1 à 2 minutes. Scènes dynamiques, zooms, flashs, transitions glitch et une bande-son originale bien plus présente. Toujours sans PC chez toi.</p>
-<div class="pill">BÊTA v0.6 — IMPACT EDITION</div>
+<p class="sub">Transforme une rediffusion Twitch de tes parties Xbox en un montage MP4 de 1 à 2 minutes. Musique originale plus présente, transitions sur les impacts et sélection des scènes organisée pour finir en crescendo. Toujours sans PC.</p>
+<div class="pill">BÊTA v0.7 — TRAILER EDITION</div>
 <div class="card">
 <strong>🎮 SOLDAT ALPHA — C1truc2ouf</strong>
 <p class="small">Le serveur Render effectue le montage. La version de test utilise le flux d'une rediffusion (VOD) Twitch publique ; elle ne capture pas encore automatiquement le direct dès son lancement.</p>
@@ -37,12 +37,14 @@ a{color:#7dd3fc}.steps{font-size:14px;color:#d0d7ed;line-height:1.75;padding-lef
 <div><label for="orientation">Format</label><select id="orientation"><option value="landscape">Horizontal 16:9</option><option value="portrait">Vertical 9:16</option></select></div>
 </div>
 <label for="style">Ambiance visuelle</label><select id="style"><option value="cinema">Cinéma — sombre et contrasté</option><option value="arcade">Arcade — couleurs intenses</option></select>
-<div class="grid"><div><label for="fx_style">Transitions</label><select id="fx_style"><option value="intense" selected>⚡ Impact : flash, glitch et flou</option><option value="subtle">Fondus discrets</option></select></div><div><label for="score_style">Bande-son originale</label><select id="score_style"><option value="epic" selected>Épique · Synthé + percussions</option><option value="dark">Sombre · Basses + percussions</option></select></div></div>
-<label for="music_level">Puissance de la musique : <strong id="music_level_label">80 %</strong></label>
-<input id="music_level" type="range" min="0" max="100" step="5" value="80">
-<div class="toggles"><label><input type="checkbox" id="smart" checked> 🎯 Analyse des scènes : mouvement + exclusion des menus</label><label><input type="checkbox" id="soundtrack" checked> 🎵 Ajouter la bande-son originale au gameplay, avec mastering du volume</label></div>
+<div class="grid"><div><label for="fx_style">Transitions</label><select id="fx_style"><option value="intense" selected>⚡ Impact : flash, glitch et flou</option><option value="extreme">🔥 Extrême : flashs et glitchs renforcés</option><option value="subtle">Fondus discrets</option></select></div><div><label for="score_style">Bande-son originale</label><select id="score_style"><option value="epic" selected>Épique · Synthé + percussions</option><option value="dark">Sombre · Basses + percussions</option></select></div></div>
+<label for="music_level">Puissance de la musique : <strong id="music_level_label">85 %</strong></label>
+<input id="music_level" type="range" min="0" max="100" step="5" value="85">
+<label for="edit_mode">Ordre des séquences</label>
+  <select id="edit_mode"><option value="trailer" selected>🎬 Bande-annonce : montée en intensité</option><option value="chronological">⏱ Ordre chronologique de la partie</option></select>
+  <div class="toggles"><label><input type="checkbox" id="smart" checked> 🎯 Analyse des scènes : mouvement + exclusion des menus</label><label><input type="checkbox" id="soundtrack" checked> 🎵 Ajouter la bande-son originale au gameplay, avec mastering du volume</label></div>
 <button id="start">🎬 CRÉER MON MONTAGE</button>
-<p class="muted">Rendu expérimental : 960×540 ou 540×960, 24 ips. Scènes d'environ 8 s. Zooms dynamiques, étalonnage, transitions de 0,5 s et musique originale synthétisée. Mastering sonore avec limiteur anti-saturation. Pas encore d'IA générative.</p>
+<p class="muted">Rendu v0.7 : 960×540 ou 540×960, 24 ips. Musique originale à 120 BPM calée sur les coupes, transitions de 0,5 s, zooms, flashs et mixage visant −14 LUFS. La sélection des scènes utilise une heuristique CPU et peut encore se tromper.</p>
 </div>
 <div class="card hidden" id="report">
 <strong id="head">Préparation</strong>
@@ -51,7 +53,7 @@ a{color:#7dd3fc}.steps{font-size:14px;color:#d0d7ed;line-height:1.75;padding-lef
 <button class="hidden" id="download">⬇ TÉLÉCHARGER LE MP4</button>
 <p class="small">Les vidéos sont conservées temporairement sur Render. Télécharge-les dès que le rendu est terminé ; un redémarrage du serveur peut les effacer.</p>
 </div>
-<p class="small" style="margin-top:26px">⚠️ Le montage exige une rediffusion publique accessible par le serveur. Utilise seulement tes propres images ou celles que tu es autorisé à monter. Les effets reposent sur des algorithmes CPU, pas une IA générative. Render Free peut manquer de ressources ou de temps pour les longs montages ; le diagnostic apparaît ici.</p>
+<p class="small" style="margin-top:26px">⚠️ Le montage exige une rediffusion accessible par le serveur. Utilise seulement tes propres images ou celles que tu es autorisé à monter. Les effets reposent sur des algorithmes CPU, pas une IA générative. Render Free peut manquer de ressources ou de temps pour les longs montages ; le diagnostic apparaît ici.</p>
 </main>
 <script>
 (()=>{'use strict';
@@ -81,7 +83,7 @@ if(key.length<24)return fail('Colle d’abord ton code privé COOP X (24 caract�
 if(!vod)return fail('Colle une adresse de rediffusion Twitch.');
 start.disabled=true;report.classList.remove('hidden');dl.classList.add('hidden');$('head').textContent='Création du montage';msg.textContent='Envoi de la demande...';$('fill').style.width='0%';
 try{
-const data=await readJSON('/api/cinema/jobs',{method:'POST',headers:headers(),body:JSON.stringify({vod_url:vod,target_seconds:Number($('seconds').value),orientation:$('orientation').value,style:$('style').value,smart:$('smart').checked,soundtrack:$('soundtrack').checked,music_level:Number($('music_level').value),fx_style:$('fx_style').value,score_style:$('score_style').value})});
+const data=await readJSON('/api/cinema/jobs',{method:'POST',headers:headers(),body:JSON.stringify({vod_url:vod,target_seconds:Number($('seconds').value),orientation:$('orientation').value,style:$('style').value,smart:$('smart').checked,soundtrack:$('soundtrack').checked,music_level:Number($('music_level').value),fx_style:$('fx_style').value,score_style:$('score_style').value,edit_mode:$('edit_mode').value})});
 currentId=data.job_id;clearInterval(poll);poll=setInterval(check,5000);await check();
 }catch(e){fail(e.message)}
 });
