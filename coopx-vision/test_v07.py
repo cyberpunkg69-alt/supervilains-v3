@@ -44,7 +44,7 @@ with tempfile.TemporaryDirectory() as d:
               '-pix_fmt','yuv420p','-g','12','-c:a','aac','-b:a','96k',str(dest)]
         cmd(args)
         parts.append(dest)
-    joined=work/'joined.mp4'
+    joined=work/'timeline.mp4'
     crossfade_pairs(parts,work,joined,15,False,lambda *args:None,fx_style='extreme')
     assert joined.exists() and joined.stat().st_size>100000
     final=work/'out.mp4'
