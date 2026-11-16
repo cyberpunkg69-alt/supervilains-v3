@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 import wave
+import unicodedata
 
 import cv2
 import numpy as np
@@ -25,6 +26,9 @@ MENU_MARKERS=(
     'PERSONNALISER','CUSTOMIZE','PAUSE','COMMANDES','CONTROLS',
     'RETOUR AU MENU','QUITTER LA PARTIE','SELECT CHAPTER',
     'CHAPITRES','CHAPTER SELECT','STOCKAGE','BOUTIQUE',
+    'AMELIORATIONS','UPGRADES','AMELIORER','SELECT WEAPON',
+    'CHOISIR UNE ARME','COMPETENCES','SKILL TREE','ARBRE DE COMPETENCE',
+    'ARSENAL','CUSTOMIZATION','PAUSED','REPRENDRE','RESUME GAME',
 )
 
 def run_command(args, timeout=100):
@@ -65,8 +69,11 @@ def sample_score(playlist:str, offset:float) -> float|None:
                       config='--psm 11',timeout=3).upper()
         except Exception:
             text=''
-        if any(marker in text for marker in MENU_MARKERS):
-            result-=90
+        # OCR sometimes sees accents; match normalized French/English UI words.
+        normalized=''.join(ch for ch in unicodedata.normalize('NFD',text)
+                           if not unicodedata.combining(ch))
+        if any(marker in normalized for marker in MENU_MARKERS):
+            result-=110
         # Text-heavy static interfaces are a weak menu signal.
         if len(text)>190 and motion<13:
             result-=23
@@ -88,7 +95,8 @@ def select_scenes(playlist:str,duration:float,target_seconds:int, progress):
     for i,length in enumerate(clip_lengths):
         region_start=10.+i*spacing
         room=max(0.,min(spacing-length,duration-length-5-region_start))
-        candidates=[round(region_start+room*f,2) for f in (.15,.75)]
+        positions=(.09,.50,.87) if count<=8 else (.18,.78)
+        candidates=[round(region_start+room*f,2) for f in positions]
         best=None
         for j,start in enumerate(sorted(set(candidates))):
             # Measure activity in the middle of each clip.
@@ -97,7 +105,7 @@ def select_scenes(playlist:str,duration:float,target_seconds:int, progress):
             comparisons+=1
             if score is not None and (best is None or score>best[1]):
                 best=(start,score)
-            progress(comparisons,2*count)
+            progress(comparisons,(3 if count<=8 else 2)*count)
         if best is None:
             scenes.append({'offset':round(min(duration-length-3,
                          region_start+room*.4),2),
@@ -220,12 +228,27 @@ def crossfade_pairs(parts:list[Path],work:Path,output:Path,
         # The 'subtle' option uses plain crossfades without flashes.
         if fx_style=='subtle':
             transition_effect='format=yuv420p'
+        elif fx_style=='extreme' and idx%3==0:
+            transition_effect=("eq=contrast=1.45:saturation=1.45:brightness=0.22:"
+                               "enable='between(t,0.14,0.28)',format=yuv420p")
+        elif fx_style=='extreme' and idx%3==1:
+            transition_effect=("chromashift=cbh=11:crh=-11:edge=smear:"
+                               "enable='between(t,0.04,0.36)',"
+                               "eq=brightness=0.08:enable='between(t,0.17,0.23)',"
+                               "format=yuv420p")
+        elif fx_style=='extreme':
+            transition_effect=("gblur=sigma=2.8:enable='between(t,0.11,0.29)',"
+                               "eq=contrast=1.28:brightness=0.08:"
+                               "enable='between(t,0.13,0.25)',format=yuv420p")
         elif idx%3==0:
-            transition_effect="eq=brightness=0.14:enable='between(t,0.16,0.28)',format=yuv420p"
+            transition_effect=("eq=brightness=0.15:contrast=1.20:"
+                               "enable='between(t,0.17,0.28)',format=yuv420p")
         elif idx%3==1:
-            transition_effect="chromashift=cbh=6:crh=-6:edge=smear:enable='between(t,0.07,0.30)',format=yuv420p"
+            transition_effect=("chromashift=cbh=7:crh=-7:edge=smear:"
+                               "enable='between(t,0.08,0.32)',format=yuv420p")
         else:
-            transition_effect="gblur=sigma=1.6:enable='between(t,0.16,0.29)',format=yuv420p"
+            transition_effect=("gblur=sigma=2:enable='between(t,0.13,0.29)',"
+                               "format=yuv420p")
         filtergraph=(
           '[0:v]fps=24,setpts=PTS-STARTPTS,format=yuv420p[v0];'
           '[1:v]fps=24,setpts=PTS-STARTPTS,format=yuv420p[v1];'
