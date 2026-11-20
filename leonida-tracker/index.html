@@ -32,7 +32,10 @@
 .mapPin:focus .pinHalo,.mapPin:hover .pinHalo{fill-opacity:.26;stroke:#fff;stroke-opacity:1}
 .mapPin text{font-family:system-ui,sans-serif;font-weight:900;fill:#061822;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .mapPin .pinHit{fill:transparent}
-.mapPin.isLocating{filter:drop-shadow(0 0 20px #2be8bb)}
+.mapPin.isLocating{filter:drop-shadow(0 0 8px #2be8bb)}
+.mapPin.isCluster .pinDisc{fill:#1b8b8e;stroke:#092b40;stroke-width:15}
+.mapPin.isCluster text{fill:#fff;font-size:71px}
+.mapPin.isCluster .pinHalo{fill-opacity:.12;stroke:#83efe9;stroke-opacity:.6}
 .mapPin.isLocating .pinHalo{animation:locatePulse .95s ease-in-out 3;stroke:#31f4c8;stroke-opacity:1;stroke-width:20}
 .mapPin.isLocating .pinDisc{stroke:#fff;stroke-width:18}
 @keyframes locatePulse{0%,100%{transform:scale(1);opacity:.55}45%{transform:scale(1.55);opacity:1}}
@@ -70,7 +73,7 @@
  <div class="stat"><div class="statlabel">Catalogue complété</div><div class="statnum pink"><span id="percent">0</span><span style="font-size:24px">%</span></div><div class="progressTrack"><div class="progressFill" id="progressFill"></div></div><div class="statfoot" style="margin-top:7px">Ce n'est pas le 100 % officiel du jeu</div></div>
  </section>
  <section id="mapSection" class="mapFrame">
-   <div class="mapTop"><label><i></i> LEONIDA • CARTE V2.3</label><span class="mapHint">Marqueurs synchronisés avec tes cases</span><a href="https://fullsweepmap.com/?lang=fr" target="_blank" rel="noopener" style="font-size:11px">Vérifier la carte source ↗</a></div>
+   <div class="mapTop"><label><i></i> LEONIDA • CARTE V2.3.1</label><span class="mapHint">Marqueurs synchronisés avec tes cases</span><a href="https://fullsweepmap.com/?lang=fr" target="_blank" rel="noopener" style="font-size:11px">Vérifier la carte source ↗</a></div>
    <div class="mapToolbar" aria-label="Commandes de la carte">
      <button type="button" class="btn mini" id="mapIn" aria-label="Zoom avant">＋</button>
      <button type="button" class="btn mini" id="mapOut" aria-label="Zoom arrière">−</button>
@@ -97,10 +100,10 @@
      <div class="mapAttribution"><strong id="terrainStatus">Chargement de la carte GTADB…</strong> · Tuiles zoomables GTADB (jour), atlas © YANIS V15 / <a href="https://map.gtadb.org" target="_blank" rel="noopener">GTADB & contributeurs</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>) · Données <a href="https://fullsweepmap.com/developers/" target="_blank" rel="noopener">FullSweep</a> · <strong id="mapAccuracyText">Positionnement en cours de vérification</strong></div>
    </div>
  </section>
- <div class="notice">🗺️ <strong>V2.3 : descriptions en français, marqueur lumineux et calibration automatique.</strong> Les descriptions publiques sont traduites à la demande (service gratuit MyMemory, puis mises en cache). Le bouton « Localiser » lance trois pulsations turquoise. Les marqueurs de la carte GTADB ne s’affichent qu’après une correspondance mesurée avec les repères FullSweep ; si ce contrôle échoue, passe en « Grille » ou vérifie le lieu directement sur FullSweep. Les positions individuelles doivent toujours être confirmées dans le jeu.</div>
+ <div class="notice">🗺️ <strong>V2.3.1 : marqueurs ultra-compacts et regroupement intelligent.</strong> Les icônes gardent un diamètre d’environ 16 à 21 pixels sur écran, même en zoomant. Lorsque plusieurs découvertes sont trop proches, elles sont regroupées dans un cercle numéroté : touche-le pour zoomer ou choisir une fiche. Une large zone tactile invisible facilite les clics. Tes découvertes, traductions et positions recalées sont conservées.</div>
  <section id="locationsSection"><div class="barRow"><div><div class="eyebrow">DISCOVERY LOG</div><h2>LES DÉCOUVERTES <span style="color:var(--teal)" id="visibleCount"></span></h2><small id="dataLabel">Connexion aux données communautaires...</small></div><div class="controls"><select class="select" id="sort" aria-label="Trier"><option value="name">A → Z</option><option value="region">Par région</option><option value="source">Par fiabilité</option><option value="missing">Non trouvés en premier</option></select><button class="btn mini" id="planBtn">★ Ma chasse</button></div></div><div class="gridcards" id="cardList" aria-live="polite"></div></section>
  <section id="catSection"><div class="barRow"><div><div class="eyebrow">YOUR COMPLETION DASHBOARD</div><h2>PAR CATÉGORIE</h2></div></div><div class="catSummary" id="categoryStats"></div></section>
- <footer class="footer"><strong>LEONIDA TRACKER — FAN CONCEPT / v2.3</strong><br>Projet non officiel, non affilié à Rockstar Games ou Take-Two Interactive. GTA VI et ses marques appartiennent à leurs ayants droit. Données de lieux : <a href="https://fullsweepmap.com/developers/" target="_blank" rel="noopener">FullSweep (CC BY 4.0)</a> et contributeurs cités. Carte GTADB jour / atlas YANIS V15, tuiles GTADB (CC BY 4.0) affichées dans leur ordre natif et à plusieurs résolutions par notre interface ; pour consulter les positions originales : <a href="https://fullsweepmap.com/" target="_blank" rel="noopener">FullSweep</a>. Les données ont été normalisées pour l'interface française ; aucune synchronisation automatique avec une sauvegarde Xbox/PS5. Sauvegarde locale et export JSON disponibles.</footer>
+ <footer class="footer"><strong>LEONIDA TRACKER — FAN CONCEPT / v2.3.1</strong><br>Projet non officiel, non affilié à Rockstar Games ou Take-Two Interactive. GTA VI et ses marques appartiennent à leurs ayants droit. Données de lieux : <a href="https://fullsweepmap.com/developers/" target="_blank" rel="noopener">FullSweep (CC BY 4.0)</a> et contributeurs cités. Carte GTADB jour / atlas YANIS V15, tuiles GTADB (CC BY 4.0) affichées dans leur ordre natif et à plusieurs résolutions par notre interface ; pour consulter les positions originales : <a href="https://fullsweepmap.com/" target="_blank" rel="noopener">FullSweep</a>. Les données ont été normalisées pour l'interface française ; aucune synchronisation automatique avec une sauvegarde Xbox/PS5. Sauvegarde locale et export JSON disponibles.</footer>
 </main></div></div>
 <div class="modalWrap" id="modalWrap"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modalHeading"><div class="modalTitle"><h3 id="modalHeading">DÉTAILS</h3><button id="closeDialog" class="close" aria-label="Fermer">×</button></div><div id="modalContent"></div></div></div>
 <div id="toast" class="toast" role="status"></div>
@@ -425,24 +428,83 @@ async function calibrateMap(){
 
 function validMapXY(i){return Number.isFinite(i.x)&&Number.isFinite(i.y)&&i.x>=0&&i.x<=MAP_W&&i.y>=0&&i.y<=MAP_H}
 function clampMap(){mapView.w=Math.max(360,Math.min(MAP_W,mapView.w));mapView.h=Math.max(520,Math.min(MAP_H,mapView.h));mapView.x=Math.max(0,Math.min(MAP_W-mapView.w,mapView.x));mapView.y=Math.max(0,Math.min(MAP_H-mapView.h,mapView.y))}
-function paintView(){clampMap();$('mapSvg').setAttribute('viewBox',`${mapView.x.toFixed(1)} ${mapView.y.toFixed(1)} ${mapView.w.toFixed(1)} ${mapView.h.toFixed(1)}`);updateDetailTiles()}
+// La taille des marqueurs reste presque constante en pixels, au lieu d'exploser avec le zoom SVG.
+function markerSizing(){
+ const rect=$('mapSvg').getBoundingClientRect();
+ const pixelsPerUnit=Math.max(.0001,Math.min(rect.width/Math.max(1,mapView.w),rect.height/Math.max(1,mapView.h)));
+ const zoom=Math.max(1,MAP_W/mapView.w);
+ const visualRadiusPx=Math.min(10.5,8+1.25*Math.log2(zoom));
+ return {pixelsPerUnit,scale:visualRadiusPx/(64*pixelsPerUnit),radiusPx:visualRadiusPx};
+}
+function adjustMarkerSizing(){
+ const {scale}=markerSizing();
+ document.querySelectorAll('#mapPins [data-px][data-py]').forEach(pin=>{
+  pin.setAttribute('transform','translate('+pin.dataset.px+','+pin.dataset.py+') scale('+scale.toFixed(6)+')');
+ });
+}
+function paintView(){
+ clampMap();
+ $('mapSvg').setAttribute('viewBox',`${mapView.x.toFixed(1)} ${mapView.y.toFixed(1)} ${mapView.w.toFixed(1)} ${mapView.h.toFixed(1)}`);
+ updateDetailTiles();
+ adjustMarkerSizing();
+ clearTimeout(window.__markerRefreshTimer);
+ window.__markerRefreshTimer=setTimeout(renderMap,140);
+}
 function zoomMap(factor,cx=mapView.x+mapView.w/2,cy=mapView.y+mapView.h/2){const oldW=mapView.w,oldH=mapView.h;mapView.w=oldW/factor;mapView.h=oldH/factor;mapView.x=cx-(cx-mapView.x)*mapView.w/oldW;mapView.y=cy-(cy-mapView.y)*mapView.h/oldH;paintView()}
 function pixelRatio(){const r=$('mapSvg').getBoundingClientRect();return Math.max(mapView.w/Math.max(1,r.width),mapView.h/Math.max(1,r.height))}
+let clusteredGroups=[];
 function renderMap(){
  if(!$('mapPins'))return;
  const all=viewItems().filter(validMapXY);
- if(forcedPinId&&!all.some(i=>i.id===forcedPinId)){const p=getItem(forcedPinId);if(p&&validMapXY(p))all.push(p);}
+ if(forcedPinId&&!all.some(i=>i.id===forcedPinId)){
+  const forced=getItem(forcedPinId);
+  if(forced&&validMapXY(forced))all.push(forced);
+ }
  const pins=all.map(i=>({item:i,point:projectItem(i)})).filter(p=>p.point&&Number.isFinite(p.point.x)&&Number.isFinite(p.point.y));
- $('mapPinCount').textContent=pins.length+' marqueur'+(pins.length>1?'s':'')+' affiché'+(pins.length>1?'s':'');
+ $('mapPinCount').textContent=pins.length+' emplacement'+(pins.length>1?'s':'')+' affiché'+(pins.length>1?'s':'');
  $('mapEmpty').hidden=pins.length>0;
  if(!pins.length){
   if(baseMode!=='grid'&&!mapCalibration)$('mapEmpty').innerHTML='Recalage des lieux en cours de vérification.<br><small>Aucun point n’est placé au hasard. Utilise le lien vers FullSweep ou la grille en attendant.</small>';
   else $('mapEmpty').innerHTML=loaded&&catalog.length?'Aucun marqueur avec ces filtres ou sans coordonnées disponibles.<br><small>Essaie « Tous les lieux » ou « Tout voir ».</small>':'Les marqueurs apparaîtront dès que le catalogue sera chargé.';
  }
- $('mapPins').innerHTML=pins.map(({item:i,point:p})=>{
-  const found=!!state.found[i.id],unverified=i.source==='unverified';
-  return '<g class="mapPin '+(found?'isFound ':'')+(unverified?'isUnverified':'')+'" data-pin="'+safe(i.id)+'" tabindex="0" role="button" aria-label="'+safe(localTitle(i))+' '+(found?'trouvé':'à trouver')+'" transform="translate('+p.x.toFixed(3)+','+p.y.toFixed(3)+')"><circle class="pinHalo" r="86"/><circle class="pinDisc" r="64"/><text y="4" font-size="62">'+(found?'✓':icon(i.cat))+'</text><circle class="pinHit" r="108"/><title>'+safe(localTitle(i))+' — '+(found?'déjà trouvé':'à trouver')+'</title></g>';
+ const {scale,pixelsPerUnit,radiusPx}=markerSizing();
+ const thresholdWorld=(radiusPx*2+9)/pixelsPerUnit;
+ const groups=[];
+ for(const pin of pins){
+  if(pin.item.id===forcedPinId){groups.push({point:pin.point,items:[pin.item],locked:true});continue;}
+  let cluster=null,dist=Infinity;
+  for(const g of groups){
+   if(g.locked)continue;
+   const d=Math.hypot(g.point.x-pin.point.x,g.point.y-pin.point.y);
+   if(d<thresholdWorld&&d<dist){cluster=g;dist=d;}
+  }
+  if(!cluster){groups.push({point:{...pin.point},items:[pin.item]});}
+  else{const n=cluster.items.length;cluster.point.x=(cluster.point.x*n+pin.point.x)/(n+1);cluster.point.y=(cluster.point.y*n+pin.point.y)/(n+1);cluster.items.push(pin.item);}
+ }
+ clusteredGroups=groups;
+ $('mapPins').innerHTML=groups.map((g,index)=>{
+  const x=g.point.x.toFixed(3),y=g.point.y.toFixed(3);
+  const transform='translate('+x+','+y+') scale('+scale.toFixed(6)+')';
+  const cluster=g.items.length>1;
+  const item=g.items[0];
+  const found=!!state.found[item.id],unverified=item.source==='unverified';
+  const cls='mapPin '+(cluster?'isCluster':(found?'isFound ':'')+(unverified?'isUnverified':''))+(item.id===forcedPinId?' isFocused':'');
+  const idAttrs=cluster?'data-cluster="'+index+'"':'data-pin="'+safe(item.id)+'"';
+  const caption=cluster?g.items.length+' découvertes proches. Toucher pour zoomer.':localTitle(item)+' — '+(found?'trouvé':'à trouver');
+  return '<g class="'+cls+'" '+idAttrs+' data-px="'+x+'" data-py="'+y+'" tabindex="0" role="button" aria-label="'+safe(caption)+'" transform="'+transform+'"><circle class="pinHalo" r="86"/><circle class="pinDisc" r="64"/><text y="4" font-size="62">'+(cluster?g.items.length:(found?'✓':icon(item.cat)))+'</text><circle class="pinHit" r="145"/><title>'+safe(caption)+'</title></g>';
  }).join('');
+}
+function openMapCluster(index){
+ const group=clusteredGroups[index];if(!group||group.items.length<2)return;
+ if(mapView.w>420||mapView.h>610){
+  const nextW=mapView.w/1.8,nextH=mapView.h/1.8;
+  mapView={x:group.point.x-nextW/2,y:group.point.y-nextH/2,w:nextW,h:nextH};
+  paintView();renderMap();toast('Zoom sur '+group.items.length+' découvertes');
+  return;
+ }
+ const choices=group.items.map(i=>'<button class="btn mini" data-group-item="'+safe(i.id)+'">'+safe(localTitle(i))+'</button>').join('');
+ openModal('DÉCOUVERTES À PROXIMITÉ','<p class="hint">Plusieurs lieux sont au même endroit à cette échelle. Choisis la fiche souhaitée :</p><div style="display:flex;flex-direction:column;gap:8px;max-height:55vh;overflow:auto">'+choices+'</div>');
+ document.querySelectorAll('[data-group-item]').forEach(b=>b.onclick=()=>openItem(b.dataset.groupItem));
 }
 function focusItemOnMap(id){
  const i=getItem(id),p=i?projectItem(i):null;
@@ -458,9 +520,9 @@ function focusItemOnMap(id){
  }
 }
 function initMap(){const svg=$('mapSvg');$('mapIn').onclick=()=>zoomMap(1.6);$('mapOut').onclick=()=>zoomMap(1/1.6);$('mapReset').onclick=()=>{mapView={x:0,y:0,w:MAP_W,h:MAP_H};paintView()};$('mapBasemap').onclick=()=>{baseMode=modeOrder[(modeOrder.indexOf(baseMode)+1)%modeOrder.length];ensureMapTiles(baseMode);clearDetailTiles();toggleTerrainUI();};$('mapMissing').onclick=()=>{state.settings.onlyMissing=!state.settings.onlyMissing;$('onlyMissing').checked=state.settings.onlyMissing;save();$('mapMissing').textContent=state.settings.onlyMissing?'✓ Uniquement manquants':'○ À trouver'};
-const pinAction=e=>{if(mapMoved)return;const pin=e.target.closest?.('[data-pin]');if(pin)openItem(pin.dataset.pin)};
-svg.addEventListener('click',pinAction);svg.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.closest('[data-pin]')){e.preventDefault();openItem(e.target.closest('[data-pin]').dataset.pin)}});
-svg.addEventListener('pointerdown',e=>{if(e.target.closest?.('[data-pin]'))return;svg.setPointerCapture(e.pointerId);mapPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});mapDown={x:e.clientX,y:e.clientY};mapMoved=false;svg.classList.add('dragging')});
+const pinAction=e=>{if(mapMoved)return;const cluster=e.target.closest?.('[data-cluster]');if(cluster){openMapCluster(Number(cluster.dataset.cluster));return;}const pin=e.target.closest?.('[data-pin]');if(pin)openItem(pin.dataset.pin)};
+svg.addEventListener('click',pinAction);svg.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const cluster=e.target.closest('[data-cluster]'),pin=e.target.closest('[data-pin]');if(cluster||pin){e.preventDefault();if(cluster)openMapCluster(Number(cluster.dataset.cluster));else openItem(pin.dataset.pin)}}});
+svg.addEventListener('pointerdown',e=>{if(e.target.closest?.('[data-pin], [data-cluster]'))return;svg.setPointerCapture(e.pointerId);mapPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});mapDown={x:e.clientX,y:e.clientY};mapMoved=false;svg.classList.add('dragging')});
 svg.addEventListener('pointermove',e=>{if(!mapPointers.has(e.pointerId))return;const prev=mapPointers.get(e.pointerId);mapPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(Math.hypot(e.clientX-(mapDown?.x||0),e.clientY-(mapDown?.y||0))>7)mapMoved=true;
 if(mapPointers.size===1){const ratio=pixelRatio();mapView.x-=(e.clientX-prev.x)*ratio;mapView.y-=(e.clientY-prev.y)*ratio;paintView();}else if(mapPointers.size===2){const arr=Array.from(mapPointers.values()),d=Math.hypot(arr[0].x-arr[1].x,arr[0].y-arr[1].y);if(window.__mapPinchD&&d>5){const factor=d/window.__mapPinchD;zoomMap(factor)}window.__mapPinchD=d;mapMoved=true;}});
 function endPointer(e){mapPointers.delete(e.pointerId);window.__mapPinchD=null;if(mapPointers.size===0){svg.classList.remove('dragging');setTimeout(()=>mapMoved=false,0)}}
