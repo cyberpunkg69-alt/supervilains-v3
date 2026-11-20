@@ -1,4 +1,13 @@
-# LEONIDA TRACKER V2.3 — 20 novembre 2026
+# LEONIDA TRACKER V2.3.1 — 20 novembre 2026
+
+## V2.3.1 — Marqueurs compacts adaptés au zoom
+
+- Icônes de marqueurs stabilisées entre 16 et 21 pixels de diamètre dans la vue réelle, au lieu de grossir avec le zoom.
+- Grande surface tactile transparente (jusqu'à ~48 pixels), sans grossir l’icône visible.
+- Regroupement des points voisins en pastilles numérotées ; cliquer pour agrandir ou choisir la fiche d'un lieu.
+- Animation turquoise « Localiser » conservée ; la progression locale et les coordonnées calibrées sont inchangées.
+
+
 
 Compagnon GTA VI pour mobile et PC, déployé sur Render. Application non officielle.
 
