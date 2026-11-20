@@ -511,6 +511,8 @@ function focusItemOnMap(id){
  if(!i||!p){toast(baseMode==='grid'?'Ce lieu n’a pas de coordonnées.':'Recalage non confirmé. Vérifie ce lieu sur FullSweep avant de partir.');return;}
  forcedPinId=id;renderMap();
  const w=950,h=1370;mapView={x:p.x-w/2,y:p.y-h/2,w,h};paintView();
+ // Préserve les 3 pulsations : le repaint différé ne remplace pas le marqueur ciblé.
+ clearTimeout(window.__markerRefreshTimer);
  $('mapSection').scrollIntoView({block:'start',behavior:'smooth'});
  const pin=Array.from($('mapPins').querySelectorAll('[data-pin]')).find(el=>el.dataset.pin===id);
  if(pin){pin.parentNode.appendChild(pin);pin.classList.remove('isLocating');void pin.getBoundingClientRect();pin.classList.add('isLocating');
