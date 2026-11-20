@@ -1,19 +1,20 @@
-# LEONIDA TRACKER V2.1 — 20 novembre 2026
+# LEONIDA TRACKER V2.2 — carte corrigée et zoom HD
 
-Un compagnon GTA VI non officiel, utilisable dans Chrome sur Android ou sur ordinateur.
+Correctif du rendu désordonné sur Chrome Android, 20 novembre 2026.
 
-## Fonctions
-- Carte GTADB « day » par défaut : mosaïque de 30 tuiles de jour, sans les planches d'annotations YANIS. Option « Atlas YANIS V15 » : mosaïque originale de 25 tuiles, incluant les planches de références. Aucune iframe (connexion Internet requise).
-- Bascule Plan → Atlas → Grille ; défilement, zoom tactile, sélection des marqueurs.
-- Carte et carnet avec catégories, filtres, marqueurs cliquables et notes.
-- État « trouvé », favoris, liste de chasse, statistiques et sauvegardes JSON.
-- La progression V1/V1.1 est conservée grâce à la même clé de stockage local.
+## Correctifs
+- Respect de l'ordre des fichiers GTADB : `niveau,niveau,ligne_Y,colonne_X.jpg`.
+- Carte Plan correctement assemblée : 5 colonnes × 6 lignes au niveau de base.
+- Atlas YANIS V15 correctement assemblé : 5 colonnes × 5 lignes au niveau de base.
+- Zoom adaptatif : tuiles de définition supérieure jusqu'au niveau 6 (Plan) ou 5 (Atlas), uniquement sur la partie visible.
+- Progression, catégories, cases cochées et sauvegardes JSON préservées.
 
-## Limites importantes
-Les données FullSweep décrivent une carte de 3344 × 4820 pixels ; les tuiles YANIS V15 proviennent d'un autre cadrage. La superposition actuelle des marqueurs sur les fonds GTADB est un **repère visuel provisoire, pas un placement géographiquement étalonné**. Il faut ouvrir chaque lieu sur la carte FullSweep pour vérifier sa position. Le catalogue ne correspond pas encore à tous les secrets du jeu et ses labels de fiabilité sont respectés.
+## Limites
+La conversion entre coordonnées FullSweep et repère GTADB n'est pas encore calibrée. Les marqueurs ont une position provisoire, non utilisable comme localisation exacte. Le lien FullSweep reste disponible pour vérifier les positions. L'accès à la carte nécessite Internet.
 
-## Sources et licences
-- Carte : GTA VI Map Tiles (CC BY 4.0) — https://map.gtadb.org ; fond « day » par défaut et atlas © YANIS V15, GTADB.ORG et contributeurs. Images non modifiées, assemblées/recadrées à l'écran par Leonida Tracker.
-- Lieux : FullSweep, https://fullsweepmap.com/developers/ ; données CC BY 4.0 et provenance conservée.
-- Licence de données/images : https://creativecommons.org/licenses/by/4.0/
-- Non affilié à Rockstar Games / Take-Two Interactive. Aucun compte Rockstar ou Xbox demandé. Sauvegarde locale uniquement.
+## Crédits
+Carte GTADB / YANIS V15 (CC BY 4.0) : https://map.gtadb.org — https://github.com/rolux/gtadb.org
+Données de lieux FullSweep (CC BY 4.0) : https://fullsweepmap.com/developers/
+Licence : https://creativecommons.org/licenses/by/4.0/
+
+Projet non officiel sans affiliation avec Rockstar Games ou Take-Two Interactive.
