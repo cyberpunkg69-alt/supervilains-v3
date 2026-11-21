@@ -42,5 +42,5 @@
 #tourLayer{pointer-events:none}
 #tourLayer .tourRouteLine{fill:none;stroke:#21f6ca;stroke-width:5;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:14 10;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 3px #062b32)}
 #tourLayer .tourRouteStop{fill:#0b343c;stroke:#bffff0;stroke-width:4;vector-effect:non-scaling-stroke}
-#tourLayer text{font:900 70px system-ui,sans-serif;fill:#fff;stroke:#063e37;stroke-width:10;paint-order:stroke;text-anchor:middle;dominant-baseline:middle}
+#tourLayer text{font-family:system-ui,sans-serif;font-weight:900;fill:#fff;stroke:#063e37;stroke-width:2;vector-effect:non-scaling-stroke;paint-order:stroke;text-anchor:middle;dominant-baseline:middle}
 @media(max-width:880px){.hunterDeck{grid-template-columns:1fr;gap:12px}.hunterPanel{padding:14px}.hunterHeading h2{font-size:25px}.hunterResults{max-height:430px}}
