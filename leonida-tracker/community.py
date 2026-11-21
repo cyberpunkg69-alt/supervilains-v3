@@ -36,6 +36,7 @@ class Community:
   self.started=datetime.now(timezone.utc).isoformat()
   self.instance=secrets.token_hex(8)
   self.views=0
+  self.visitor_ids=set()
   self.pages={}
   self.presence={}
   self.messages=deque(maxlen=MESSAGE_LIMIT)
@@ -65,7 +66,8 @@ class Community:
  def _status(self):
   return {"views":self.views,"online":len(self.presence),"instance":self.instance,"started":self.started,
     "lastId":self.next_id,"temporary":True,
-    "notice":"Visites et messages temporaires : remise à zéro possible au redémarrage de Render."}
+    "notice":"Visiteurs uniques par identifiant navigateur (aucune adresse MAC). Stockage temporaire en attente de connexion à la base PostgreSQL.",
+    "mode":"temporary","mediaUploads":False}
 
  def join(self,sid,page):
   sid=self._check_session(sid)
@@ -73,7 +75,10 @@ class Community:
   if not PAGE_ID.fullmatch(page):raise CommunityError("Identifiant de page invalide.")
   with self.lock:
    now=time.time();self._cleanup(now)
-   if page not in self.pages:self.views+=1
+   # One count per browser ID, regardless of refreshes or reconnections.
+   if sid not in self.visitor_ids:
+    self.visitor_ids.add(sid)
+    self.views+=1
    self.pages[page]=now
    self.presence[sid]=now
    return self._status()
