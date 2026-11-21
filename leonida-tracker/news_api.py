@@ -17,6 +17,7 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from community import Community, CommunityError
 
 UTC=dt.timezone.utc
 FEEDS=[
@@ -160,11 +161,17 @@ def get_feed(force=False):
  with _LOCK:
   _CACHE.update(entries=entries[:220],at=now,checkedAt=checked,feeds=successes,failures=failures)
   return dict(_CACHE)
+COMMUNITY=Community()
+
 class Handler(BaseHTTPRequestHandler):
  def do_GET(self):
   parsed=urllib.parse.urlsplit(self.path)
   if parsed.path in ("/","/health"):
    self.reply({"ok":True,"app":"LEONIDA discoveries API","version":"1.0.0"})
+   return
+  if parsed.path=="/api/community/state":
+   params=urllib.parse.parse_qs(parsed.query)
+   self.reply(COMMUNITY.state(params.get("after",["0"])[0]))
    return
   if parsed.path not in ("/api/discoveries","/api/refresh"):
    self.reply({"error":"endpoint inconnu"},404);return
@@ -175,6 +182,47 @@ class Handler(BaseHTTPRequestHandler):
    "entries":d["entries"],"count":len(d["entries"]),
    "disclaimer":"Articles externes et discussions de joueurs ; aucun emplacement ni glitch n'est vérifié automatiquement."
   })
+ def do_POST(self):
+  parsed=urllib.parse.urlsplit(self.path)
+  actions={
+   "/api/community/join":"join",
+   "/api/community/heartbeat":"heartbeat",
+   "/api/community/leave":"leave",
+   "/api/community/send":"send",
+   "/api/community/report":"report",
+   "/api/community/delete":"delete",
+  }
+  action=actions.get(parsed.path)
+  if not action:self.reply({"error":"endpoint inconnu"},404);return
+  origin=self.headers.get("Origin","")
+  if origin not in ("https://leonida-tracker-gta6.onrender.com","http://localhost:8000","http://127.0.0.1:8000"):
+   self.reply({"error":"Origine refusée."},403);return
+  if not self.headers.get("Content-Type","").lower().startswith("application/json"):
+   self.reply({"error":"Utilise application/json."},415);return
+  try:
+   length=int(self.headers.get("Content-Length","0"))
+  except (ValueError,TypeError):length=0
+  if length<=0 or length>2400:self.reply({"error":"Requête trop volumineuse ou vide."},413);return
+  try:
+   body=json.loads(self.rfile.read(length).decode("utf-8"))
+   if not isinstance(body,dict):raise ValueError("Objet JSON requis")
+  except (ValueError,UnicodeDecodeError):
+   self.reply({"error":"JSON invalide."},400);return
+  try:
+   sid=body.get("sid")
+   if action=="join":result=COMMUNITY.join(sid,body.get("page"))
+   elif action=="heartbeat":result=COMMUNITY.heartbeat(sid)
+   elif action=="leave":result=COMMUNITY.leave(sid)
+   elif action=="send":
+    # Never trust nickname or chat HTML, and hash the ephemeral client IP only for throttling.
+    ip=self.headers.get("CF-Connecting-IP") or self.headers.get("X-Forwarded-For","").split(",")[0] or self.client_address[0]
+    result=COMMUNITY.send(sid,body.get("nickname"),body.get("text"),ip)
+   elif action=="report":result=COMMUNITY.report(sid,body.get("messageId"))
+   else:result=COMMUNITY.delete_own(sid,body.get("messageId"))
+   self.reply(result)
+  except CommunityError as exc:self.reply({"error":exc.msg},exc.code)
+  except Exception:self.reply({"error":"Erreur de traitement du chat."},500)
+
  def do_OPTIONS(self):
   self.send_response(204);self.add_response_headers();self.end_headers()
  def add_response_headers(self):
@@ -183,7 +231,7 @@ class Handler(BaseHTTPRequestHandler):
   self.send_header("Vary","Origin")
   self.send_header("Access-Control-Allow-Methods","GET,OPTIONS")
   self.send_header("Access-Control-Allow-Headers","Content-Type")
-  self.send_header("Cache-Control","public, max-age=300")
+  self.send_header("Cache-Control","no-store" if self.path.startswith("/api/community/") else "public, max-age=300")
   self.send_header("X-Content-Type-Options","nosniff")
  def reply(self,obj,status=200):
   data=json.dumps(obj,ensure_ascii=False,separators=(",",":")).encode("utf-8")
