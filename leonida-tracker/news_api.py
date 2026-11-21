@@ -229,7 +229,7 @@ class Handler(BaseHTTPRequestHandler):
   origin=self.headers.get("Origin","")
   self.send_header("Access-Control-Allow-Origin",origin if origin in ("https://leonida-tracker-gta6.onrender.com","http://localhost:8000","http://127.0.0.1:8000") else "https://leonida-tracker-gta6.onrender.com")
   self.send_header("Vary","Origin")
-  self.send_header("Access-Control-Allow-Methods","GET,OPTIONS")
+  self.send_header("Access-Control-Allow-Methods","GET,POST,OPTIONS")
   self.send_header("Access-Control-Allow-Headers","Content-Type")
   self.send_header("Cache-Control","no-store" if self.path.startswith("/api/community/") else "public, max-age=300")
   self.send_header("X-Content-Type-Options","nosniff")
