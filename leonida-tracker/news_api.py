@@ -17,7 +17,8 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from community import Community, CommunityError
+from community import CommunityError
+from community_pg import make_community
 
 UTC=dt.timezone.utc
 FEEDS=[
@@ -161,7 +162,7 @@ def get_feed(force=False):
  with _LOCK:
   _CACHE.update(entries=entries[:220],at=now,checkedAt=checked,feeds=successes,failures=failures)
   return dict(_CACHE)
-COMMUNITY=Community()
+COMMUNITY=make_community()
 
 class Handler(BaseHTTPRequestHandler):
  def do_GET(self):
