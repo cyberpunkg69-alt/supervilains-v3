@@ -174,8 +174,8 @@ class Handler(BaseHTTPRequestHandler):
    "disclaimer":"Articles externes et discussions de joueurs ; aucun emplacement ni glitch n'est vérifié automatiquement."
   })
  def do_OPTIONS(self):
-  self.send_response(204);self.headers();self.end_headers()
- def headers(self):
+  self.send_response(204);self.add_response_headers();self.end_headers()
+ def add_response_headers(self):
   origin=self.headers.get("Origin","")
   self.send_header("Access-Control-Allow-Origin",origin if origin in ("https://leonida-tracker-gta6.onrender.com","http://localhost:8000","http://127.0.0.1:8000") else "https://leonida-tracker-gta6.onrender.com")
   self.send_header("Vary","Origin")
