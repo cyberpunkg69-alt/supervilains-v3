@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#080d15"><meta name="description" content="Leonida Tracker, votre compagnon GTA VI : carte interactive, découvertes, favoris, progression, et sauvegarde locale.">
-<title>LEONIDA TRACKER V3.0 — GTA VI</title>
+<title>LEONIDA TRACKER V3.1 — GTA VI</title>
 <link rel="stylesheet" href="./chat.css">
 <link rel="stylesheet" href="./hunter.css">
 <link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="manifest" href="manifest.webmanifest">
@@ -109,7 +109,7 @@
  <div class="stat"><div class="statlabel">Catalogue complété</div><div class="statnum pink"><span id="percent">0</span><span style="font-size:24px">%</span></div><div class="progressTrack"><div class="progressFill" id="progressFill"></div></div><div class="statfoot" style="margin-top:7px">Ce n'est pas le 100 % officiel du jeu</div></div>
  </section>
  <section id="mapSection" class="mapFrame">
-   <div class="mapTop"><label><i></i> LEONIDA • CARTE V3.0</label><span class="mapHint">Marqueurs synchronisés avec tes cases</span><a href="https://fullsweepmap.com/?lang=fr" target="_blank" rel="noopener" style="font-size:11px">Vérifier la carte source ↗</a></div>
+   <div class="mapTop"><label><i></i> LEONIDA • CARTE V3.1</label><span class="mapHint">Marqueurs synchronisés avec tes cases</span><a href="https://fullsweepmap.com/?lang=fr" target="_blank" rel="noopener" style="font-size:11px">Vérifier la carte source ↗</a></div>
    <div class="mapToolbar" aria-label="Commandes de la carte">
      <button type="button" class="btn mini" id="mapIn" aria-label="Zoom avant">＋</button>
      <button type="button" class="btn mini" id="mapOut" aria-label="Zoom arrière">−</button>
@@ -163,7 +163,7 @@
  </section>
  <section id="locationsSection"><div class="barRow"><div><div class="eyebrow">DISCOVERY LOG</div><h2>LES DÉCOUVERTES <span style="color:var(--teal)" id="visibleCount"></span></h2><small id="dataLabel">Connexion aux données communautaires...</small></div><div class="controls"><select class="select" id="sort" aria-label="Trier"><option value="name">A → Z</option><option value="region">Par région</option><option value="source">Par fiabilité</option><option value="missing">Non trouvés en premier</option></select><button class="btn mini" id="planBtn">★ Ma chasse</button></div></div><div class="gridcards" id="cardList" aria-live="polite"></div></section>
  <section id="catSection"><div class="barRow"><div><div class="eyebrow">YOUR COMPLETION DASHBOARD</div><h2>PAR CATÉGORIE</h2></div></div><div class="catSummary" id="categoryStats"></div></section>
- <footer class="footer"><strong>LEONIDA TRACKER — FAN CONCEPT / v3.0</strong><br>Projet non officiel, non affilié à Rockstar Games ou Take-Two Interactive. GTA VI et ses marques appartiennent à leurs ayants droit. Données de lieux : <a href="https://fullsweepmap.com/developers/" target="_blank" rel="noopener">FullSweep (CC BY 4.0)</a> et contributeurs cités. Carte GTADB jour / atlas YANIS V15, tuiles GTADB (CC BY 4.0) affichées dans leur ordre natif et à plusieurs résolutions par notre interface ; pour consulter les positions originales : <a href="https://fullsweepmap.com/" target="_blank" rel="noopener">FullSweep</a>. Les données ont été normalisées pour l'interface française ; aucune synchronisation automatique avec une sauvegarde Xbox/PS5. Sauvegarde locale et export JSON disponibles.</footer>
+ <footer class="footer"><strong>LEONIDA TRACKER — FAN CONCEPT / v3.1</strong><br>Projet non officiel, non affilié à Rockstar Games ou Take-Two Interactive. GTA VI et ses marques appartiennent à leurs ayants droit. Données de lieux : <a href="https://fullsweepmap.com/developers/" target="_blank" rel="noopener">FullSweep (CC BY 4.0)</a> et contributeurs cités. Carte GTADB jour / atlas YANIS V15, tuiles GTADB (CC BY 4.0) affichées dans leur ordre natif et à plusieurs résolutions par notre interface ; pour consulter les positions originales : <a href="https://fullsweepmap.com/" target="_blank" rel="noopener">FullSweep</a>. Les données ont été normalisées pour l'interface française ; aucune synchronisation automatique avec une sauvegarde Xbox/PS5. Sauvegarde locale et export JSON disponibles.</footer>
 </main></div></div>
 <div class="modalWrap" id="modalWrap"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modalHeading"><div class="modalTitle"><h3 id="modalHeading">DÉTAILS</h3><button id="closeDialog" class="close" aria-label="Fermer">×</button></div><div id="modalContent"></div></div></div>
 <button class="chatLauncher" type="button" id="chatLauncher" aria-controls="chatDock" aria-expanded="false">💬 Chat joueurs</button>
@@ -173,8 +173,16 @@
  <form class="chatForm" id="chatForm" autocomplete="off">
   <label for="chatNickname">Ton pseudo</label><input id="chatNickname" name="nickname" type="text" maxlength="22" minlength="2" required placeholder="Ex : Joueur_Leonida">
   <label for="chatText">Ton message</label>
-  <div class="chatInputRow"><textarea id="chatText" name="message" maxlength="320" minlength="2" required placeholder="Un secret découvert ? Une astuce à partager ?"></textarea><button id="chatSend" class="btn main" type="submit" disabled>Envoyer</button></div>
-  <div class="chatSafety">⚠ Chat public : ne partage pas de coordonnées personnelles ni de liens. Limite de 4 messages/minute. Signale les abus. Messages temporaires.</div>
+  <div class="chatInputRow"><textarea id="chatText" name="message" maxlength="320" placeholder="Une astuce à partager ? Un message, une photo, une vidéo…"></textarea><button id="chatSend" class="btn main" type="submit" disabled>Envoyer</button></div>
+  <label for="chatMediaUrl">Lien vidéo ou image (YouTube, Twitch, TikTok, Imgur, Reddit)</label>
+  <input id="chatMediaUrl" name="mediaUrl" type="url" maxlength="800" placeholder="https://youtu.be/…">
+  <div class="chatAttachRow">
+   <label class="chatAttachLabel" for="chatFile">📎 Photo ou courte vidéo</label>
+   <input id="chatFile" name="file" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm">
+   <span id="chatFileHint">Image ≤ 1 Mo · Vidéo ≤ 2,5 Mo</span>
+  </div>
+  <div id="chatMediaStatus" class="chatMediaStatus" aria-live="polite"></div>
+  <div class="chatSafety">⚠ Chat public : ne partage pas de coordonnées personnelles ni de liens. Limite de 4 messages/minute. Signale les abus. Les fichiers et messages sont temporaires tant que le stockage permanent n’est pas activé.</div>
  </form>
  <div class="chatConnection" id="chatConnection">Connexion au salon…</div>
 </aside>
