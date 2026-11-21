@@ -1,0 +1,37 @@
+/* LEONIDA TRACKER V2.5 — public chat and site stats */
+.communityStrip{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.communityStat{border:1px solid #315064;background:linear-gradient(140deg,#14283a,#101c2b);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:12px;min-height:66px;flex:1 1 170px}
+.communityStatIcon{font-size:22px;flex:none}
+.communityValue{font-size:22px;font-weight:950;color:#2be8bb;line-height:1.12;font-variant-numeric:tabular-nums}
+.communityValue.purple{color:#b7baff}
+.communityLabel{font-size:11px;color:#bfd0e0;line-height:1.35}
+.communityStrip .chatOpenBtn{flex:1 1 180px;min-height:64px;border-radius:13px;font-size:13px}
+.communityExplanation{width:100%;font-size:10px;color:#91a8bc;line-height:1.5;margin:-5px 0 2px}
+.chatLauncher{position:fixed;right:max(15px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:40;border:1px solid #2ff4c9;background:#13d6ad;color:#06201b;padding:12px 17px;box-shadow:0 10px 35px #0009;border-radius:999px;font-weight:950;font-size:13px;cursor:pointer}
+.chatLauncher:focus-visible{outline:3px solid #fff}
+.chatDock{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));z-index:45;width:min(410px,calc(100vw - 26px));height:min(650px,calc(100dvh - 45px));border:1px solid #3b6166;border-radius:20px;overflow:hidden;background:#101c2b;box-shadow:0 24px 85px #000b;display:flex;flex-direction:column}
+.chatDock[hidden]{display:none}
+.chatHeader{padding:13px 15px;display:flex;align-items:center;gap:10px;justify-content:space-between;background:linear-gradient(130deg,#152d3e,#172438);border-bottom:1px solid #2d4557}
+.chatHeader h2{font-size:16px;line-height:1.2;margin:0;color:#eefffd;font-weight:950}
+.chatHeader small{font-size:10px;color:#9eb8c4}
+.chatClose{border:1px solid #3b586e;background:#263e53;color:#fff;border-radius:10px;padding:7px 12px;cursor:pointer}
+.chatMessages{flex:1;min-height:0;overflow-y:auto;padding:12px;overscroll-behavior:contain;display:flex;flex-direction:column;gap:8px;background:radial-gradient(circle at top right,#15334675,transparent 300px)}
+.chatPlaceholder{font-size:12px;color:#9eb6c3;text-align:center;padding:25px 12px;line-height:1.6}
+.chatMessage{border:1px solid #2b4051;background:#15263a;border-radius:12px;padding:9px 10px;display:flex;flex-direction:column;gap:5px}
+.chatMsgTop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.chatNick{color:#4ae8ca;font-size:12px;font-weight:950;min-width:0;overflow-wrap:anywhere}
+.chatTimestamp{color:#899dae;font-size:10px;flex:none}
+.chatMessage p{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;color:#e1f0f2;font-size:12px;line-height:1.45}
+.chatReport{border:0;background:none;color:#92a7b9;font-size:10px;padding:3px 0;cursor:pointer;align-self:flex-end;text-decoration:underline}
+.chatReport:hover{color:#ffa57a}
+.chatForm{border-top:1px solid #2d4557;padding:11px 12px;display:flex;flex-direction:column;gap:8px;background:#132237}
+.chatForm label{font-size:11px;color:#b5c9d1;font-weight:800}
+.chatInputRow{display:flex;gap:8px}
+.chatForm input,.chatForm textarea{background:#0b1826;border:1px solid #385167;color:#fff;border-radius:10px;padding:10px 11px;font-size:13px;width:100%;outline:none}
+.chatForm input:focus,.chatForm textarea:focus{border-color:#2ce3b6}
+.chatForm textarea{min-height:57px;max-height:100px;resize:vertical}
+.chatForm .chatInputRow button{min-width:85px}
+.chatSafety{font-size:10px;color:#91aabe;line-height:1.45}
+.chatConnection{padding:7px 12px;font-size:10px;color:#a3c1cf;border-top:1px solid #28465b;background:#0e1b2a}
+.chatConnection.bad{color:#ffb08c}
+@media(max-width:700px){.communityStrip{gap:7px}.communityStat{padding:10px 12px;flex:1 1 120px;min-height:60px}.communityValue{font-size:20px}.communityLabel{font-size:10px}.communityStrip .chatOpenBtn{min-height:48px;flex-basis:100%}.chatDock{width:calc(100vw - 14px);right:7px;bottom:7px;height:min(645px,calc(100dvh - 16px));border-radius:16px}.chatLauncher{right:12px;bottom:12px}}
