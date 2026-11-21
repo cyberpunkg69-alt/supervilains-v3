@@ -1,35 +1,27 @@
-# LEONIDA TRACKER V2.3.1 — 20 novembre 2026
+# LEONIDA TRACKER V2.4 — 21 novembre 2026
 
-## V2.3.1 — Marqueurs compacts adaptés au zoom
+Carte interactive gratuite GTA VI avec sauvegarde de progression et flux de nouveautés.
 
-- Icônes de marqueurs stabilisées entre 16 et 21 pixels de diamètre dans la vue réelle, au lieu de grossir avec le zoom.
-- Grande surface tactile transparente (jusqu'à ~48 pixels), sans grossir l’icône visible.
-- Regroupement des points voisins en pastilles numérotées ; cliquer pour agrandir ou choisir la fiche d'un lieu.
-- Animation turquoise « Localiser » conservée ; la progression locale et les coordonnées calibrées sont inchangées.
+## Nouveau : LEONIDA LIVE INTEL
 
+- Nouveau panneau « Nouvelles découvertes » sur la page principale, avec filtres Argent, Trafic (jeu), Secrets, Véhicules, Actualités.
+- Le bouton « Actualiser les découvertes » appelle une nouvelle API Render gratuite, qui lit des flux publics RSS/Atom de GTA BOOM, Rockstar INTEL, IGN, GTA6.how et de communautés Reddit dédiées.
+- Le serveur conserve un cache de 15 minutes en mémoire pour limiter la charge et fonctionne uniquement quand il est sollicité ; les services Render gratuits peuvent dormir après 15 minutes d'inactivité. Leur réveil peut ralentir le premier chargement. Aucun coût supplémentaire n'a été choisi pour cette API (plan free).
+- Une liste de guides sélectionnés issus de GTABase, PowerPyx, PC Gamer et de signalements Reddit reste accessible hors ligne ou en cas de blocage des flux. L'application n'annonce jamais que les flux ont été actualisés si le serveur ne répond pas.
+- Les articles de médias sont étiquetés **guide externe**, les publications Reddit **signalement à confirmer**. Aucun titre ne devient un marqueur GPS automatiquement, et les méthodes pour gagner de l'argent peuvent dépendre de la version et du chapitre.
+- Le bouton « Signaler un spot » prépare un lien de nouvelle issue GitHub (compte GitHub requis) avec nom, zone, catégorie, description et lien de preuve. L'utilisateur doit valider l'envoi ; ce système ne publie aucun contenu sans validation.
+- Les nouvelles favorites sont incluses dans la sauvegarde existante (export/import JSON), clé locale \`leonida-tracker-state-v1\`.
 
+## Backend
 
-Compagnon GTA VI pour mobile et PC, déployé sur Render. Application non officielle.
+\`news_api.py\` utilise uniquement la bibliothèque standard Python, et propose :
+- \`GET /health\`
+- \`GET /api/discoveries\`
+- \`GET /api/refresh\` (cache serveur commun de 15 min, limité sans authentification).
 
-## Améliorations
+Service Render : https://leonida-tracker-news.onrender.com
+Frontend : https://leonida-tracker-gta6.onrender.com
 
-- Traduction française à l'ouverture d'une fiche depuis les descriptions publiques FullSweep. Exemple Raccoon → Raton laveur, avec traduction interne. Traductions supplémentaires via API MyMemory, mises en cache dans le navigateur. Si le service est indisponible ou atteint sa limite de requêtes, le texte source est affiché explicitement.
-- « Localiser sur ma carte » : centrage sur le marqueur choisi, halo turquoise pulsant trois fois pendant environ 3 secondes, passage au-dessus des autres marqueurs.
-- Conversion de coordonnées : compare les positions des repères communautaires FullSweep (pixel 3344×4820) à celles des repères homonymes GTADB (coordonnées de carte GTADB), puis ajuste une transformation affine par moindres carrés et rejette les observations aberrantes.
-- Validation de sécurité : minimum 12 repères correspondants, plus de 55 % d'accords et erreur médiane inférieure à 170 unités GTADB. Sinon le fond « Plan/Atlas » n'affiche pas de marqueurs plutôt que des positions fictives. Le mode « Grille » conserve les positions FullSweep d'origine.
-- Les positions, même recalées, restent des indications communautaires : les lieux particuliers doivent être confirmés par jeu.
-- Les cases « trouvé », notes et export JSON conservent la même clé localStorage que les versions précédentes.
+## Notes
 
-## Fonctionnement
-
-La calibration télécharge au premier accès les repères publics de FullSweep (API CORS) et GTADB (JSON du dépôt GitHub) et enregistre seulement les coefficients calculés pendant 7 jours. Les réponses externes et leur ordre peuvent changer ; si la calibration échoue, un avertissement s'affiche avec le lien vers FullSweep. Une nouvelle ouverture/actualisation de la page relance l'essai.
-
-La traduction des descriptions publiques utilise https://api.mymemory.translated.net/get, sans envoyer les notes privées des joueurs. Le service de traduction peut être limité, indisponible et ne garantit pas l'exactitude.
-
-## Crédits
-
-- Données et suivi FullSweep (CC BY 4.0) : https://fullsweepmap.com/developers/
-- Repères et carte GTADB, YANIS V15 et contributeurs (CC BY 4.0) : https://map.gtadb.org et https://github.com/rolux/gtadb.org
-- Licence CC BY 4.0 : https://creativecommons.org/licenses/by/4.0/
-
-Non affilié à Rockstar Games ou Take-Two Interactive. Aucun accès aux sauvegardes Xbox / PlayStation.
+Ce sont les actualités des sites et les signalements communautaires, pas un catalogue exhaustif de coordonnées vérifiées. Les emplacements cartographiques restent séparés et gardent le système de calibration V2.3.1. Les traductions des descriptions FullSweep sont conservées. L'application n'est pas affiliée à Rockstar Games.
