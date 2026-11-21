@@ -43,6 +43,34 @@
 .mapCalStatus{width:100%;color:#9ab6c5;font-size:11px;line-height:1.45;margin-top:2px}.mapCalStatus.good{color:#48e3b7}.mapCalStatus.pending{color:#ffb46d}
 @media(max-width:700px){.mapViewport{height:520px}.mapTop{flex-wrap:wrap}.mapTop .mapHint{display:none}.mapToolbar .mapCount{width:100%;margin:3px 0 0;text-align:left}.mapAttribution{font-size:9px}.mapFrame{border-radius:15px}}
 
+
+/* NOUVEAUTÉS GTA VI : fiches de veille et signalements communautaires */
+.discoveryPanel{border:1px solid #2d4454;background:linear-gradient(140deg,#102133,#0c1623);border-radius:18px;padding:20px;margin:22px 0;box-shadow:0 12px 35px #0003}
+.discoveryHead{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.discoveryHead h2{font:900 29px/1 'Barlow Condensed',Impact,'Arial Narrow',sans-serif;letter-spacing:.8px;margin:9px 0}
+.discoveryHead p{font-size:12px;line-height:1.6;color:#9eb0c0;margin:0}
+.discoveryBtns,.discoveryTabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.discoveryTabs button{border:1px solid #2b4950;color:#c4d8df;border-radius:10px;background:#152638;padding:10px 12px;font-size:12px;font-weight:800;cursor:pointer}
+.discoveryTabs button.on{background:#1fe1b8;border-color:#1fe1b8;color:#062921}
+.discoveryStatus{font-size:11px;color:#9caebe;margin:12px 0;line-height:1.5}
+.newsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:11px}
+.newsCard{background:#121e2e;border:1px solid #2b4153;border-radius:13px;padding:15px;min-width:0;display:flex;flex-direction:column;gap:10px;transition:border-color .15s}
+.newsCard:hover{border-color:#2fd3b3}
+.newsHead{display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;gap:7px}
+.newsLabel{display:inline-flex;align-items:center;border:1px solid #355a62;background:#142e35;color:#74eddb;font-size:10px;font-weight:800;padding:4px 7px;border-radius:7px}
+.newsLabel.community{background:#2d241c;color:#ffbc7c;border-color:#544435}
+.newsDate{color:#8da5b6;font-size:10px}
+.newsCard h3{font-size:14px;line-height:1.35;margin:0;color:#f2f9ff;overflow-wrap:anywhere}
+.newsCard p{font-size:12px;line-height:1.58;color:#adbfca;margin:0;flex:1}
+.newsCard .newsFooter{display:flex;gap:7px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.newsSrc{font-size:11px;color:#8da5b6;font-weight:700}
+.newsCard .btn{font-size:11px;padding:9px 11px}
+.newsCard a.btn{text-decoration:none}
+.newsEmpty{border:1px dashed #4b6474;padding:20px;border-radius:12px;color:#adbfca;font-size:13px}
+.newsDisclaimer{font-size:11px;line-height:1.6;color:#9ab0bf;margin-top:12px}
+.newsAlert{border:1px solid #5d4931;background:#2b241d;padding:12px;border-radius:10px;color:#eacaa6;font-size:11px;margin-top:15px;line-height:1.55}
+@media(max-width:700px){.discoveryPanel{padding:14px;margin:16px 0}.discoveryHead h2{font-size:24px}.newsGrid{grid-template-columns:1fr}.discoveryTabs button{padding:9px 10px}}
+
 </style>
 </head>
 <body>
@@ -73,13 +101,13 @@
  <div class="stat"><div class="statlabel">Catalogue complété</div><div class="statnum pink"><span id="percent">0</span><span style="font-size:24px">%</span></div><div class="progressTrack"><div class="progressFill" id="progressFill"></div></div><div class="statfoot" style="margin-top:7px">Ce n'est pas le 100 % officiel du jeu</div></div>
  </section>
  <section id="mapSection" class="mapFrame">
-   <div class="mapTop"><label><i></i> LEONIDA • CARTE V2.3.1</label><span class="mapHint">Marqueurs synchronisés avec tes cases</span><a href="https://fullsweepmap.com/?lang=fr" target="_blank" rel="noopener" style="font-size:11px">Vérifier la carte source ↗</a></div>
+   <div class="mapTop"><label><i></i> LEONIDA • CARTE V2.4</label><span class="mapHint">Marqueurs synchronisés avec tes cases</span><a href="https://fullsweepmap.com/?lang=fr" target="_blank" rel="noopener" style="font-size:11px">Vérifier la carte source ↗</a></div>
    <div class="mapToolbar" aria-label="Commandes de la carte">
      <button type="button" class="btn mini" id="mapIn" aria-label="Zoom avant">＋</button>
      <button type="button" class="btn mini" id="mapOut" aria-label="Zoom arrière">−</button>
      <button type="button" class="btn mini" id="mapReset">⤢ Tout voir</button>
      <button type="button" class="btn mini main" id="mapBasemap" aria-pressed="true">◈ Plan</button>
-     <button type="button" class="btn mini" id="mapMissing">○ À trouver</button>
+     <button type="button" class="btn mini" id="mapMissing">○ À trouver</button><button type="button" class="btn mini" data-jump="newsSection">🛰 Nouveautés</button>
      <span class="mapCount" id="mapPinCount">Chargement des positions…</span><span id="calibrationInfo" class="mapCalStatus" role="status" aria-live="polite">Vérification des repères en cours…</span>
    </div>
    <div id="mapViewport" class="mapViewport" aria-label="Carte de Leonida en tuiles haute résolution, zoomable ; marqueurs à vérifier">
@@ -101,9 +129,33 @@
    </div>
  </section>
  <div class="notice">🗺️ <strong>V2.3.1 : marqueurs ultra-compacts et regroupement intelligent.</strong> Les icônes gardent un diamètre d’environ 16 à 21 pixels sur écran, même en zoomant. Lorsque plusieurs découvertes sont trop proches, elles sont regroupées dans un cercle numéroté : touche-le pour zoomer ou choisir une fiche. Une large zone tactile invisible facilite les clics. Tes découvertes, traductions et positions recalées sont conservées.</div>
+
+ <section id="newsSection" class="discoveryPanel" aria-labelledby="newsTitle">
+  <div class="discoveryHead">
+   <div><div class="eyebrow">LEONIDA LIVE INTEL</div><h2 id="newsTitle">🛰 NOUVELLES DÉCOUVERTES</h2>
+    <p>Guides spécialisés et signalements de joueurs : argent, trafic dans GTA 6, objets rares et secrets.</p>
+   </div>
+   <div class="discoveryBtns">
+    <button class="btn main" id="newsRefresh" type="button">↻ Actualiser les découvertes</button>
+    <button class="btn" id="newsReport" type="button">＋ Signaler un spot</button>
+   </div>
+  </div>
+  <div class="discoveryTabs" id="newsTabs" role="group" aria-label="Catégories des nouveautés">
+   <button class="on" data-news-cat="all" type="button">Tout</button>
+   <button data-news-cat="argent" type="button">💰 Argent</button>
+   <button data-news-cat="stups" type="button">🧪 Trafic (jeu)</button>
+   <button data-news-cat="collectibles" type="button">💎 Secrets</button>
+   <button data-news-cat="vehicules" type="button">🚗 Véhicules</button>
+   <button data-news-cat="actualites" type="button">📰 Actus</button>
+  </div>
+  <div class="discoveryStatus" id="newsStatus" role="status">Chargement des premières découvertes…</div>
+  <div class="newsGrid" id="newsGrid"><div class="newsEmpty">Les nouveautés apparaîtront ici.</div></div>
+  <div class="newsAlert">⚠ Les articles de guides sont des sources externes. Les publications Reddit sont des <strong>signalements non vérifiés</strong>. Aucune actualité ne crée un marqueur sur la carte avant contrôle de sa localisation.</div>
+  <p class="newsDisclaimer">Sources suivies : <a href="https://www.gtabase.com/fr/gta-6/map/" target="_blank" rel="noopener">GTABase</a>, <a href="https://www.powerpyx.com/gta-6-grand-theft-auto-vi-trophy-guide-roadmap/" target="_blank" rel="noopener">PowerPyx</a>, IGN, GTA BOOM, Rockstar INTEL et Reddit. Titres renvoyant vers leurs auteurs, sans copie des articles. Actualisation des flux disponible selon leur accessibilité et les limites de l’hébergement gratuit.</p>
+ </section>
  <section id="locationsSection"><div class="barRow"><div><div class="eyebrow">DISCOVERY LOG</div><h2>LES DÉCOUVERTES <span style="color:var(--teal)" id="visibleCount"></span></h2><small id="dataLabel">Connexion aux données communautaires...</small></div><div class="controls"><select class="select" id="sort" aria-label="Trier"><option value="name">A → Z</option><option value="region">Par région</option><option value="source">Par fiabilité</option><option value="missing">Non trouvés en premier</option></select><button class="btn mini" id="planBtn">★ Ma chasse</button></div></div><div class="gridcards" id="cardList" aria-live="polite"></div></section>
  <section id="catSection"><div class="barRow"><div><div class="eyebrow">YOUR COMPLETION DASHBOARD</div><h2>PAR CATÉGORIE</h2></div></div><div class="catSummary" id="categoryStats"></div></section>
- <footer class="footer"><strong>LEONIDA TRACKER — FAN CONCEPT / v2.3.1</strong><br>Projet non officiel, non affilié à Rockstar Games ou Take-Two Interactive. GTA VI et ses marques appartiennent à leurs ayants droit. Données de lieux : <a href="https://fullsweepmap.com/developers/" target="_blank" rel="noopener">FullSweep (CC BY 4.0)</a> et contributeurs cités. Carte GTADB jour / atlas YANIS V15, tuiles GTADB (CC BY 4.0) affichées dans leur ordre natif et à plusieurs résolutions par notre interface ; pour consulter les positions originales : <a href="https://fullsweepmap.com/" target="_blank" rel="noopener">FullSweep</a>. Les données ont été normalisées pour l'interface française ; aucune synchronisation automatique avec une sauvegarde Xbox/PS5. Sauvegarde locale et export JSON disponibles.</footer>
+ <footer class="footer"><strong>LEONIDA TRACKER — FAN CONCEPT / v2.4</strong><br>Projet non officiel, non affilié à Rockstar Games ou Take-Two Interactive. GTA VI et ses marques appartiennent à leurs ayants droit. Données de lieux : <a href="https://fullsweepmap.com/developers/" target="_blank" rel="noopener">FullSweep (CC BY 4.0)</a> et contributeurs cités. Carte GTADB jour / atlas YANIS V15, tuiles GTADB (CC BY 4.0) affichées dans leur ordre natif et à plusieurs résolutions par notre interface ; pour consulter les positions originales : <a href="https://fullsweepmap.com/" target="_blank" rel="noopener">FullSweep</a>. Les données ont été normalisées pour l'interface française ; aucune synchronisation automatique avec une sauvegarde Xbox/PS5. Sauvegarde locale et export JSON disponibles.</footer>
 </main></div></div>
 <div class="modalWrap" id="modalWrap"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modalHeading"><div class="modalTitle"><h3 id="modalHeading">DÉTAILS</h3><button id="closeDialog" class="close" aria-label="Fermer">×</button></div><div id="modalContent"></div></div></div>
 <div id="toast" class="toast" role="status"></div>
@@ -116,7 +168,7 @@ const $=id=>document.getElementById(id);
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const nice=s=>String(s||'').replace(/[_-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-const defaultState={found:{},favorites:{},planned:{},notes:{},custom:[],settings:{onlyMissing:false,onlyFav:false,showUnverified:false,spoilers:true,filter:'all',sort:'name'}};
+const defaultState={found:{},favorites:{},planned:{},notes:{},custom:[],settings:{onlyMissing:false,onlyFav:false,showUnverified:false,spoilers:true,filter:'all',sort:'name'},bookmarkedNews:{}};
 let state=restore(),catalog=[],stats=null,loaded=false,source='';
 function restore(){try{const d=JSON.parse(localStorage.getItem(KEY)||'null');return {...structuredClone(defaultState),...(d&&typeof d==='object'?d:{}),settings:{...defaultState.settings,...(d?.settings||{})}}}catch{return structuredClone(defaultState)}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch{toast('Impossible d’enregistrer sur cet appareil : stockage bloqué.')};refresh()}
@@ -195,7 +247,7 @@ $('modalWrap').dataset.itemId=i.id;translateDescription(i);if($('focusOnMap'))$(
 function openAdd(){openModal('NOUVELLE DÉCOUVERTE',`<p class="hint">Pour garder une trace d’un objet trouvé en jeu, même si son emplacement n’apparaît pas encore dans la base. <strong>Les lieux personnels ne créent pas de marqueur sur la carte FullSweep.</strong></p><form id="customForm"><label class="field">Nom du lieu ou objet<input name="title" required maxlength="100" placeholder="Ex : Carte découverte près de la plage"></label><label class="field">Région<input name="region" maxlength="80" placeholder="Ex : Vice City"></label><label class="field">Catégorie<select name="cat"><option value="collectibles">Objet à trouver</option><option value="activities">Activité</option><option value="vehicles">Véhicule</option><option value="location">Lieu / repère</option></select></label><label class="field">Description<textarea name="desc" maxlength="1200" placeholder="Indice ou information sur l'emplacement..."></textarea></label><div class="modalBtns"><button class="btn main" type="submit">＋ Ajouter à mon carnet</button></div></form>`);$('customForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.currentTarget);const id='user-'+Date.now()+'-'+Math.random().toString(36).slice(2,6);state.custom.push({id,title:String(f.get('title')).trim(),region:String(f.get('region')).trim(),cat:String(f.get('cat')),desc:String(f.get('desc')).trim(),source:'user',isCustom:true});save();closeModal();toast('Nouvelle découverte enregistrée')}}
 function openSettings(){openModal('MES SAUVEGARDES',`<p class="hint">Ta progression est enregistrée localement. Elle n'est ni envoyée à un serveur, ni synchronisée avec Xbox ou PS5. Pour changer de téléphone, exporte puis importe ta sauvegarde JSON.</p><div class="modalBtns" style="justify-content:start"><button id="exportIn" class="btn main">⇩ Exporter JSON</button><button id="importIn" class="btn">⇧ Importer JSON</button><input type="file" id="jsonFile" accept="application/json,.json" hidden></div><div class="sideDivider"></div><p class="hint">La carte fonctionne sans fenêtre externe, mais les tuiles YANIS nécessitent Internet ; le quadrillage fonctionne sans ces images. Internet reste nécessaire pour récupérer de nouveaux emplacements depuis FullSweep. Le dernier catalogue reçu peut être conservé dans ce navigateur ; sur Android, les fichiers téléchargés séparément ne partagent pas toujours le même stockage. Exporte ta progression avant de changer de version.</p><div class="modalBtns"><button id="resetIn" class="btn warn">⚠ Effacer ma progression locale</button></div>`);$('exportIn').onclick=exportData;$('importIn').onclick=()=>$('jsonFile').click();$('jsonFile').onchange=e=>importData(e.target.files?.[0]);$('resetIn').onclick=()=>{if(!confirm('Supprimer toutes les cases cochées, notes, favoris et lieux personnalisés ? Cette action est irréversible.'))return;state=structuredClone(defaultState);save();closeModal();toast('Progression effacée')}}
 function exportData(){let payload={app:'Leonida Tracker',version:1,exportedAt:new Date().toISOString(),state};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='LEONIDA_TRACKER_sauvegarde_'+new Date().toISOString().slice(0,10)+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Sauvegarde téléchargée')}
-async function importData(file){if(!file)return;if(file.size>2e6){toast('Fichier trop volumineux.');return}try{const payload=JSON.parse(await file.text());if(payload.app!=='Leonida Tracker'||!payload.state||!payload.version||payload.version!==1)throw Error('Format non compatible');if(!confirm('Remplacer ta progression actuelle par cette sauvegarde ?'))return;const st=payload.state;state={found:st.found&&typeof st.found==='object'?st.found:{},favorites:st.favorites&&typeof st.favorites==='object'?st.favorites:{},planned:st.planned&&typeof st.planned==='object'?st.planned:{},notes:st.notes&&typeof st.notes==='object'?st.notes:{},custom:Array.isArray(st.custom)?st.custom.slice(0,2000):[],settings:{...defaultState.settings,...(st.settings||{})}};syncControls();save();closeModal();toast('Sauvegarde importée !')}catch(e){toast('Échec de l’import : '+e.message)}}
+async function importData(file){if(!file)return;if(file.size>2e6){toast('Fichier trop volumineux.');return}try{const payload=JSON.parse(await file.text());if(payload.app!=='Leonida Tracker'||!payload.state||!payload.version||payload.version!==1)throw Error('Format non compatible');if(!confirm('Remplacer ta progression actuelle par cette sauvegarde ?'))return;const st=payload.state;state={found:st.found&&typeof st.found==='object'?st.found:{},favorites:st.favorites&&typeof st.favorites==='object'?st.favorites:{},planned:st.planned&&typeof st.planned==='object'?st.planned:{},notes:st.notes&&typeof st.notes==='object'?st.notes:{},bookmarkedNews:st.bookmarkedNews&&typeof st.bookmarkedNews==='object'?st.bookmarkedNews:{},custom:Array.isArray(st.custom)?st.custom.slice(0,2000):[],settings:{...defaultState.settings,...(st.settings||{})}};syncControls();save();closeModal();toast('Sauvegarde importée !')}catch(e){toast('Échec de l’import : '+e.message)}}
 function openPlan(){const a=allItems().filter(i=>state.planned[i.id]);openModal('MA LISTE DE CHASSE',`<p class="hint">${a.length} lieu(x) épinglé(s) — pratique avant une session GTA 6.</p><div style="max-height:45vh;overflow:auto">${a.length?a.map(i=>`<div style="padding:12px 0;border-bottom:1px solid #2e4152"><strong style="font-size:13px">${safe(i.title)}</strong><div class="hint">${safe(nice(i.region)||'Leonida')} • ${state.found[i.id]?'✓ trouvé':'○ à trouver'}</div><button class="btn mini" data-planfocus="${safe(i.id)}">Ouvrir ↗</button></div>`).join(''):'<p class="hint">Pour préparer un itinéraire, appuie sur ☆ à côté d’un lieu.</p>'}</div><div class="modalBtns"><button class="btn main" id="copyPlan">Copier ma liste</button></div>`);document.querySelectorAll('[data-planfocus]').forEach(b=>b.onclick=()=>openItem(b.dataset.planfocus));$('copyPlan').onclick=async()=>{const txt=a.map(i=>`${state.found[i.id]?'[x]':'[ ]'} ${i.title} — ${i.region}`).join('\n');try{await navigator.clipboard.writeText(txt);toast('Liste copiée')}catch{toast('Copie non autorisée dans ce navigateur')}}}
 function syncControls(){['onlyMissing','onlyFav','showUnverified','spoilers'].forEach(k=>$(k).checked=!!state.settings[k]);$('sort').value=state.settings.sort||'name';if($('mapMissing'))$('mapMissing').textContent=state.settings.onlyMissing?'✓ Uniquement manquants':'○ À trouver'}
 async function loadData(){loaded=false;$('dataLabel').textContent='Chargement de l’API de FullSweep...';try{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),13000);const [res,statsres]=await Promise.all([fetch(API,{signal:controller.signal,cache:'no-store'}),fetch(STATS,{signal:controller.signal,cache:'no-store'}).catch(()=>null)]);clearTimeout(timer);if(!res.ok)throw Error('HTTP '+res.status);const payload=await res.json();const list=unpack(payload);if(!list.length)throw Error('Réponse API vide ou format inconnu');catalog=list;stats=statsres?.ok?await statsres.json():null;try{localStorage.setItem(CACHE,JSON.stringify({at:new Date().toISOString(),catalog,stats}))}catch{}source='live';$('onlineBadge').textContent='● DONNÉES EN DIRECT';$('onlineBadge').className='pill';$('dataLabel').textContent=`${list.length} emplacements fournis par FullSweep ${stats?.dataUpdated?'• version du '+stats.dataUpdated:''} • données non exhaustives`;loaded=true;refresh();toast('Catalogue actualisé : '+list.length+' lieux');return true}catch(e){try{const cache=JSON.parse(localStorage.getItem(CACHE)||'null');if(!Array.isArray(cache?.catalog)||!cache.catalog.length)throw Error();catalog=cache.catalog.map(normalizeItem);stats=cache.stats;source='cache';$('onlineBadge').textContent='● MODE CATALOGUE MÉMORISÉ';$('onlineBadge').className='pill orange';$('dataLabel').textContent=`${catalog.length} lieux enregistrés en cache • dernière récupération ${new Date(cache.at).toLocaleDateString('fr-FR')} • actualisation indisponible`;}catch{source='offline';catalog=[];$('onlineBadge').textContent='● SOURCE INDISPONIBLE';$('onlineBadge').className='pill orange';$('dataLabel').textContent='API actuellement inaccessible. Recharge la page avec Internet ou ajoute tes propres découvertes.'}loaded=true;refresh();toast('Connexion aux données indisponible : '+e.message);return false}}
@@ -531,7 +583,122 @@ function endPointer(e){mapPointers.delete(e.pointerId);window.__mapPinchD=null;i
 svg.addEventListener('pointerup',endPointer);svg.addEventListener('pointercancel',endPointer);
 svg.addEventListener('wheel',e=>{e.preventDefault();zoomMap(e.deltaY<0?1.3:1/1.3)},{passive:false});paintView();}
 
-function init(){syncControls();['onlyMissing','onlyFav','showUnverified','spoilers'].forEach(k=>$(k).onchange=e=>{state.settings[k]=e.target.checked;save()});$('search').oninput=()=>{renderList();renderMap()};$('sort').onchange=e=>{state.settings.sort=e.target.value;save()};$('refreshBtn').onclick=loadData;$('addBtn').onclick=openAdd;$('saveBtn').onclick=exportData;$('settingsBtn').onclick=openSettings;$('openPlan').onclick=openPlan;$('planBtn').onclick=openPlan;$('closeDialog').onclick=closeModal;$('modalWrap').onclick=e=>{if(e.target===$('modalWrap'))closeModal()};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>$(b.dataset.jump)?.scrollIntoView({behavior:'smooth'}));initMap();initializeTerrain();renderFilters();renderCategories();renderMap();projectionStatus();calibrateMap();loadData();if('serviceWorker'in navigator&&['https:','http:'].includes(location.protocol))navigator.serviceWorker.register('./sw.js').catch(()=>{})}
+
+const NEWS_API='https://leonida-tracker-news.onrender.com';
+const NEWS_CACHE_KEY='leonida-live-intel-cache-v1';
+const NEWS_CATEGORIES={argent:'💰 Argent',stups:'🧪 Trafic (dans le jeu)',collectibles:'💎 Secrets',vehicules:'🚗 Véhicules',actualites:'📰 GTA 6'};
+const NEWS_FALLBACK=[
+ {id:'gtabase-money',title:"8 méthodes pour gagner de l’argent dans GTA 6",link:"https://www.gtabase.com/fr/gta-6/articles/comment-gagner-de-largent-rapidement-dans-gta-6",source:'GTABase',category:'argent',date:'2026-11-20',noteFr:'Guide en français des méthodes de revenus selon l’avancement dans GTA 6.',kind:'guide'},
+ {id:'powerpyx-fences',title:"Où trouver les receleurs dans GTA 6",link:"https://www.powerpyx.com/gta-6-all-fence-locations-how-to-fence-stolen-goods/",source:'PowerPyx',category:'argent',date:'2026-11-19',noteFr:'Guide des emplacements permettant de revendre des objets volés dans le jeu.',kind:'guide'},
+ {id:'powerpyx-banks',title:"Les coffres de banque de GTA 6",link:"https://www.powerpyx.com/gta-6-all-bank-jobs-locations-bank-vaults/",source:'PowerPyx',category:'argent',date:'2026-11-19',noteFr:'Guide des braquages de banques et des lieux à explorer.',kind:'guide'},
+ {id:'powerpyx-cocaine',title:"Flamants roses et cocaïne dans GTA 6",link:"https://www.powerpyx.com/gta-6-all-cocaine-flamingo-locations/",source:'PowerPyx',category:'stups',date:'2026-11-19',noteFr:'Liste des emplacements des objets liés à la cocaïne dans le jeu.',kind:'guide'},
+ {id:'powerpyx-gangs',title:"Opérations des gangs de Leonida",link:"https://www.powerpyx.com/gta-6-all-illegal-gang-operations-locations/",source:'PowerPyx',category:'stups',date:'2026-11-19',noteFr:'Emplacements des opérations de gangs et activités illégales de GTA 6.',kind:'guide'},
+ {id:'reddit-warehouse',title:"Entrepôt Apollo Aggregates : astuce d’argent signalée",link:"https://www.reddit.com/r/gtaglitches/comments/1y1gou5/gta_6_unlimited_money_red_barn_apollo_aggregates/",source:'Reddit r/gtaglitches',category:'argent',date:'2026-11-20',noteFr:'Astuce rapportée par un joueur, possiblement corrigée : à vérifier avant de l’ajouter à la carte.',kind:'community'}
+];
+let newsItems=[],newsFilter='all',newsCheckedAt='',newsFeedSource='secours',newsBusy=false,newsSources=0;
+function safeNewsUrl(value){
+ try{const u=new URL(value);if(['https:','http:'].includes(u.protocol))return u.href;}catch{}
+ return '';
+}
+function dateNews(value){
+ if(!value)return 'Date inconnue';
+ const d=new Date(value);return Number.isNaN(d.getTime())?'Date inconnue':d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+}
+function renderNews(){
+ const grid=$('newsGrid');if(!grid)return;
+ document.querySelectorAll('[data-news-cat]').forEach(b=>b.classList.toggle('on',b.dataset.newsCat===newsFilter));
+ let items=newsFilter==='all'?newsItems:newsItems.filter(i=>i.category===newsFilter);
+ if(!items.length){grid.innerHTML='<div class="newsEmpty">Aucune découverte dans cette catégorie pour le moment. Tu peux proposer un lieu avec le bouton « Signaler un spot ».</div>';return;}
+ grid.innerHTML=items.slice(0,70).map(i=>{
+  const link=safeNewsUrl(i.link),community=i.kind==='community';
+  const badge=community?'Signalement à confirmer':'Guide / article externe';
+  const saved=!!(state.bookmarkedNews||{})[i.id];
+  return '<article class="newsCard"><div class="newsHead"><span class="newsLabel '+(community?'community':'')+'">'+badge+'</span><small class="newsDate">'+safe(dateNews(i.date))+'</small></div>'+
+  '<div class="newsSrc">'+safe(NEWS_CATEGORIES[i.category]||'📰 GTA 6')+' · '+safe(i.source||'Source')+'</div>'+
+  '<h3>'+safe(i.title||'Nouvelle découverte GTA 6')+'</h3>'+
+  '<p>'+safe(i.noteFr||'Consulte la source pour connaître les détails. Les informations restent à vérifier dans le jeu.')+'</p>'+
+  '<div class="newsFooter">'+(link?'<a class="btn main" href="'+safe(link)+'" target="_blank" rel="noopener noreferrer">Lire la source ↗</a>':'')+
+  '<button type="button" class="btn" data-news-save="'+safe(i.id)+'">'+(saved?'★ Enregistré':'☆ Garder')+'</button></div></article>';
+ }).join('');
+ grid.querySelectorAll('[data-news-save]').forEach(b=>b.onclick=()=>{
+  state.bookmarkedNews=state.bookmarkedNews||{};
+  state.bookmarkedNews[b.dataset.newsSave]=!state.bookmarkedNews[b.dataset.newsSave];
+  save();renderNews();toast(state.bookmarkedNews[b.dataset.newsSave]?'★ Astuce enregistrée':'Astuce retirée des favoris');
+ });
+}
+function cachedNews(){
+ try{
+  const c=JSON.parse(localStorage.getItem(NEWS_CACHE_KEY)||'null');
+  if(Array.isArray(c?.entries)&&c.entries.length){newsItems=c.entries;newsCheckedAt=c.checkedAt||'';newsFeedSource='cache';return;}
+ }catch{}
+ newsItems=NEWS_FALLBACK;newsFeedSource='sélection de départ';
+}
+function statusNews(extra){
+ const t=extra||('Dernière consultation : '+(newsCheckedAt?dateNews(newsCheckedAt):'sources de départ')+' • '+newsItems.length+' découvertes • mode '+newsFeedSource);
+ $('newsStatus').textContent=t;
+}
+async function refreshNews(force=false){
+ if(newsBusy)return;
+ newsBusy=true;
+ const btn=$('newsRefresh');btn.disabled=true;btn.textContent='↻ Consultation des sources…';
+ statusNews('Recherche de nouvelles découvertes… Les résultats enregistrés restent consultables. Sur un hébergement gratuit, le premier démarrage peut être plus lent.');
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),76000);
+ try{
+  const endpoint=NEWS_API+(force?'/api/refresh':'/api/discoveries');
+  const res=await fetch(endpoint,{signal:controller.signal,cache:'no-store'});
+  if(!res.ok)throw Error('HTTP '+res.status);
+  const raw=await res.json();
+  if(!Array.isArray(raw.entries)||!raw.entries.length)throw Error('aucune découverte reçue');
+  const seen=new Set();
+  newsItems=raw.entries.filter(i=>{
+   if(!i||typeof i!=='object'||!i.id||!safeNewsUrl(i.link))return false;
+   const key=safeNewsUrl(i.link).split('?')[0];
+   if(seen.has(key))return false;seen.add(key);return true;
+  });
+  newsCheckedAt=raw.checkedAt||new Date().toISOString();
+  newsSources=Array.isArray(raw.sourcesOnline)?raw.sourcesOnline.length:0;
+  newsFeedSource='sources publiques';
+  try{localStorage.setItem(NEWS_CACHE_KEY,JSON.stringify({entries:newsItems,checkedAt:newsCheckedAt}))}catch{}
+  statusNews('✓ '+newsItems.length+' découvertes • '+newsSources+' flux accessibles • vérifié le '+new Date(newsCheckedAt).toLocaleString('fr-FR')+'. Les guides externes restent à recouper.');
+  if(force)toast('Actualisation des nouveautés effectuée');
+ }catch(err){
+  statusNews('Flux direct indisponible pour le moment ('+err.message+'). '+newsItems.length+' découvertes déjà enregistrées restent accessibles ; réessaie plus tard.');
+ }finally{
+  clearTimeout(timer);newsBusy=false;btn.disabled=false;btn.textContent='↻ Actualiser les découvertes';renderNews();
+ }
+}
+function openNewsReport(){
+ openModal('PROPOSER UNE DÉCOUVERTE GTA 6','<p class="hint">Signale un emplacement, un butin, un trafic ou une astuce <strong>dans GTA 6</strong>. Les coordonnées et indices seront examinés avant d’être ajoutés sur la carte.</p>'+
+ '<form id="newsReportForm">'+
+ '<label class="field">Nom de ta découverte<input name="title" required maxlength="100" placeholder="Ex : coffre caché près du port"></label>'+
+ '<label class="field">Catégorie<select name="cat"><option value="argent">💰 Argent</option><option value="stups">🧪 Trafic dans le jeu</option><option value="collectibles">💎 Secrets / collection</option><option value="vehicules">🚗 Véhicules</option><option value="actualites">Autre</option></select></label>'+
+ '<label class="field">Zone du jeu<input name="region" maxlength="100" placeholder="Ex : Vice City, Port Gellhorn"></label>'+
+ '<label class="field">Détails et conditions<textarea name="desc" required minlength="10" maxlength="1500" placeholder="Où ? Quel chapitre ? Que peut-on récupérer ?"></textarea></label>'+
+ '<label class="field">Lien de preuve (vidéo, capture, guide)<input type="url" name="source" maxlength="500" placeholder="https://..."></label>'+
+ '<div class="modalBtns"><button class="btn main" type="submit">Préparer mon signalement ↗</button><button class="btn" id="newsCopyReport" type="button">Copier le formulaire</button></div></form>'+
+ '<p class="hint" style="margin-top:10px">Le signalement est préparé pour les <strong>Issues GitHub</strong> du projet ; l’envoi nécessite un compte GitHub. Aucune découverte n’est publiée sur la carte sans validation.</p>');
+ function read(){
+  const form=$('newsReportForm');const fd=new FormData(form);
+  const title=String(fd.get('title')||'').trim();
+  const desc=String(fd.get('desc')||'').trim();
+  if(title.length<4||desc.length<10){toast('Ajoute un nom et au moins 10 caractères de description.');return null;}
+  const cat=String(fd.get('cat')||'actualites'),region=String(fd.get('region')||'').trim(),proof=safeNewsUrl(String(fd.get('source')||''));
+  return {title,body:'### Catégorie\n'+(NEWS_CATEGORIES[cat]||cat)+'\n\n### Zone\n'+(region||'Non précisée')+'\n\n### Description\n'+desc+'\n\n### Preuve / lien\n'+(proof||'À fournir')+'\n\n---\nSignalement communautaire non vérifié — LEONIDA TRACKER. Pas de coordonnées certifiées à ce stade.'};
+ }
+ $('newsReportForm').onsubmit=e=>{
+  e.preventDefault();const r=read();if(!r)return;
+  const target='https://github.com/cyberpunkg69-alt/supervilains-v3/issues/new?title='+encodeURIComponent('[LEONIDA] '+r.title)+'&body='+encodeURIComponent(r.body);
+  const a=document.createElement('a');a.href=target;a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();a.remove();
+  toast('Ouverture de GitHub : valide le signalement dans le formulaire.');
+ };
+ $('newsCopyReport').onclick=async()=>{
+  const r=read();if(!r)return;
+  const message=r.title+'\n\n'+r.body;
+  try{await navigator.clipboard.writeText(message);toast('Signalement copié. Tu peux le partager.');}catch{toast('Copie indisponible : utilise la sélection manuelle.');}
+ };
+}
+
+function init(){syncControls();['onlyMissing','onlyFav','showUnverified','spoilers'].forEach(k=>$(k).onchange=e=>{state.settings[k]=e.target.checked;save()});$('search').oninput=()=>{renderList();renderMap()};$('sort').onchange=e=>{state.settings.sort=e.target.value;save()};$('refreshBtn').onclick=loadData;$('addBtn').onclick=openAdd;$('saveBtn').onclick=exportData;$('settingsBtn').onclick=openSettings;$('openPlan').onclick=openPlan;$('planBtn').onclick=openPlan;$('closeDialog').onclick=closeModal;$('modalWrap').onclick=e=>{if(e.target===$('modalWrap'))closeModal()};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>$(b.dataset.jump)?.scrollIntoView({behavior:'smooth'}));cachedNews();renderNews();statusNews();document.querySelectorAll('[data-news-cat]').forEach(b=>b.onclick=()=>{newsFilter=b.dataset.newsCat;renderNews();});$('newsRefresh').onclick=()=>refreshNews(true);$('newsReport').onclick=openNewsReport;refreshNews(false);initMap();initializeTerrain();renderFilters();renderCategories();renderMap();projectionStatus();calibrateMap();loadData();if('serviceWorker'in navigator&&['https:','http:'].includes(location.protocol))navigator.serviceWorker.register('./sw.js').catch(()=>{})}
 init();
 </script>
 </body></html>
