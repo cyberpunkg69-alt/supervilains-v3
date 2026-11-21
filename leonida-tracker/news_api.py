@@ -185,7 +185,7 @@ class Handler(BaseHTTPRequestHandler):
   self.send_header("X-Content-Type-Options","nosniff")
  def reply(self,obj,status=200):
   data=json.dumps(obj,ensure_ascii=False,separators=(",",":")).encode("utf-8")
-  self.send_response(status);self.headers()
+  self.send_response(status);self.add_response_headers()
   self.send_header("Content-Type","application/json; charset=utf-8")
   self.send_header("Content-Length",str(len(data)))
   self.end_headers();self.wfile.write(data)
