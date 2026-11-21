@@ -1,27 +1,36 @@
-# LEONIDA TRACKER V2.4 — 21 novembre 2026
+# LEONIDA TRACKER V2.5 — 21 novembre 2026
 
-Carte interactive gratuite GTA VI avec sauvegarde de progression et flux de nouveautés.
+Compagnon GTA VI gratuit pour mobile, avec carte, découvertes, progression personnelle et actualités.
 
-## Nouveau : LEONIDA LIVE INTEL
+## Nouveau : communauté en direct
 
-- Nouveau panneau « Nouvelles découvertes » sur la page principale, avec filtres Argent, Trafic (jeu), Secrets, Véhicules, Actualités.
-- Le bouton « Actualiser les découvertes » appelle une nouvelle API Render gratuite, qui lit des flux publics RSS/Atom de GTA BOOM, Rockstar INTEL, IGN, GTA6.how et de communautés Reddit dédiées.
-- Le serveur conserve un cache de 15 minutes en mémoire pour limiter la charge et fonctionne uniquement quand il est sollicité ; les services Render gratuits peuvent dormir après 15 minutes d'inactivité. Leur réveil peut ralentir le premier chargement. Aucun coût supplémentaire n'a été choisi pour cette API (plan free).
-- Une liste de guides sélectionnés issus de GTABase, PowerPyx, PC Gamer et de signalements Reddit reste accessible hors ligne ou en cas de blocage des flux. L'application n'annonce jamais que les flux ont été actualisés si le serveur ne répond pas.
-- Les articles de médias sont étiquetés **guide externe**, les publications Reddit **signalement à confirmer**. Aucun titre ne devient un marqueur GPS automatiquement, et les méthodes pour gagner de l'argent peuvent dépendre de la version et du chapitre.
-- Le bouton « Signaler un spot » prépare un lien de nouvelle issue GitHub (compte GitHub requis) avec nom, zone, catégorie, description et lien de preuve. L'utilisateur doit valider l'envoi ; ce système ne publie aucun contenu sans validation.
-- Les nouvelles favorites sont incluses dans la sauvegarde existante (export/import JSON), clé locale \`leonida-tracker-state-v1\`.
+- **Compteur de vues** : nombre d'ouvertures distinctes de pages, comptées sur le serveur depuis son dernier démarrage. Un identifiant de page évite qu'une reconnexion automatique compte deux fois la même visite.
+- **Joueurs connectés** : nombre de sessions actives sur LEONIDA TRACKER au cours des 65 dernières secondes (ce n'est pas le nombre de joueurs connectés à GTA VI). Actualisation des nombres toutes les 6 secondes, signal de présence toutes les 25 secondes.
+- **Chat public GTA 6** : fenêtre flottante mobile/desktop, pseudo choisi sans inscription, salon partagé, messages de 2 à 320 caractères, actualisation toutes les 6 secondes.
+- **Protection** : rendu texte sans insertion HTML, interdiction des liens et coordonnées dans les messages, limites d'envoi de 4 messages/minute par session et 20 par adresse réseau anonymisée, signalements de messages, masquage après trois signalements distincts. Les pseudos ne sont pas vérifiés ; aucune identité Roblox/Xbox/PlayStation n'est demandée.
+- **Vie privée** : identifiant aléatoire de navigateur conservé localement, pas de stockage d'adresse IP brute dans le module de chat, pas de messages privés. Ne pas partager de renseignements personnels.
+- **Avertissement de persistance** : le serveur Render gratuit ne dispose pas encore de base de données persistante pour ces trois fonctions. Les visites et l'historique de messages résident uniquement en mémoire (jusqu'à 200 messages, 24h) et se réinitialisent quand l'instance s'arrête ou redémarre. Les compteurs ne sont donc PAS des totaux permanents. Une base de données séparée devra être ajoutée avant d'en faire un service public pérenne.
+- **Service** : les routes publiques du backend sont dans \`community.py\` et \`news_api.py\`. Frontend dans \`chat.js\` / \`chat.css\`. HTTPS via Render.
 
-## Backend
+### API
 
-\`news_api.py\` utilise uniquement la bibliothèque standard Python, et propose :
-- \`GET /health\`
-- \`GET /api/discoveries\`
-- \`GET /api/refresh\` (cache serveur commun de 15 min, limité sans authentification).
+- POST \`/api/community/join\` (sid, page)
+- POST \`/api/community/heartbeat\` (sid)
+- POST \`/api/community/leave\` (sid)
+- GET \`/api/community/state\`
+- POST \`/api/community/send\` (sid, nickname, text)
+- POST \`/api/community/report\` (sid, messageId)
+- POST \`/api/community/delete\` (sid, messageId)
 
-Service Render : https://leonida-tracker-news.onrender.com
-Frontend : https://leonida-tracker-gta6.onrender.com
+Les routes POST n'acceptent que l'origine autorisée du frontend (et localhost de développement). CORS autorise GET, POST, OPTIONS avec Content-Type JSON.
 
-## Notes
+### Compatibilité
 
-Ce sont les actualités des sites et les signalements communautaires, pas un catalogue exhaustif de coordonnées vérifiées. Les emplacements cartographiques restent séparés et gardent le système de calibration V2.3.1. Les traductions des descriptions FullSweep sont conservées. L'application n'est pas affiliée à Rockstar Games.
+La carte, les coordonnées calibrées, les marqueurs compacts, les traductions et le suivi des découvertes sont conservés. La progression personnelle reste stockée localement sous \`leonida-tracker-state-v1\`, indépendante du chat.
+
+### Liens
+
+- Site : https://leonida-tracker-gta6.onrender.com/
+- API : https://leonida-tracker-news.onrender.com/
+
+Projet non officiel ; non affilié à Rockstar Games / Take-Two Interactive.
