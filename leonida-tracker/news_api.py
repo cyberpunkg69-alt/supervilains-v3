@@ -169,6 +169,21 @@ class Handler(BaseHTTPRequestHandler):
   if parsed.path in ("/","/health"):
    self.reply({"ok":True,"app":"LEONIDA discoveries API","version":"1.0.0"})
    return
+  if parsed.path.startswith("/api/community/media/"):
+   mid=parsed.path.rsplit("/",1)[-1]
+   if not re.fullmatch(r"[a-zA-Z0-9_-]{15,60}",mid):
+    self.reply({"error":"Pièce jointe invalide."},404);return
+   media=COMMUNITY.get_media(mid)
+   if not media:self.reply({"error":"Média indisponible ou expiré."},404);return
+   mime,data=media
+   self.send_response(200)
+   self.add_response_headers()
+   self.send_header("Content-Type",mime)
+   self.send_header("Content-Length",str(len(data)))
+   self.send_header("Content-Security-Policy","default-src 'none'; sandbox")
+   self.send_header("Content-Disposition","inline")
+   self.end_headers();self.wfile.write(data)
+   return
   if parsed.path=="/api/community/state":
    params=urllib.parse.parse_qs(parsed.query)
    self.reply(COMMUNITY.state(params.get("after",["0"])[0]))
@@ -189,6 +204,7 @@ class Handler(BaseHTTPRequestHandler):
    "/api/community/heartbeat":"heartbeat",
    "/api/community/leave":"leave",
    "/api/community/send":"send",
+   "/api/community/upload":"upload",
    "/api/community/report":"report",
    "/api/community/delete":"delete",
   }
@@ -202,7 +218,8 @@ class Handler(BaseHTTPRequestHandler):
   try:
    length=int(self.headers.get("Content-Length","0"))
   except (ValueError,TypeError):length=0
-  if length<=0 or length>2400:self.reply({"error":"Requête trop volumineuse ou vide."},413);return
+  limit=4_500_000 if action=="upload" else 2400
+  if length<=0 or length>limit:self.reply({"error":"Requête trop volumineuse ou vide."},413);return
   try:
    body=json.loads(self.rfile.read(length).decode("utf-8"))
    if not isinstance(body,dict):raise ValueError("Objet JSON requis")
@@ -213,10 +230,12 @@ class Handler(BaseHTTPRequestHandler):
    if action=="join":result=COMMUNITY.join(sid,body.get("page"))
    elif action=="heartbeat":result=COMMUNITY.heartbeat(sid)
    elif action=="leave":result=COMMUNITY.leave(sid)
+   elif action=="upload":
+    result=COMMUNITY.upload(sid,body.get("mime"),body.get("contents"))
    elif action=="send":
     # Never trust nickname or chat HTML, and hash the ephemeral client IP only for throttling.
     ip=self.headers.get("CF-Connecting-IP") or self.headers.get("X-Forwarded-For","").split(",")[0] or self.client_address[0]
-    result=COMMUNITY.send(sid,body.get("nickname"),body.get("text"),ip)
+    result=COMMUNITY.send(sid,body.get("nickname"),body.get("text"),ip,body.get("mediaUrl"),body.get("mediaId"))
    elif action=="report":result=COMMUNITY.report(sid,body.get("messageId"))
    else:result=COMMUNITY.delete_own(sid,body.get("messageId"))
    self.reply(result)
