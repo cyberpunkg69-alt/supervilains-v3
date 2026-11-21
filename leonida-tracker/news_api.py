@@ -20,6 +20,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 UTC=dt.timezone.utc
 FEEDS=[
+ ("GTABase","https://www.gtabase.com/feed/","guide"),
+ ("PowerPyx","https://www.powerpyx.com/feed/","guide"),
  ("GTA BOOM","https://www.gtaboom.com/feed","guide"),
  ("Rockstar INTEL","https://rockstarintel.com/feed/","guide"),
  ("IGN","https://www.ign.com/rss/v2/articles/feed","guide"),
