@@ -1,4 +1,4 @@
-const SHELL='leonida-tracker-shell-v3-1';
+const SHELL='leonida-tracker-shell-v3-1-1';
 const FILES=['./','./index.html','./icon.svg','./manifest.webmanifest','./chat.css','./chat.js','./hunter.css','./hunter-ui.js','./hunter.js'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(SHELL).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('leonida-tracker-shell-')&&key!==SHELL).map(key=>caches.delete(key)))),self.clients.claim()])));
