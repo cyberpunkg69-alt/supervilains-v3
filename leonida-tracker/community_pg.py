@@ -80,24 +80,6 @@ class PersistentCommunity(Community):
   } for r in reversed(items)]
   return status
 
- def send(self,sid,nick,text,ip,media_url="",media_id=""):
-  receipt=super().send(sid,nick,text,ip,media_url,media_id)
-  pending=self.messages[-1]
-  with self.db() as conn:
-   with conn.cursor() as cur:
-    if media_id:
-     cur.execute("SELECT owner_hash FROM leonida_media_objects WHERE id=%s",(media_id,))
-     row=cur.fetchone()
-     if not row or row[0]!=shash(sid):
-      raise CommunityError("Pièce jointe introuvable ou expirée.",400)
-    cur.execute("""INSERT INTO leonida_chat_messages
-      (owner_hash,nickname,body,media_url,media_kind,media_id)
-      VALUES(%s,%s,%s,%s,%s,%s) RETURNING id""",
-      (shash(sid),pending["nickname"],pending["text"],pending.get("mediaUrl",""),
-       pending.get("mediaKind",""),pending.get("mediaId","")))
-    receipt["messageId"]=cur.fetchone()[0]
-  return receipt
-
  def report(self,sid,msg_id):
   self._check_session(sid)
   try:msg_id=int(msg_id)
