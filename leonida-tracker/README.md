@@ -1,54 +1,62 @@
-# LEONIDA TRACKER V3.0 — MONEY FINDER + GPS INTELLIGENT
+# LEONIDA TRACKER V3.1 — 21 novembre 2026
 
-Déployé sur Render depuis la branche \`leonida-tracker-render\` du dépôt \`cyberpunkg69-alt/supervilains-v3\`. L'application est non officielle et gratuite.
+Carte GTA VI communautaire, Money Finder, GPS indicatif, chat et statistiques de fréquentation.
 
-## Argent et butin : MONEY FINDER
+## Corrections du 21 novembre 2026
 
-La section 💰 MONEY FINDER est accessible sous la carte via « Argent + GPS ».
+### Compteur de visiteurs uniques
 
-- Guides et fiches de sources publiques vérifiables : PowerPyx (argent, 22 opérations bancaires, 7 receleurs, 39 opérations de gangs, caches de contrebande), GTABase (argent et receleurs).
-- Ces listes sont des **guides**, pas une reproduction intégrale ni une base certifiée de coordonnées. Les filtres couvrent conseils, banques, receleurs, gangs, lieux de notre catalogue et communauté.
-- Le flux actualisé de la V2.4 est réutilisé pour les nouvelles pistes d'argent et de trafic dans **GTA 6**. Les signalements Reddit restent étiquetés comme non vérifiés.
-- Un moteur de recherche filtre guides et lieux. Un sous-ensemble de lieux associés (d'après titre / catégorie / description) issus du catalogue FullSweep peut être ajouté à la tournée, sans jamais inventer une position.
-- Les montants non sourcés ne sont pas affichés. Le guide PowerPyx indique que certains grands coffres atteignent 205 000 $ dans le jeu, sans garantir le même gain à chaque banque.
-- Les liens ouvrent les sites des auteurs ; contenus, publicités et conditions de ces sites ne sont pas contrôlés par LEONIDA TRACKER.
+- Chaque navigateur crée un identifiant aléatoire \`leonida-chat-session-v1\`, enregistré dans son \`localStorage\`. Les actualisations du navigateur et les reconnexions ne génèrent **plus** une visite supplémentaire pour ce même identifiant.
+- Un navigateur Web ne peut pas récupérer l'adresse MAC de l'appareil. Les statistiques ne collectent aucune adresse MAC et n'exigent aucun compte.
+- Effacer les données du site ou changer de navigateur crée une nouvelle identité : « visiteurs uniques » reste une **approximation par navigateur**, non une identification matérielle de personnes.
+- La présence « joueurs connectés » est actualisée toutes les 6 secondes ; elle compte les sessions actives durant les 65 dernières secondes, pas les joueurs GTA Online.
 
-## GPS de chasse indicatif
+### Chat : pièces jointes, liens vidéo et archivage
 
-- Recherche des lieux du catalogue FullSweep et ajout depuis une fiche, une carte de découverte ou MONEY FINDER ; **12 arrêts maximum**.
-- Enregistrement de la liste dans \`localStorage\` sous \`leonida-gps-tour-v1\`, indépendamment du suivi des découvertes \`leonida-tracker-state-v1\`.
-- Filtre des lieux encore à trouver, liste d'étapes numérotées, localisation individuelle avec pulsation turquoise, suppression de points, effacement de la tournée.
-- Algorithme d'optimisation géométrique : plus proche voisin, puis amélioration 2-opt, en gardant le premier arrêt comme départ. Il réduit la longueur de la tournée **dans le repère FullSweep**, sans calcul de route routière ou de temps de conduite.
-- Visualisation sur le fond GTADB seulement si la conversion FullSweep→GTADB a été calibrée. Sinon le parcours peut être visualisé dans le mode « Grille » (schéma non géoréférencé) ; ne pas confondre avec un GPS routier fiable.
-- Chemin SVG en pointillés, étapes numérotées adaptatives au zoom.
-- Aucune promesse de localisation précise, pas de fausse estimation de kilomètres ni de durée de déplacement ; les points du catalogue sont communautaires et nécessitent confirmation dans le jeu.
+- Champ facultatif pour les liens **YouTube, YouTube Shorts, Twitch et TikTok** ; les liens d'images provenant d'**Imgur, Reddit ou Unsplash** sont également acceptés. Les URL HTTPS sont contrôlées côté serveur (liste d'hôtes autorisés).
+- **Fichiers image** : JPEG, PNG, WebP — limite de 1 Mo.
+- **Courtes vidéos** : MP4, WebM — limite de 2,5 Mo.
+- Le serveur contrôle le type MIME, la signature binaire, le volume total chargé et les limites d'envoi (trois fichiers par cinq minutes).
+- Les médias publiés s'affichent dans le chat sous forme de photo ou de vidéo consultable. Ils sont associés au message et sont masqués après des signalements suffisants.
+- Les messages locaux précédemment chargés sont archivés dans le navigateur \`leonida-chat-local-archive-v1\` lorsque le serveur redémarre. **L'archive locale est visible uniquement sur cet appareil**, pas par les autres joueurs. Les messages déjà perdus avant cette mise à jour ne sont pas récupérables.
+- Les uploads et les messages restent *temporaires côté serveur tant que la connexion PostgreSQL n'a pas été activée*. En mode mémoire : les images/vidéos sont conservées au plus 4 heures, les messages jusqu'à 24 heures, et ces durées peuvent être raccourcies par un redémarrage.
+- Modération minimale : signalement et masquage après plusieurs alertes, limitations de volume, filtrage des liens. **Une modération humaine et un vrai dispositif de contrôle des images et des vidéos restent nécessaires avant une ouverture à grande échelle**.
+
+### Backend PostgreSQL préparé
+
+La nouvelle base gratuite Render existe, mais **n'est pas encore connectée à la Web API** faute d'accès aux identifiants de connexion depuis les outils disponibles :
+
+- Base : [leonida-tracker-community-db](https://dashboard.render.com/d/dpg-dc0m77u1egvs738co2ug-a), plan Free, région Francfort, identifiant \`dpg-dc0m77u1egvs738co2ug-a\`.
+- **Expiration : 21 décembre 2026**, selon Render. Un plan gratuit PostgreSQL Render ne convient pas à la conservation définitive : prévoir une migration vers une base durable avant expiration et des sauvegardes régulières. Aucun abonnement payant n'a été souscrit.
+- Service API : [leonida-tracker-news](https://dashboard.render.com/web/srv-dc0lcbcs728c73akl3r0), région Francfort. Site public : https://leonida-tracker-gta6.onrender.com/.
+
+Les fichiers \`community_pg.py\` et \`requirements.txt\` contiennent le schéma et l'adaptateur prêts à l'emploi pour une connexion PostgreSQL sécurisée. La base stockera les identifiants de navigateurs sous forme de hash SHA-256 (pas de MAC), les messages publics et les données des pièces jointes.
+
+**Activation manuelle nécessaire dans Render (ne partage pas les identifiants de connexion dans une conversation publique)** :
+
+1. Ouvrir le tableau de bord de la base ci-dessus, onglet **Connect**, et copier son **Internal Database URL** (il contient un mot de passe secret).
+2. Ouvrir le service Web **leonida-tracker-news**, onglet **Settings**. Modifier **Build Command** et inscrire \`pip install -r leonida-tracker/requirements.txt\`. L'adaptateur PostgreSQL utilise \`psycopg[binary]==3.3.9\` compatible Python 3.14.
+3. Dans **Environment**, ajouter la variable secrète \`DATABASE_URL\` avec la valeur de l'**Internal Database URL** copiée à l'étape 1. Ne jamais placer cette URL dans GitHub ni dans l'application frontend !
+4. Enregistrer, relancer un déploiement de ce service et vérifier \`https://leonida-tracker-news.onrender.com/api/community/state\` : la réponse doit indiquer \`"mode":"persistent"\`, \`"temporary":false\`.
+5. **Important :** cette solution de test devra être migrée avant le 21 décembre 2026. Sans migration, la base expire et les données risquent d'être supprimées. Pour un stockage pérenne, préférer un projet dédié Supabase ou une base payante conservée avec sauvegardes, selon le choix explicite du propriétaire.
+
+Si \`DATABASE_URL\` n'est pas définie, la version temporaire reste active avec \`"mode":"temporary"\` ; le site ne prétend pas que les données sont durables.
+
+### Limites et bonnes pratiques
+
+- Le chat est public. Ne pas partager d'adresse personnelle, de numéro de téléphone ou de documents sensibles. Seuls les médias dont les droits de diffusion sont détenus par le joueur doivent être publiés.
+- L'archivage local n'est pas une sauvegarde du serveur et ne synchronise pas plusieurs appareils.
+- La base gratuite Render est limitée en stockage, notamment pour les vidéos ; une solution de stockage objet indépendante sera recommandée avant de relever les limites vidéo.
+- Les fichiers du site et l'API ne doivent jamais exposer la variable \`DATABASE_URL\`.
+- La progression et les favoris du joueur restent dans \`leonida-tracker-state-v1\` et les tournées GPS dans \`leonida-gps-tour-v1\`.
 
 ## Fichiers
 
-- \`index.html\` : moteur de carte, fiches, hooks GPS et fichiers front.
-- \`hunter-ui.js\` : rendu des deux panneaux sur l'interface.
-- \`hunter.js\` : données, filtres, recherche, optimisation et affichage du parcours.
-- \`hunter.css\` : styles responsives et tracé SVG.
-- \`sw.js\` : cache mobile V3.0 avec tous les nouveaux fichiers.
-- \`chat.js\`, \`chat.css\`, \`community.py\`, \`news_api.py\` : chat, visiteurs et actualités déjà présents en V2.5.
+- \`community.py\` — compteurs de navigateur, chat en mémoire, validation et stockage temporaire des médias
+- \`community_pg.py\` — adaptateur PostgreSQL facultatif et tables persistantes
+- \`news_api.py\` — API HTTP du chat, des statistiques, du partage et des nouveautés
+- \`chat.js\` / \`chat.css\` — interface mobile, archive locale, galerie et liens vidéo
+- \`hunter.js\` / \`hunter.css\` / \`hunter-ui.js\` — Money Finder et GPS
+- \`sw.js\` — cache hors ligne mobile
 
-## Test manuel sur Chrome Android
-
-1. Charger le site (actualiser si le cache affiche encore V2.5).
-2. Appuyer sur « Argent + GPS ». Tester les filtres « Banques », « Receleurs », « Sur carte ».
-3. Ajouter au moins trois lieux depuis le moteur GPS ou les fiches.
-4. Appuyer sur « Optimiser l'ordre », puis sur « Voir sur la carte ». Vérifier les numéros 1, 2, 3.
-5. Localiser un arrêt et vérifier que le marqueur pulse, sans supprimer les autres découvertes cochées.
-6. Si la carte affiche « recalage non confirmé », choisir la « Grille » ; celle-ci est indicative.
-
-## Références
-
-- https://www.powerpyx.com/gta-6-money-guide-how-to-get-money-fast/
-- https://www.powerpyx.com/gta-6-all-bank-jobs-locations-bank-vaults/
-- https://www.powerpyx.com/gta-6-all-fence-locations-how-to-fence-stolen-goods/
-- https://www.powerpyx.com/gta-6-all-illegal-gang-operations-locations/
-- https://www.gtabase.com/gta-6/map/
-- https://fullsweepmap.com/developers/
-- https://map.gtadb.org/
-
-Le projet n'est pas affilié à Rockstar Games ou Take-Two Interactive.
+Projet fan non officiel, sans lien avec Rockstar Games ou Take-Two Interactive.
