@@ -185,8 +185,17 @@ function init(){
  $('chatForm').onsubmit=async e=>{
   e.preventDefault();
   if(!connected){notify('Chat momentanément indisponible. Réessaie.');return}
-  const nick=nickname.value.trim(),text=$('chatText').value.trim();
-  const link=$('chatMediaUrl').value.trim(),file=$('chatFile').files?.[0];
+  const nick=nickname.value.trim();
+  let text=$('chatText').value.trim(),link=$('chatMediaUrl').value.trim();
+  const file=$('chatFile').files?.[0];
+  // Coller directement une URL de vidéo dans le message fonctionne aussi.
+  if(!link&&!file){
+   const urls=text.match(/https:\/\/[^\s<>"']+/gi);
+   if(urls&&urls.length===1){
+    link=urls[0].replace(/[.,;!?]+$/,'');
+    text=text.replace(urls[0],'').trim();
+   }
+  }
   if(!text&&!link&&!file){notify('Écris un message ou joins une photo/vidéo.');return;}
   if(link&&file){notify('Choisis un lien OU un fichier, pas les deux.');return;}
   $('chatSend').disabled=true;
