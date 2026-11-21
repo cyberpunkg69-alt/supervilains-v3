@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#080d15"><meta name="description" content="Leonida Tracker, votre compagnon GTA VI : carte interactive, découvertes, favoris, progression, et sauvegarde locale.">
-<title>LEONIDA TRACKER V2 — GTA VI</title>
+<title>LEONIDA TRACKER V2.5 — GTA VI</title>
+<link rel="stylesheet" href="./chat.css">
 <link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="manifest" href="manifest.webmanifest">
 <style>
 
@@ -94,6 +95,12 @@
 </aside>
 <main class="content">
  <div class="headingRow"><div><div class="eyebrow">LIVE MAP & PROGRESS TRACKING</div><h1 class="megaTitle">LA CHASSE EST OUVERTE<span style="color:var(--teal)">.</span></h1><p>Carte de Leonida • Collections et lieux répertoriés • Suivi personnel indépendant sur Xbox / PS5</p></div><div class="headBtns"><button class="btn" id="refreshBtn">↻ Actualiser</button><button class="btn main" id="addBtn">＋ Ajouter</button></div></div>
+ <section class="communityStrip" aria-label="Communauté LEONIDA TRACKER">
+  <div class="communityStat"><span class="communityStatIcon" aria-hidden="true">👁️</span><div><div class="communityValue" id="siteViews">—</div><div class="communityLabel">Vues sur le site</div></div></div>
+  <div class="communityStat"><span class="communityStatIcon" aria-hidden="true">🟢</span><div><div class="communityValue purple" id="siteOnline">—</div><div class="communityLabel">Joueurs connectés au site</div></div></div>
+  <button class="btn main chatOpenBtn" id="openChatTop" type="button">💬 CHAT LIVE • Discuter</button>
+  <p class="communityExplanation" id="communityCountsNote">Chargement des statistiques de la communauté…</p>
+ </section>
  <section class="stats" id="progressSection" aria-label="Progression">
  <div class="stat"><div class="statlabel">Lieux suivis</div><div class="statnum" id="countTotal">—</div><div class="statfoot">Hors positions non vérifiées</div></div>
  <div class="stat"><div class="statlabel">Découvertes</div><div class="statnum teal" id="countFound">—</div><div class="statfoot">Cases cochées sur cet appareil</div></div>
@@ -101,7 +108,7 @@
  <div class="stat"><div class="statlabel">Catalogue complété</div><div class="statnum pink"><span id="percent">0</span><span style="font-size:24px">%</span></div><div class="progressTrack"><div class="progressFill" id="progressFill"></div></div><div class="statfoot" style="margin-top:7px">Ce n'est pas le 100 % officiel du jeu</div></div>
  </section>
  <section id="mapSection" class="mapFrame">
-   <div class="mapTop"><label><i></i> LEONIDA • CARTE V2.4</label><span class="mapHint">Marqueurs synchronisés avec tes cases</span><a href="https://fullsweepmap.com/?lang=fr" target="_blank" rel="noopener" style="font-size:11px">Vérifier la carte source ↗</a></div>
+   <div class="mapTop"><label><i></i> LEONIDA • CARTE V2.5</label><span class="mapHint">Marqueurs synchronisés avec tes cases</span><a href="https://fullsweepmap.com/?lang=fr" target="_blank" rel="noopener" style="font-size:11px">Vérifier la carte source ↗</a></div>
    <div class="mapToolbar" aria-label="Commandes de la carte">
      <button type="button" class="btn mini" id="mapIn" aria-label="Zoom avant">＋</button>
      <button type="button" class="btn mini" id="mapOut" aria-label="Zoom arrière">−</button>
@@ -155,9 +162,21 @@
  </section>
  <section id="locationsSection"><div class="barRow"><div><div class="eyebrow">DISCOVERY LOG</div><h2>LES DÉCOUVERTES <span style="color:var(--teal)" id="visibleCount"></span></h2><small id="dataLabel">Connexion aux données communautaires...</small></div><div class="controls"><select class="select" id="sort" aria-label="Trier"><option value="name">A → Z</option><option value="region">Par région</option><option value="source">Par fiabilité</option><option value="missing">Non trouvés en premier</option></select><button class="btn mini" id="planBtn">★ Ma chasse</button></div></div><div class="gridcards" id="cardList" aria-live="polite"></div></section>
  <section id="catSection"><div class="barRow"><div><div class="eyebrow">YOUR COMPLETION DASHBOARD</div><h2>PAR CATÉGORIE</h2></div></div><div class="catSummary" id="categoryStats"></div></section>
- <footer class="footer"><strong>LEONIDA TRACKER — FAN CONCEPT / v2.4</strong><br>Projet non officiel, non affilié à Rockstar Games ou Take-Two Interactive. GTA VI et ses marques appartiennent à leurs ayants droit. Données de lieux : <a href="https://fullsweepmap.com/developers/" target="_blank" rel="noopener">FullSweep (CC BY 4.0)</a> et contributeurs cités. Carte GTADB jour / atlas YANIS V15, tuiles GTADB (CC BY 4.0) affichées dans leur ordre natif et à plusieurs résolutions par notre interface ; pour consulter les positions originales : <a href="https://fullsweepmap.com/" target="_blank" rel="noopener">FullSweep</a>. Les données ont été normalisées pour l'interface française ; aucune synchronisation automatique avec une sauvegarde Xbox/PS5. Sauvegarde locale et export JSON disponibles.</footer>
+ <footer class="footer"><strong>LEONIDA TRACKER — FAN CONCEPT / v2.5</strong><br>Projet non officiel, non affilié à Rockstar Games ou Take-Two Interactive. GTA VI et ses marques appartiennent à leurs ayants droit. Données de lieux : <a href="https://fullsweepmap.com/developers/" target="_blank" rel="noopener">FullSweep (CC BY 4.0)</a> et contributeurs cités. Carte GTADB jour / atlas YANIS V15, tuiles GTADB (CC BY 4.0) affichées dans leur ordre natif et à plusieurs résolutions par notre interface ; pour consulter les positions originales : <a href="https://fullsweepmap.com/" target="_blank" rel="noopener">FullSweep</a>. Les données ont été normalisées pour l'interface française ; aucune synchronisation automatique avec une sauvegarde Xbox/PS5. Sauvegarde locale et export JSON disponibles.</footer>
 </main></div></div>
 <div class="modalWrap" id="modalWrap"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modalHeading"><div class="modalTitle"><h3 id="modalHeading">DÉTAILS</h3><button id="closeDialog" class="close" aria-label="Fermer">×</button></div><div id="modalContent"></div></div></div>
+<button class="chatLauncher" type="button" id="chatLauncher" aria-controls="chatDock" aria-expanded="false">💬 Chat joueurs</button>
+<aside class="chatDock" id="chatDock" aria-label="Chat public LEONIDA TRACKER" hidden>
+ <div class="chatHeader"><div><h2>💬 CHAT LEONIDA LIVE</h2><small>Discussion publique entre joueurs • pseudos non vérifiés</small></div><button type="button" class="chatClose" id="chatClose" aria-label="Fermer le chat">✕</button></div>
+ <div id="chatMessages" class="chatMessages" role="log" aria-label="Messages des joueurs" aria-live="off"><p class="chatPlaceholder">Connexion au salon de discussion…</p></div>
+ <form class="chatForm" id="chatForm" autocomplete="off">
+  <label for="chatNickname">Ton pseudo</label><input id="chatNickname" name="nickname" type="text" maxlength="22" minlength="2" required placeholder="Ex : Joueur_Leonida">
+  <label for="chatText">Ton message</label>
+  <div class="chatInputRow"><textarea id="chatText" name="message" maxlength="320" minlength="2" required placeholder="Un secret découvert ? Une astuce à partager ?"></textarea><button id="chatSend" class="btn main" type="submit" disabled>Envoyer</button></div>
+  <div class="chatSafety">⚠ Chat public : ne partage pas de coordonnées personnelles ni de liens. Limite de 4 messages/minute. Signale les abus. Messages temporaires.</div>
+ </form>
+ <div class="chatConnection" id="chatConnection">Connexion au salon…</div>
+</aside>
 <div id="toast" class="toast" role="status"></div>
 <script>
 'use strict';
@@ -701,4 +720,5 @@ function openNewsReport(){
 function init(){syncControls();['onlyMissing','onlyFav','showUnverified','spoilers'].forEach(k=>$(k).onchange=e=>{state.settings[k]=e.target.checked;save()});$('search').oninput=()=>{renderList();renderMap()};$('sort').onchange=e=>{state.settings.sort=e.target.value;save()};$('refreshBtn').onclick=loadData;$('addBtn').onclick=openAdd;$('saveBtn').onclick=exportData;$('settingsBtn').onclick=openSettings;$('openPlan').onclick=openPlan;$('planBtn').onclick=openPlan;$('closeDialog').onclick=closeModal;$('modalWrap').onclick=e=>{if(e.target===$('modalWrap'))closeModal()};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>$(b.dataset.jump)?.scrollIntoView({behavior:'smooth'}));cachedNews();renderNews();statusNews();document.querySelectorAll('[data-news-cat]').forEach(b=>b.onclick=()=>{newsFilter=b.dataset.newsCat;renderNews();});$('newsRefresh').onclick=()=>refreshNews(true);$('newsReport').onclick=openNewsReport;refreshNews(false);initMap();initializeTerrain();renderFilters();renderCategories();renderMap();projectionStatus();calibrateMap();loadData();if('serviceWorker'in navigator&&['https:','http:'].includes(location.protocol))navigator.serviceWorker.register('./sw.js').catch(()=>{})}
 init();
 </script>
+<script src="./chat.js"></script>
 </body></html>
